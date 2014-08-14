@@ -1,0 +1,26 @@
+<launch>
+    <group ns="robot_1">
+
+        <param name="tf_prefix" value="robot_1" />
+
+        <include file="$(find rp_actions)/config/localization/amcl_node.xml" />
+        
+        <!-- include file="$(find rp_actions)/config/navigation/move_base.xml" / -->
+
+        <node pkg="tf" type="static_transform_publisher" name="link_broadcaster_0" args="0 0 0 0 0 0 /map /robot_1/map 100" />
+
+        <node pkg="tf" type="static_transform_publisher" name="link_broadcaster_1" args="0 0 0 0 0 0 /robot_0/base_laser_link /robot_1/laser_frame 100" />
+
+        <param name="amcl/initial_pose_x" value="-1.0" />
+        <param name="amcl/initial_pose_y" value="1.8" />
+        <param name="amcl/initial_pose_a" value="0.0" />
+
+        <param name="amcl/initial_cov_xx" value="0.25" />
+        <param name="amcl/initial_cov_yy" value="0.25" />
+        <param name="amcl/initial_cov_aa" value="0.25" />
+
+        <node pkg="rp_actions" type="turn" name="turn" args="-server" output="screen" />
+
+    </group>
+</launch>
+

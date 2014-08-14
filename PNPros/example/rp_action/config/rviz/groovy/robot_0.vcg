@@ -1,0 +1,214 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 115
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Status1
+        - /TF1/Frames1
+      Splitter Ratio: 0.704698
+    Tree Height: 430
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded:
+      - /2D Pose Estimate1
+      - /2D Nav Goal1
+    Name: Tool Properties
+    Splitter Ratio: 0.588679
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz/Time
+    Name: Time
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        /map:
+          Value: true
+        /robot_0/base_footprint:
+          Value: true
+        /robot_0/base_laser_link:
+          Value: true
+        /robot_0/base_link:
+          Value: true
+        /robot_0/laser_frame:
+          Value: true
+        /robot_0/map:
+          Value: true
+        /robot_0/odom:
+          Value: true
+        /robot_1/base_footprint:
+          Value: true
+        /robot_1/base_laser_link:
+          Value: true
+        /robot_1/base_link:
+          Value: true
+        /robot_1/odom:
+          Value: true
+        /robot_2/base_footprint:
+          Value: true
+        /robot_2/base_laser_link:
+          Value: true
+        /robot_2/base_link:
+          Value: true
+        /robot_2/odom:
+          Value: true
+        /robot_3/base_footprint:
+          Value: true
+        /robot_3/base_laser_link:
+          Value: true
+        /robot_3/base_link:
+          Value: true
+        /robot_3/odom:
+          Value: true
+        All Enabled: false
+      Marker Scale: 5
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+      Tree:
+        /map:
+          /robot_0/map:
+            /robot_0/odom:
+              /robot_0/base_footprint:
+                /robot_0/base_link:
+                  /robot_0/base_laser_link:
+                    /robot_0/laser_frame:
+                      {}
+        /robot_1/odom:
+          /robot_1/base_footprint:
+            /robot_1/base_link:
+              /robot_1/base_laser_link:
+                {}
+        /robot_2/odom:
+          /robot_2/base_footprint:
+            /robot_2/base_link:
+              /robot_2/base_laser_link:
+                {}
+        /robot_3/odom:
+          /robot_3/base_footprint:
+            /robot_3/base_link:
+              /robot_3/base_laser_link:
+                {}
+      Update Interval: 0
+      Value: true
+    - Alpha: 0.7
+      Class: rviz/Map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /map
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds:
+        Max Intensity: 1
+        Min Intensity: 1
+        Value: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 0; 0
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.05
+      Style: Squares
+      Topic: /robot_0/scan
+      Use Fixed Frame: true
+      Use rainbow:
+        Max Color: 255; 255; 255
+        Min Color: 0; 0; 0
+        Value: true
+      Value: true
+    - Alpha: 1
+      Class: rviz/GridCells
+      Color: 25; 255; 0
+      Enabled: false
+      Name: Global Obst
+      Topic: /robot_0/move_base_node/global_costmap/inflated_obstacles
+      Value: false
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Name: Global Path
+      Topic: /robot_0/move_base_node/NavfnROS/plan
+      Value: true
+    - Alpha: 1
+      Class: rviz/GridCells
+      Color: 255; 170; 0
+      Enabled: false
+      Name: Local Obst
+      Topic: /robot_0/move_base_node/local_costmap/inflated_obstacles
+      Value: false
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 255; 170; 0
+      Enabled: true
+      Name: Local Path
+      Topic: /robot_0/move_base_node/TrajectoryPlannerROS/global_plan
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: /map
+  Name: root
+  Tools:
+    - Class: rviz/MoveCamera
+    - Class: rviz/Interact
+    - Class: rviz/Select
+    - Class: rviz/SetInitialPose
+      Topic: /robot_0/initialpose
+    - Class: rviz/SetGoal
+      Topic: /robot_0/move_base_simple/goal
+  Value: true
+  Views:
+    Current:
+      Angle: -1.585
+      Class: rviz/TopDownOrtho
+      Name: Current View
+      Near Clip Distance: 0.01
+      Scale: 35.7806
+      Target Frame: <Fixed Frame>
+      Value: TopDownOrtho (rviz)
+      X: 5.94887
+      Y: 1.40933
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 680
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd00000004000000000000013c00000262fc0200000005fb0000001200530065006c0065006300740069006f006e00000000280000009b0000006400fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000002800000262000000dd00ffffff000000010000010f00000262fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000002800000262000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004a00000003efc0100000002fb0000000800540069006d00650000000000000004a0000002bf00fffffffb0000000800540069006d00650100000000000004500000000000000000000002be0000026200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1301
+  X: 322
+  Y: 142

@@ -1,0 +1,136 @@
+Background\ ColorB=0
+Background\ ColorG=0
+Background\ ColorR=0
+Camera\ Config=1.5698 3.15579 18.2951 7.44169 0.0291633 1.20376
+Camera\ Type=rviz::OrbitViewController
+Fixed\ Frame=/map
+Global\ Obst.Alpha=1
+Global\ Obst.ColorB=0
+Global\ Obst.ColorG=1
+Global\ Obst.ColorR=0.1
+Global\ Obst.Enabled=0
+Global\ Obst.Topic=/robot_0/move_base_node/global_costmap/inflated_obstacles
+Global\ Path.Alpha=1
+Global\ Path.ColorB=0
+Global\ Path.ColorG=1
+Global\ Path.ColorR=0.1
+Global\ Path.Enabled=1
+Global\ Path.Topic=/robot_0/move_base_node/NavfnROS/plan
+LaserScan..AxisColorAutocompute\ Value\ Bounds=1
+LaserScan..AxisColorAxis=2
+LaserScan..AxisColorMax\ Value=10
+LaserScan..AxisColorMin\ Value=-10
+LaserScan..AxisColorUse\ Fixed\ Frame=1
+LaserScan..FlatColorColorB=0
+LaserScan..FlatColorColorG=0
+LaserScan..FlatColorColorR=1
+LaserScan..IntensityAutocompute\ Intensity\ Bounds=0
+LaserScan..IntensityChannel\ Name=intensity
+LaserScan..IntensityMax\ ColorB=1
+LaserScan..IntensityMax\ ColorG=1
+LaserScan..IntensityMax\ ColorR=1
+LaserScan..IntensityMax\ Intensity=1
+LaserScan..IntensityMin\ ColorB=0
+LaserScan..IntensityMin\ ColorG=0
+LaserScan..IntensityMin\ ColorR=0.666667
+LaserScan..IntensityMin\ Intensity=1
+LaserScan..IntensityUse\ full\ RGB\ spectrum=0
+LaserScan.Alpha=1
+LaserScan.Billboard\ Size=0.1
+LaserScan.Color\ Transformer=FlatColor
+LaserScan.Decay\ Time=0
+LaserScan.Enabled=1
+LaserScan.Position\ Transformer=XYZ
+LaserScan.Queue\ Size=10
+LaserScan.Selectable=1
+LaserScan.Style=0
+LaserScan.Topic=/robot_0/scan
+Local\ Obst.Alpha=1
+Local\ Obst.ColorB=0
+Local\ Obst.ColorG=0.666667
+Local\ Obst.ColorR=1
+Local\ Obst.Enabled=0
+Local\ Obst.Topic=/robot_0/move_base_node/local_costmap/inflated_obstacles
+Local\ Path.Alpha=1
+Local\ Path.ColorB=0
+Local\ Path.ColorG=0.666667
+Local\ Path.ColorR=1
+Local\ Path.Enabled=1
+Local\ Path.Topic=/robot_0/move_base_node/TrajectoryPlannerROS/global_plan
+Map.Alpha=0.7
+Map.Draw\ Behind=0
+Map.Enabled=1
+Map.Topic=/map
+PoseArray.Arrow\ Length=0.3
+PoseArray.ColorB=1
+PoseArray.ColorG=0.333333
+PoseArray.ColorR=0
+PoseArray.Enabled=0
+PoseArray.Topic=/robot_0/particlecloud
+Property\ Grid\ Splitter=294,129
+Property\ Grid\ State=expanded=.Global Options;splitterratio=0.595092
+QMainWindow=000000ff00000000fd0000000300000000000001f1000001f9fc0200000001fb000000100044006900730070006c0061007900730100000036000001f9000000ee00ffffff0000000100000131000001f9fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000036000000830000006700fffffffb0000000a0056006900650077007301000000bf000000e7000000bb00fffffffb0000001200530065006c0065006300740069006f006e01000001ac000000830000006700ffffff00000003000005160000003efc0100000001fb0000000800540069006d0065010000000000000516000002bf00ffffff000001e8000001f900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+TF.All\ Enabled=0
+TF.Enabled=1
+TF.Frame\ Timeout=15
+TF.Marker\ Scale=5
+TF.Show\ Arrows=0
+TF.Show\ Axes=1
+TF.Show\ Names=0
+TF.Update\ Interval=0
+Target\ Frame=/map
+Tool\ 2D\ Nav\ GoalTopic=/robot_0/move_base_simple/goal
+Tool\ 2D\ Pose\ EstimateTopic=/robot_0/initialpose
+[Display0]
+ClassName=rviz::TFDisplay
+Name=TF
+[Display1]
+ClassName=rviz::MapDisplay
+Name=Map
+[Display2]
+ClassName=rviz::LaserScanDisplay
+Name=LaserScan
+[Display3]
+ClassName=rviz::GridCellsDisplay
+Name=Global Obst
+[Display4]
+ClassName=rviz::PathDisplay
+Name=Global Path
+[Display5]
+ClassName=rviz::GridCellsDisplay
+Name=Local Obst
+[Display6]
+ClassName=rviz::PathDisplay
+Name=Local Path
+[Display7]
+ClassName=rviz::PoseArrayDisplay
+Name=PoseArray
+[TF.Frames.]
+map.Enabled=0
+[TF.Frames./robot_0]
+base_footprint.Enabled=0
+base_laser_link.Enabled=0
+base_link.Enabled=1
+laser_frame.Enabled=0
+map.Enabled=0
+odom.Enabled=0
+[TF.Frames./robot_1]
+base_footprint.Enabled=0
+base_laser_link.Enabled=0
+base_link.Enabled=0
+odom.Enabled=0
+[TF.Frames./robot_2]
+base_footprint.Enabled=0
+base_laser_link.Enabled=0
+base_link.Enabled=0
+odom.Enabled=0
+[TF.Frames./robot_3]
+base_footprint.Enabled=0
+base_laser_link.Enabled=0
+base_link.Enabled=0
+odom.Enabled=0
+[Window]
+Height=656
+Width=1304
+X=354
+Y=17

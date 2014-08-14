@@ -1,0 +1,37 @@
+<launch>
+    
+    <group ns="robot_0">
+        <param name="robot_name" value="robot_0" />
+        <param name="tf_prefix" value="robot_0" />
+
+        <include file="$(find rp_action)/config/localization/amcl_node.xml" />
+        
+        <include file="$(find rp_action)/config/navigation/move_base.xml" />
+
+        <node pkg="tf" type="static_transform_publisher" name="link_broadcaster_0" args="0 0 0 0 0 0 /map /robot_0/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="link_broadcaster_1" args="0 0 0 0 0 0 /map /robot_1/odom 100" />
+	<node pkg="tf" type="static_transform_publisher" name="link_broadcaster_2" args="0 0 0 0 0 0 /map /robot_2/odom 100" />
+        <node pkg="tf" type="static_transform_publisher" name="link_broadcaster_3" args="0 0 0 0 0 0 /map /robot_3/odom 100" />
+
+        <!-- node pkg="tf" type="static_transform_publisher" name="link_broadcaster_1" args="0 0 0 0 0 0 /robot_0/base_laser_link /robot_0/laser_frame 100" /  -->
+
+        <param name="amcl/initial_pose_x" value="0.0" />
+        <param name="amcl/initial_pose_y" value="1.8" />
+        <param name="amcl/initial_pose_a" value="0.0" />
+
+        <param name="amcl/initial_cov_xx" value="0.25" />
+        <param name="amcl/initial_cov_yy" value="0.25" />
+        <param name="amcl/initial_cov_aa" value="0.25" />
+
+        <node pkg="rp_action" type="turn" name="turn" args="-server" output="screen" />
+
+        <node pkg="rp_action" type="mypnpas" name="pnpas" args="" output="screen" />
+
+        <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen">
+            <param name="plan_folder" value="$(find pnp_ros)/plans/" />
+            <param name="current_plan" value="sensing" />
+        </node>
+
+    </group>
+</launch>
+

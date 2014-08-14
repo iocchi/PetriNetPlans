@@ -1,0 +1,60 @@
+include "urg.inc"
+include "erratic.inc"
+
+
+define floorplan model
+(
+  # sombre, sensible, artistic
+  color "black"
+
+  # most maps will need a bounding box
+  boundary 1
+
+  gui_nose 0
+  gui_grid 0
+
+  gui_outline 0
+  gripper_return 0
+  fiducial_return 0
+  laser_return 1
+)
+
+# set the resolution of the underlying raytrace model in meters
+resolution 0.02
+
+interval_sim 100  # simulation timestep in milliseconds
+
+
+window
+( 
+  size [ 917.000 688.000 ] 
+  center [ -0.169 -0.592 ]
+  rotate [ 0 0 ]
+  scale 19.757 
+)
+
+# load an environment bitmap
+floorplan
+( 
+  name "dis-B1"
+  bitmap "dis-B1.png"
+  size [ 50.5 53.5 0.500 ]
+  pose [ 12.8 14.5 0 0 ]
+)
+
+# robots
+erratic( pose [   0.0   1.8 0 0 ] name "robot_0" color "blue")
+erratic( pose [  -1.0   1.8 0 0 ] name "robot_1" color "red")
+erratic( pose [  -8.0 -10.0 0 0 ] name "robot_2" color "green")
+erratic( pose [  -6.0 -10.0 0 0 ] name "robot_3" color "magenta")
+
+define box model
+(
+  size [0.400 0.400 0.500]
+  gui_nose 0
+)
+
+box( pose [ 8.0 6.0 0 0 ] color "red")
+
+
+

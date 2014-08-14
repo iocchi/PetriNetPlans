@@ -1,0 +1,16 @@
+# Goal
+# target_angle [DEG] 
+float32 target_angle
+# flag ABS/REL
+string absolute_relative_flag
+# max angular velocity [DEG/s]
+float32 max_ang_vel
+#robot name
+string name
+---
+# Result
+string result
+---
+# Feedback
+string feedback
+
