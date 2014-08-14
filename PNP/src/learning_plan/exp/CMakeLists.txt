@@ -1,0 +1,7 @@
+
+SET( pnp_SRC ${pnp_SRC}
+	${CMAKE_CURRENT_SOURCE_DIR}/Exploit.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/EGreedy.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/SoftMax.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ExploitWithHysteresis.cpp
+	PARENT_SCOPE)

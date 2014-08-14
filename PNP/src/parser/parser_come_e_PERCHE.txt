@@ -1,0 +1,112 @@
+- How to generate the parsers //added on 5/12/2009
+
+***********LEXER
+
+In the very likely event you have to regenerate the lexer, just let the
+cmake script run
+
+flex ConditionScanner.yy
+
+
+***********PARSER
+
+in the unlikely event you have to recreate the parser, follow this
+procedure.
+
+on a shell, run:
+bison ConditionParser.yy
+
+
+it will create the files ConditionParser.cpp and 
+ConditionParser.hpp in the directory src/parser. 
+
+Move the following files: 
+-ConditionParser.hpp 
+-location.hh
+-position.hh
+-stack.hh
+
+into include/pnp/parser/ and modify ConditionParser.cpp substituting
+
+#include "ConditionParser.hpp"
+
+with
+
+#include <pnp/parser/ConditionParser.hpp>
+
+I am sorry, the rest of this file is older and is still in italian.
+--------------
+
+Cercati una sedia comoda.
+Preparati un caffe', un the, o la bevanda a base del vasocostrittore che preferisci.
+Cominciamo.
+
+- Struttura
+
+Il ConditionChecker è un wrapper del lexer e del parser. Prende la stringa
+da analizzare, crea lo stream e lo setta per il lexer. Poi invoca il parser
+e restituisce il valore della condizione se era corretta o false se non lo era
+(scrivendo un messaggio di errore).
+
+La classe del parser e' yy::parser creata da bison e dichiarata in ConditionParser.hpp.
+E' una classe friend di ConditionChecker perché durante il parsing modifica il valore 
+ConditionChecker::lastResult che sara' restituito dal ConditionChecker alla fine del parsing.
+
+
+- Parser
+
+La prima parte del file ConditionParser.yy contiene le forward declarations per il file hpp.
+Il costruttore prende un riferimento al ConditionScanner (per invocarne il metodo yylex()) e al
+ConditionChecker (per settare la variabile lastResult come spiegato sopra).
+
+Nel parser l'analizzatore lessicale viene invocato semplicemente con il metodo yylex(), quindi
+ho dichiarato la macro:
+
+#define yylex theLexer->yylex
+
+in modo che chiami il metodo dell'oggetto ConditionScanner. Questa macro va eliminata nel file
+generato da flex (che include l'header del parser perche' ci sono definiti i token) perché chiaramente
+qui il metodo è definito e chiamato senza alcun theLexer e non compilerebbe.
+
+Il resto del file per bison e' la grammatica e la definizione vuota del metodo error() visto che non
+ci interessa andare avanti nel parsing in caso di errori.
+
+
+- Lexer
+
+Nel file ConditionScanner.yy viene subito tolta la macro yylex di cui sopra.
+
+Flex crea il lexer di classe yyFlexLexer con un metodo yylex() senza parametri. Pero'
+il metodo richiesto dal parser di bison prende un parametro di tipo yy::parser::semantic_type*
+cioé un puntatore alla union in cui si aspetta di trovare il valore associato al token.
+Flex invece non usa parametri del metodo ma permette di accedere al valore dell'ultimo token
+tramite il metodo YYText().
+
+Per far comunicare i due ho creato la classe ConditionScanner che ha il lexer di flex come variabile
+di istanza ed espone un metodo yylex(yy::parser::semantic_type*) come lo vuole il parser.
+Il codice di questa classe "ponte", o se vogliamo adapter, e' incluso nel file per flex e quindi finisce
+in fondo a ConditionScanner.cpp che prima contiene tutto il codice generato da flex.
+
+-------------------
+ATTENZIONE: poiche' la classe generata da flex non e' ConditionScanner il file ConditionScanner.h
+e' stato scritto a mano e non viene generato da flex. Non cancellarlo!
+-------------------
+
+
+questo e' il metodo invocato dal parser:
+
+int PetriNetPlans::ConditionScanner::yylex(yy::parser::semantic_type* yylval) {
+
+    int tok = lexer->yylex();
+    if(tok == yy::parser::token::ATOMIC_COND)
+        yylval->sval = new std::string(lexer->YYText());
+
+    return tok;
+}
+
+come si vede il valore del token e' ottenuto con YYText() e copiato in yyval per renderlo
+disponibile al parser.
+L'unico token di cui serve il valore e' quello della condizione atomica, come
+dichiarato in ConditionParser.yy
+La stringa e' nell'heap ed infatti il codice del parser (vedi il file ConditionParser.yy) si occupa di
+deallocarla quando non gli serve piu'.

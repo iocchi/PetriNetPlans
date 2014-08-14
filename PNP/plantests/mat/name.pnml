@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<pnml>
+  <!--generator: JARP 1.2 http://jarp.sourceforge.net/-->
+  <net id="n1" type="PTNet">
+    <name>
+      <value>P/T net</value>
+    </name>
+    <place id="p1">
+      <graphics>
+        <position x="116" y="160" />
+        <size width="32" height="32" />
+      </graphics>
+      <name>
+        <value>P1</value>
+        <graphics>
+          <offset x="31" y="32" />
+        </graphics>
+      </name>
+      <initialMarking>
+        <value>0</value>
+      </initialMarking>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=0,g=0,b=0]</value>
+        </FrameColor>
+        <FillColor>
+          <value>java.awt.Color[r=255,g=255,b=255]</value>
+        </FillColor>
+      </toolspecific>
+    </place>
+    <place id="p2">
+      <graphics>
+        <position x="369" y="160" />
+        <size width="32" height="32" />
+      </graphics>
+      <name>
+        <value>P2</value>
+        <graphics>
+          <offset x="31" y="32" />
+        </graphics>
+      </name>
+      <initialMarking>
+        <value>0</value>
+      </initialMarking>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=0,g=0,b=0]</value>
+        </FrameColor>
+        <FillColor>
+          <value>java.awt.Color[r=255,g=255,b=255]</value>
+        </FillColor>
+      </toolspecific>
+    </place>
+    <transition id="t1">
+      <graphics>
+        <position x="253" y="153" />
+        <size width="8" height="48" />
+      </graphics>
+      <name>
+        <value>T1</value>
+        <graphics>
+          <offset x="1" y="51" />
+        </graphics>
+      </name>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=0,g=0,b=0]</value>
+        </FrameColor>
+        <FillColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FillColor>
+      </toolspecific>
+    </transition>
+    <arc id="a1" source="p1" target="t1">
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <arc id="a2" source="t1" target="p2">
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <comment id="c1">
+      <graphics>
+        <position x="108" y="52" />
+        <size width="101" height="13" />
+      </graphics>
+      <text>
+        <value>name: plan name</value>
+      </text>
+      <toolspecific tool="JARP" version="1.2">
+        <FontName>
+          <value>Helvetica</value>
+        </FontName>
+        <FontSize>
+          <value>12</value>
+        </FontSize>
+        <FontStyle>
+          <value>0</value>
+        </FontStyle>
+      </toolspecific>
+    </comment>
+  </net>
+</pnml>
+

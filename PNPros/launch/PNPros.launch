@@ -1,0 +1,14 @@
+<launch>
+	<group ns="robot_0">
+		<node name="pnp_ros" pkg="PNPros" type="pnp_ros">
+			<param name="current_plan" value="BeeSAFE-TaskAssignment"/>
+			<param name="plan_folder" value="$(find PNPros)/plans"/>
+			<param name="learning" value="false"/>
+			<param name="log_places" value="false"/>
+			<param name="number_of_epochs" value="1"/>
+			<param name="number_of_episodes" value="384"/>
+			<param name="number_of_samples" value="25"/>
+			<param name="learning_period" value="50"/>
+		</node>
+	</group>
+</launch>

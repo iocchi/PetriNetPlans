@@ -1,0 +1,21 @@
+<package>
+	<description brief="PNPros">
+		PNPros
+	</description>
+	<author>Iocchi</author>
+	<license>BSD</license>
+	<review status="unreviewed" notes=""/>
+	
+	<url>
+		http://ros.org/wiki/PNPros
+	</url>
+	
+	<depend package="actionlib"/>
+	<depend package="roscpp"/>
+	<depend package="rospy"/>
+
+    <export>
+        <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib"/>
+    </export>
+
+</package>

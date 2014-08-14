@@ -1,0 +1,4 @@
+action1a	Action1		myInt=1, myDouble=3.0
+action1b	Action1		myInt=2, myString="una stringa con gli spazi"
+action2		Action2
+
