@@ -1,4 +1,4 @@
-pnp
-===
+Petri Net Plans
+===============
 
-Petri Net Plans library and applications
+This repository contains Petri Net Plans library, PNP ROS bridge and some sample applications.
