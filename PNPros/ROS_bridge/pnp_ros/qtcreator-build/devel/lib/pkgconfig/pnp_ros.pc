@@ -1,0 +1,8 @@
+prefix=/home/jnitsch/ros_hydro/pnp_ws/src/petri_net/pnp_ros/qtcreator-build/devel
+
+Name: pnp_ros
+Description: Description of pnp_ros
+Version: 0.0.0
+Cflags: -I/home/jnitsch/ros_hydro/pnp_ws/src/petri_net/pnp_ros/include
+Libs: -L/home/jnitsch/ros_hydro/pnp_ws/src/petri_net/pnp_ros/qtcreator-build/devel/lib -lPNPAS
+Requires: actionlib pnp_msgs roscpp rospy

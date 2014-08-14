@@ -1,0 +1,8 @@
+prefix=/usr/local
+
+Name: pnp_ros
+Description: Description of pnp_ros
+Version: 0.0.0
+Cflags: -I/usr/local/include
+Libs: -L/usr/local/lib -lPNPAS
+Requires: actionlib pnp_msgs roscpp rospy

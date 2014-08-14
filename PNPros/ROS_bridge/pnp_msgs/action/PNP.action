@@ -1,0 +1,12 @@
+#Goal
+uint32 id
+string robotname
+string name
+string params
+string function
+---
+#Result
+string result
+---
+#Feedback
+string feedback
