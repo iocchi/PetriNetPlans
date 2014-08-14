@@ -1,0 +1,12 @@
+	
+SET( pnp_SRC ${pnp_SRC}
+	${CMAKE_CURRENT_SOURCE_DIR}/TDLambda.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/MonteCarlo.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/LoggingController.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/PlaceLogger.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/BasicController.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/QLearning.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/AlphaScheduler.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/MCESP_SAA.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/DelayedQLearning.cpp
+	PARENT_SCOPE)

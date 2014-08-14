@@ -1,0 +1,5 @@
+
+SET( test_SRC ${test_SRC}
+	${CMAKE_CURRENT_SOURCE_DIR}/Env1QInst.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/Env1DQInst.cpp
+	PARENT_SCOPE)
