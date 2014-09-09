@@ -27,7 +27,7 @@ If everything goes fine you, should find a directory lib/ containing the newly c
 
 You can generate the reference documentation using doxygen:
 
-$doxygen
+    $ doxygen
 
 in the directory PNP/ where the file named Doxyfile is. 
 
