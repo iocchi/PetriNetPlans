@@ -69,4 +69,4 @@ if(CPPUNIT_FOUND)
 endif(CPPUNIT_FOUND)
 
 #add the target to copy the library in lib
-install(TARGETS pnp DESTINATION ${PROJECT_SOURCE_DIR}/../lib)
+install(TARGETS pnp DESTINATION ${PROJECT_SOURCE_DIR}/lib)
