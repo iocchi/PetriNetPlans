@@ -265,7 +265,7 @@
         <size width="8" height="48" />
       </graphics>
       <name>
-        <value>sense1.end [(not obstacle)]</value>
+        <value>sense1.end [not obstacle]</value>
         <graphics>
           <offset x="-80" y="-36" />
         </graphics>
