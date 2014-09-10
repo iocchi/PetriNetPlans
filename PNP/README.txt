@@ -36,3 +36,5 @@ You can generate the reference documentation using doxygen:
 in the directory PNP/ where the file named Doxyfile is. 
 
 
+For additional information about PNP parser see the txt file in src/parser folder.
+
