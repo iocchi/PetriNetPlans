@@ -230,7 +230,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
         (*f)(replace_vars_with_values(action_params),run);
     }
     else
-      cout << "??? UNKNOWN Action " << action_name << " ??? " << endl;
+       ROS_ERROR_STREAM("??? UNKNOWN Action " << robotname << "#" << action_name << " ??? " );
   }
 
 }

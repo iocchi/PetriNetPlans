@@ -86,7 +86,7 @@ protected:
     // void cancelCallback(PNPAS::GoalHandle gh)
     void ActionExecutionThread(PNPAS::GoalHandle gh);
     void CancelAction(string robotname, string action_name, string action_params);
-    void actionExecutionThread(string robotname, string action_name, string action_params, bool *run);
+    virtual void actionExecutionThread(string robotname, string action_name, string action_params, bool *run);
 
     // Condition evaluation
     void addEvent_callback(const std_msgs::String::ConstPtr& msg);

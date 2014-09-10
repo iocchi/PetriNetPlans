@@ -31,7 +31,7 @@
     </place>
     <place id="p2">
       <graphics>
-        <position x="438" y="240" />
+        <position x="465" y="240" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -77,7 +77,7 @@
     </place>
     <place id="p4">
       <graphics>
-        <position x="435" y="322" />
+        <position x="462" y="322" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -100,7 +100,7 @@
     </place>
     <place id="p5">
       <graphics>
-        <position x="110" y="146" />
+        <position x="84" y="145" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -123,13 +123,13 @@
     </place>
     <place id="p6">
       <graphics>
-        <position x="38" y="297" />
+        <position x="84" y="296" />
         <size width="32" height="32" />
       </graphics>
       <name>
-        <value>sense1.start</value>
+        <value>P1</value>
         <graphics>
-          <offset x="-26" y="43" />
+          <offset x="-14" y="35" />
         </graphics>
       </name>
       <initialMarking>
@@ -146,13 +146,13 @@
     </place>
     <place id="p7">
       <graphics>
-        <position x="147" y="297" />
+        <position x="174" y="297" />
         <size width="32" height="32" />
       </graphics>
       <name>
         <value>sense1.exec</value>
         <graphics>
-          <offset x="-1" y="32" />
+          <offset x="-9" y="37" />
         </graphics>
       </name>
       <initialMarking>
@@ -169,7 +169,7 @@
     </place>
     <place id="p8">
       <graphics>
-        <position x="301" y="323" />
+        <position x="328" y="323" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -192,7 +192,7 @@
     </place>
     <place id="p9">
       <graphics>
-        <position x="300" y="241" />
+        <position x="327" y="241" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -215,13 +215,13 @@
     </place>
     <place id="p10">
       <graphics>
-        <position x="587" y="240" />
+        <position x="614" y="240" />
         <size width="32" height="32" />
       </graphics>
       <name>
-        <value> 1</value>
+        <value>P2</value>
         <graphics>
-          <offset x="32" y="32" />
+          <offset x="8" y="38" />
         </graphics>
       </name>
       <initialMarking>
@@ -238,7 +238,7 @@
     </place>
     <place id="p11">
       <graphics>
-        <position x="717" y="239" />
+        <position x="744" y="239" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -261,13 +261,13 @@
     </place>
     <transition id="t1">
       <graphics>
-        <position x="253" y="234" />
+        <position x="280" y="234" />
         <size width="8" height="48" />
       </graphics>
       <name>
-        <value>sense1.end [conditionA]</value>
+        <value>sense1.end [(not obstacle)]</value>
         <graphics>
-          <offset x="-69" y="-36" />
+          <offset x="-80" y="-36" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -281,7 +281,7 @@
     </transition>
     <transition id="t2">
       <graphics>
-        <position x="531" y="233" />
+        <position x="558" y="233" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -301,7 +301,7 @@
     </transition>
     <transition id="t3">
       <graphics>
-        <position x="806" y="232" />
+        <position x="833" y="232" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -321,13 +321,13 @@
     </transition>
     <transition id="t4">
       <graphics>
-        <position x="252" y="316" />
+        <position x="279" y="316" />
         <size width="8" height="48" />
       </graphics>
       <name>
-        <value>sense1.end [not conditionA]</value>
+        <value>sense1.end [obstacle]</value>
         <graphics>
-          <offset x="-80" y="70" />
+          <offset x="-62" y="70" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -341,7 +341,7 @@
     </transition>
     <transition id="t5">
       <graphics>
-        <position x="533" y="314" />
+        <position x="560" y="314" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -361,13 +361,13 @@
     </transition>
     <transition id="t6">
       <graphics>
-        <position x="95" y="108" />
+        <position x="69" y="107" />
         <size width="64" height="8" />
       </graphics>
       <name>
         <value>init.start</value>
         <graphics>
-          <offset x="-67" y="-3" />
+          <offset x="-61" y="-4" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -381,7 +381,7 @@
     </transition>
     <transition id="t7">
       <graphics>
-        <position x="96" y="214" />
+        <position x="70" y="213" />
         <size width="62" height="11" />
       </graphics>
       <name>
@@ -401,13 +401,13 @@
     </transition>
     <transition id="t8">
       <graphics>
-        <position x="105" y="291" />
+        <position x="141" y="290" />
         <size width="8" height="48" />
       </graphics>
       <name>
         <value>sense1.start</value>
         <graphics>
-          <offset x="-31" y="51" />
+          <offset x="-19" y="-21" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -421,7 +421,7 @@
     </transition>
     <transition id="t9">
       <graphics>
-        <position x="375" y="233" />
+        <position x="402" y="233" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -441,7 +441,7 @@
     </transition>
     <transition id="t10">
       <graphics>
-        <position x="377" y="315" />
+        <position x="404" y="315" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -461,7 +461,7 @@
     </transition>
     <transition id="t11">
       <graphics>
-        <position x="671" y="233" />
+        <position x="698" y="233" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -751,7 +751,12 @@
         </ArrowMode>
       </toolspecific>
     </arc>
-    <arc id="a18" source="t5" target="p1">
+    <arc id="a18" source="t5" target="p6">
+      <graphics>
+        <position x="633" y="337" />
+        <position x="633" y="416" />
+        <position x="100" y="416" />
+      </graphics>
       <inscription>
         <value>1</value>
         <graphics>

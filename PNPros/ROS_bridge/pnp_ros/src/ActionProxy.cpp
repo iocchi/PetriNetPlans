@@ -49,7 +49,7 @@ namespace pnpros
             nh.getParam("robot_name", robotname);
         }
 
-         ROS_ERROR_STREAM("Exec: " << robotname << "#" << name << " " << params );
+         ROS_DEBUG_STREAM("Exec: " << robotname << "#" << name << " " << params );
 	}
 	
     void ActionProxy::actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message)
@@ -104,7 +104,7 @@ namespace pnpros
 		}
 		
         pnp_msgs::PNPGoal goal;
-        ROS_ERROR_STREAM("ActionProxy Robotname "<<robotname);
+        ROS_DEBUG_STREAM("ActionProxy Robotname "<<robotname);
 		goal.id = maxID;
 		goal.robotname = robotname;
 		goal.name = name;
