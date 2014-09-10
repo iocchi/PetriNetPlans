@@ -38,3 +38,10 @@ in the directory PNP/ where the file named Doxyfile is.
 
 For additional information about PNP parser see the txt file in src/parser folder.
 
+=========================
+Issues with Ubuntu 14.04
+
+PNP parser seems not to work with new flex/bison libraries in Ubuntu 14.04
+
+
+
