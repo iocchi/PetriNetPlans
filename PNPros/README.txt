@@ -46,6 +46,8 @@ To terminate the test, just close all the xterm windows,
 or use 'killall -9 xterm' if you do not normally use xterm for
 other purposes.
 
+Note: Install 'xterm' if the system complains about it
+(sudo apt-get install xterm)
 
 How to test rp_action
 =====================

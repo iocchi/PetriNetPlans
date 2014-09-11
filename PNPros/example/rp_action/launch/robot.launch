@@ -1,0 +1,36 @@
+<launch>
+
+    <arg name="robotname" default="robot_0" />
+    
+    <group ns="$(arg robotname)">
+        <param name="robot_name" value="$(arg robotname)" />
+        <param name="tf_prefix" value="$(arg robotname)" />
+
+        <include file="$(find rp_action)/config/localization/amcl_node.xml" />
+        
+        <include file="$(find rp_action)/config/navigation/move_base.xml" />
+
+        <node pkg="tf" type="static_transform_publisher" name="link_broadcaster_$(arg robotname)" args="0 0 0 0 0 0 /map /$(arg robotname)/map 100" />
+
+
+        <!-- node pkg="tf" type="static_transform_publisher" name="link_broadcaster_1" args="0 0 0 0 0 0 /$(arg robotname)/base_laser_link /$(arg robotname)/laser_frame 100" / -->
+
+        
+	<!-- Override AMCL Frame Params to include prefix -->
+	<param name="/$(arg robotname)/amcl/base_frame_id" value="$(arg robotname)/base_link"/>
+	<param name="/$(arg robotname)/amcl/odom_frame_id" value="$(arg robotname)/odom"/>
+	<param name="/$(arg robotname)/amcl/global_frame_id" value="map"/> <!--common map frame for all robots -->
+
+        <param name="/$(arg robotname)/amcl/initial_pose_x" value="0.0" />
+        <param name="/$(arg robotname)/amcl/initial_pose_y" value="1.8" />
+        <param name="/$(arg robotname)/amcl/initial_pose_a" value="0.0" />
+        <param name="/$(arg robotname)/amcl/initial_cov_xx" value="0.25" />
+        <param name="/$(arg robotname)/amcl/initial_cov_yy" value="0.25" />
+        <param name="/$(arg robotname)/amcl/initial_cov_aa" value="0.25" />
+
+        
+        <node pkg="rp_action" type="turn" name="turn" args="-server" output="screen" />
+
+    </group>
+</launch>
+

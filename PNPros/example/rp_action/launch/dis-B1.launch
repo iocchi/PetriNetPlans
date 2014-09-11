@@ -12,8 +12,8 @@
 	      <remap from="/robot_0/base_scan" to="/robot_0/scan" />
 	      <remap from="/robot_1/base_scan" to="/robot_1/scan" />
 
-	      <remap from="/robot_0/base_laser_link" to="/robot_0/laser_frame" />
-	      <remap from="/robot_1/base_laser_link" to="/robot_1/laser_frame" />
+	      <!-- remap from="/robot_0/base_laser_link" to="/robot_0/laser_frame" />
+	      <remap from="/robot_1/base_laser_link" to="/robot_1/laser_frame" / -->
 
 	</node>
 

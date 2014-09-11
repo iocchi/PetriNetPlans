@@ -3,9 +3,9 @@ xterm -e roscore &
 sleep 3
 xterm -e roslaunch rp_action dis-B1.launch &
 sleep 3
-xterm -e roslaunch rp_action robot_0_plan.launch &
+xterm -e roslaunch rp_action robot.launch robotname:=robot_0 &
 sleep 3
-#xterm -e roslaunch rp_actions robot_1.launch &
+xterm -e roslaunch rp_action robot_plan.launch robotname:=robot_0 planname:=sensing &
 sleep 3
 
 

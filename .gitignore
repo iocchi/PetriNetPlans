@@ -1,3 +1,12 @@
 *~
 *.bak
+.kdev4
+*.kdev4
+PNP/build
+PNP/doc
+Jarp/jarp.properties
+PNP/lib
+PNP/src/parser/ConditionScanner.cpp
+frames.gv
+frames.pdf
 
