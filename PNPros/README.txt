@@ -49,8 +49,17 @@ other purposes.
 Note: Install 'xterm' if the system complains about it
 (sudo apt-get install xterm)
 
+
 How to test rp_action
 =====================
 
-Move to the PNPros/example/rp_action folder
+Move to the PNPros/example/rp_action/scripts folder
+
+Run ./run-dis-B1-plan.sh
+
+You should see a robot moving on stage following the plan
+specified in run-dis-B1-plan.sh (sensing, by default)
+
+If it does not work, try to run ./run-dis-B1.sh
+and debug your ROS setting with rviz
 
