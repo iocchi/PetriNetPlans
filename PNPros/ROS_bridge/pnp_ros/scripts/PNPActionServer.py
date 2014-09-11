@@ -149,6 +149,8 @@ def handle_PNPConditionEval(req):
 
 if __name__ == '__main__':
   rospy.init_node(NODE) 
+  rospy.set_param('robot_name','dummy')
+
   thC = threading.Thread(None, generateConditions);
   thC.start();
 
