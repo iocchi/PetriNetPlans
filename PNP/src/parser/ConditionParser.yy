@@ -9,7 +9,7 @@ class ConditionChecker;
 
 %skeleton "lalr1.cc"
 %require "2.3"
-%output="ConditionParser.cpp"
+%output "ConditionParser.cpp"
 
 %defines
 %union
@@ -60,11 +60,11 @@ inCond: AND andList  {$$ = $2; condChecker->lastResult = $$;}
       | NOT cond {$$ = !$2; condChecker->lastResult = $$;}
       | atomic {$$ = $1; condChecker->lastResult = $$;}
       
-andList:   andList cond {$$ = $1 && $2}
-         | cond cond {$$ = $1 && $2};
+andList:   andList cond {$$ = $1 && $2;}
+         | cond cond {$$ = $1 && $2;};
          
-orList: cond orList {$$ = $1 || $2}
-        | cond cond {$$ = $1 || $2};
+orList: cond orList {$$ = $1 || $2;}
+        | cond cond {$$ = $1 || $2;};
 
 atomic: ATOMIC_COND {$$ = condChecker->evaluateAtomicCondition(*$1); 
                      delete $1;
@@ -73,4 +73,4 @@ atomic: ATOMIC_COND {$$ = condChecker->evaluateAtomicCondition(*$1);
 %%
 
 
-void yy::parser::error (const location_type& , const std::string& ) {}
+void yy::parser::error (const std::string& ) {}
