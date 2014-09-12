@@ -1,0 +1,7 @@
+# Define the goal
+---
+# Define the result
+uint8 OK=1
+uint8 result
+---
+# Define a feedback message
