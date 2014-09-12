@@ -1,6 +1,7 @@
 #include <tug_example_pnp_server/example_pnp_server_node.h>
 
 ExamplePNPServer::ExamplePNPServer():
+    PNPActionServer(),
     nh_(),
     fetch_box_ac_("fetch_box",true),
     transport_box_ac_("transport_box",true),
@@ -11,9 +12,10 @@ ExamplePNPServer::ExamplePNPServer():
     //fuction map to map places names to c++ functions
     function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("FetchBox", boost::bind(&ExamplePNPServer::fetchBox,this,_1)));
     function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("TransportBox", boost::bind(&ExamplePNPServer::transportBox,this,_1)));
-    function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("PutBox", boost::bind(&ExamplePNPServer::putBox,this,_1)));
+    function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("Put", boost::bind(&ExamplePNPServer::putBox,this,_1)));
     function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("Recovery", boost::bind(&ExamplePNPServer::recoveryNotFetchingBox,this,_1)));
     function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("RecoveryTimeOut", boost::bind(&ExamplePNPServer::recoveryTimedOut,this,_1)));
+    function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("init", boost::bind(&ExamplePNPServer::init,this,_1)));
 
 
     //action clients
@@ -30,19 +32,20 @@ ExamplePNPServer::~ExamplePNPServer()
 
 int ExamplePNPServer::evalCondition(string condition)
 {
-    if((condition == "FetchBox.ok")&&(fetch_box_state_ == static_cast<int>(tug_example_msgs::FetchBoxResult::OK)))
+    ROS_INFO_STREAM("Evaluating condition "<< condition);
+    if((condition == "ok")&&(fetch_box_state_ == static_cast<int>(tug_example_msgs::FetchBoxResult::OK)))
     {
         fetch_box_state_ = -1;
         return 1;
     }
 
-    if((condition == "FetchBox.not_ok")&&(fetch_box_state_ == static_cast<int>(tug_example_msgs::FetchBoxResult::NOT_OK)))
+    if((condition == "not_ok")&&(fetch_box_state_ == static_cast<int>(tug_example_msgs::FetchBoxResult::NOT_OK)))
     {
         fetch_box_state_ = -1;
         return 1;
     }
 
-    if((condition == "FetchBox.timed_out")&&(fetch_box_state_ == static_cast<int>(tug_example_msgs::FetchBoxResult::TIMED_OUT)))
+    if((condition == "timed_out")&&(fetch_box_state_ == static_cast<int>(tug_example_msgs::FetchBoxResult::TIMED_OUT)))
     {
         fetch_box_state_ = -1;
         return 1;
@@ -55,6 +58,7 @@ int ExamplePNPServer::evalCondition(string condition)
 
 void ExamplePNPServer::actionExecutionThread(string robotname, string action_name, string action_params, bool *run)
 {
+    ROS_INFO_STREAM("actionExecutionThread called " << action_name << " run is "<< *run);
 
     std::map<std::string, boost::function<void(bool*)> >::iterator function_map_it = function_map_.find(action_name);
     if(function_map_it == function_map_.end())
@@ -243,9 +247,18 @@ void ExamplePNPServer::recoveryTimedOut(bool *run)
     }
 }
 
+void ExamplePNPServer::init(bool *run)
+{
+    ROS_INFO("Start Init of PNP Server");
+
+    ROS_INFO("End Init of PNP Server");
+}
+
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "mypnpas");
+    ExamplePNPServer test_server;
+    test_server.start();
 
     ros::spin();
 

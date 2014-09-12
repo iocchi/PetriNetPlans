@@ -56,6 +56,7 @@ public:
     void putBox(bool *run);
     void recoveryNotFetchingBox(bool *run);
     void recoveryTimedOut(bool *run);
+    void init(bool *run);
 
 
 };

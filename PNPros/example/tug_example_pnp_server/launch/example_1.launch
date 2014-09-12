@@ -18,7 +18,7 @@
         <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen" >
             <param name="plan_folder" value="$(find tug_example_pnp_server)/plans/" />
             <param name="current_plan" value="$(arg planname)" />
-        </node >
+        </node>
 
     </group>
 </launch>
