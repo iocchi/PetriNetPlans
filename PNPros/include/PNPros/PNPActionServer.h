@@ -110,7 +110,7 @@ protected:
     
     vector<string> split_condition(string);
     vector<string> get_variables_values(vector<std::string> );
-    string get_variable_value(string);
+    string get_variable_value(string, string = "");
     string replace_vars_with_values(string);
     bool well_formatted_with_variables(string);
     void update_variable_with_value(string, string);
