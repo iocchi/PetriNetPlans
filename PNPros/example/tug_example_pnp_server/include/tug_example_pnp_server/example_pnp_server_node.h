@@ -17,11 +17,14 @@
 #include <tug_example_msgs/RecoverTimedOutAction.h>
 #include <tug_example_msgs/PutBoxAction.h>
 
+#include <pnp/pnpfwd.h>
+
 typedef actionlib::SimpleActionClient<tug_example_msgs::FetchBoxAction> FetchBoxActionClient;
 typedef actionlib::SimpleActionClient<tug_example_msgs::TransportBoxAction> TransportBoxActionClient;
 typedef actionlib::SimpleActionClient<tug_example_msgs::RecoverNotFetchingBoxAction> RecoverNotFetchingBoxActionClient;
 typedef actionlib::SimpleActionClient<tug_example_msgs::RecoverTimedOutAction> RecoverTimedOutActionClient;
 typedef actionlib::SimpleActionClient<tug_example_msgs::PutBoxAction> PutBoxActionClient;
+
 
 
 class ExamplePNPServer : public PNPActionServer
@@ -42,6 +45,10 @@ private:
     //map for function pointer
     std::map<std::string, boost::function<void(bool*)> > function_map_;
 
+    bool runable_;
+
+
+
 public:
     ExamplePNPServer();
     ~ExamplePNPServer();
@@ -59,6 +66,16 @@ public:
     void init(bool *run);
 
 
+    void setRun(bool run)
+    {
+        runable_ = run;
+    }
+
+
+
 };
+
+
+
 
 #endif

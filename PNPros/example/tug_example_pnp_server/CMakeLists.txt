@@ -95,12 +95,17 @@ catkin_package(
 ## Your package locations should be listed before other locations
  include_directories(include)
 include_directories(
+  $ENV{PNP_INCLUDE}
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp library
-# add_library(tug_example_pnp_server
-#   src/${PROJECT_NAME}/tug_example_pnp_server.cpp
+# add_library(example_pnp_server
+#
+# )
+
+#target_link_libraries(example_pnp_server
+#   ${catkin_LIBRARIES}
 # )
 
 ## Declare a cpp executable

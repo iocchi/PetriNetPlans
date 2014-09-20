@@ -7,7 +7,8 @@ ExamplePNPServer::ExamplePNPServer():
     transport_box_ac_("transport_box",true),
     put_box_ac_("put_box",true),
     recovery_timed_out_ac_("recover_timed_out",true),
-    recovery_not_fetching_box_ac_("recover_not_fetching_box",true)
+    recovery_not_fetching_box_ac_("recover_not_fetching_box",true),
+    runable_(true)
 {
     //fuction map to map places names to c++ functions
     function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("FetchBox", boost::bind(&ExamplePNPServer::fetchBox,this,_1)));
@@ -18,16 +19,12 @@ ExamplePNPServer::ExamplePNPServer():
     function_map_.insert(std::pair<std::string, boost::function<void(bool*)> >("init", boost::bind(&ExamplePNPServer::init,this,_1)));
 
 
-    //action clients
-
-
     //fetch box state
     fetch_box_state_ = -1;
 }
 
 ExamplePNPServer::~ExamplePNPServer()
 {
-
 }
 
 int ExamplePNPServer::evalCondition(string condition)
@@ -67,7 +64,7 @@ void ExamplePNPServer::actionExecutionThread(string robotname, string action_nam
     }
     else
     {
-        function_map_it->second(run);
+        function_map_it->second(&runable_);
     }
 }
 
@@ -75,6 +72,8 @@ void ExamplePNPServer::fetchBox(bool *run)
 {
     if(!(*run))
         return;
+
+
 
     // Wait for the action server
     while(!fetch_box_ac_.waitForServer(ros::Duration(5.0)))
@@ -254,11 +253,20 @@ void ExamplePNPServer::init(bool *run)
     ROS_INFO("End Init of PNP Server");
 }
 
+
+
+
+
+
+
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "mypnpas");
+
+
     ExamplePNPServer test_server;
     test_server.start();
+
 
     ros::spin();
 

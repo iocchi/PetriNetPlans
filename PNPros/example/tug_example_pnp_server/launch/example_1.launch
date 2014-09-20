@@ -13,7 +13,9 @@
        
 
         <!-- Test pnp server -->
-        <node pkg="tug_example_pnp_server" type="example_pnp_server_node" name="example_pnp_server_node" args="" output="screen" />
+        <node pkg="tug_example_pnp_server" type="example_pnp_server_node" name="example_pnp_server_node" args="" output="screen" >
+             <param name="current_plan" value="$(arg planname)" />
+        </node>
 
         <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen" >
             <param name="plan_folder" value="$(find tug_example_pnp_server)/plans/" />
