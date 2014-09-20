@@ -16,6 +16,8 @@
 #include <cstdlib>
 #include <fstream>
 
+#include <pnp_ros/connection_observer.h>
+
 using namespace std;
 using namespace PetriNetPlans;
 using namespace pnpros;
@@ -166,13 +168,22 @@ int main(int argc, char** argv)
 	else
 	{
 		// The executor owns the instantiator.
-		PnpExecuter<PnpPlan> executor(new ROSInst(conditionChecker,planFolder));
-		
+        ExecutableInstantiator* instantiator = new ROSInst(conditionChecker,planFolder);
+
+        PnpExecuter<PnpPlan> executor(instantiator);
+        ConnectionObserver observer(planName);
+        PlanObserver* new_observer = &observer;
+
+        executor.setMainPlan(planName);
+        executor.setObserver(new_observer);
+
+
+
 		while (ros::ok())
 		{
 			cerr << "\033[22;37;1mExecuting plan: " << planName << "\033[0m" << endl;
 			
-			executor.setMainPlan(planName);
+
 			
 			while (!executor.goalReached() && ros::ok())
 			{

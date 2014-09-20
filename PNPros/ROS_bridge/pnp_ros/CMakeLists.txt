@@ -109,12 +109,14 @@ add_library(aamas
   include/pnp_ros/LearnPNP/ROSLearnInstantiator.h
   include/pnp_ros/LearnPNP/ROSReward.h
   include/pnp_ros/LearnPNP/World/World.h
+  include/pnp_ros/connection_observer.h
 	src/ActionProxy.cpp
 	src/ROSInst.cpp
 	src/ROSConds.cpp
 	src/LearnPNP/ROSLearnInstantiator.cpp
 	src/LearnPNP/ROSReward.cpp
 	src/LearnPNP/World/World.cpp
+    src/connection_observer.cpp
  )
  target_link_libraries(aamas
    ${catkin_LIBRARIES}

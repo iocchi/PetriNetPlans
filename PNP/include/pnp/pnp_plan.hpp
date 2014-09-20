@@ -397,8 +397,8 @@ template<typename PnpPlaceClass, typename PnpTransitionClass>
 void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>
 ::setObserver( PlanObserver *newObserver) {
 
-	delete this->observer;
-	this->observer = newObserver;
+    delete this->observer;
+    this->observer = newObserver;
 }
 
 template<typename PnpPlaceClass, typename PnpTransitionClass>
