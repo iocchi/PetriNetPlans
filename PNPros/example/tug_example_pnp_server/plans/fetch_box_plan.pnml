@@ -31,7 +31,7 @@
     </place>
     <place id="p2">
       <graphics>
-        <position x="1019" y="188" />
+        <position x="1028" y="187" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -169,7 +169,7 @@
     </place>
     <place id="p8">
       <graphics>
-        <position x="833" y="292" />
+        <position x="833" y="286" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -192,7 +192,7 @@
     </place>
     <place id="p9">
       <graphics>
-        <position x="834" y="362" />
+        <position x="834" y="355" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -284,7 +284,7 @@
     </place>
     <place id="p13">
       <graphics>
-        <position x="1192" y="184" />
+        <position x="1192" y="187" />
         <size width="32" height="32" />
       </graphics>
       <name>
@@ -347,7 +347,7 @@
     </transition>
     <transition id="t3">
       <graphics>
-        <position x="748" y="348" />
+        <position x="752" y="347" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -387,7 +387,7 @@
     </transition>
     <transition id="t5">
       <graphics>
-        <position x="1143" y="347" />
+        <position x="1146" y="347" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -407,7 +407,7 @@
     </transition>
     <transition id="t6">
       <graphics>
-        <position x="1141" y="278" />
+        <position x="1145" y="280" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -427,7 +427,7 @@
     </transition>
     <transition id="t7">
       <graphics>
-        <position x="1311" y="37" />
+        <position x="1433" y="180" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -447,7 +447,7 @@
     </transition>
     <transition id="t8">
       <graphics>
-        <position x="409" y="151" />
+        <position x="423" y="243" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -467,7 +467,7 @@
     </transition>
     <transition id="t9">
       <graphics>
-        <position x="919" y="176" />
+        <position x="919" y="180" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -487,7 +487,7 @@
     </transition>
     <transition id="t10">
       <graphics>
-        <position x="923" y="273" />
+        <position x="919" y="279" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -507,7 +507,7 @@
     </transition>
     <transition id="t11">
       <graphics>
-        <position x="927" y="353" />
+        <position x="928" y="347" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -567,7 +567,7 @@
     </transition>
     <transition id="t14">
       <graphics>
-        <position x="1271" y="173" />
+        <position x="1271" y="180" />
         <size width="8" height="48" />
       </graphics>
       <name>
@@ -938,6 +938,9 @@
       </toolspecific>
     </arc>
     <arc id="a23" source="p12" target="t8">
+      <graphics>
+        <position x="338" y="267" />
+      </graphics>
       <inscription>
         <value>1</value>
         <graphics>
@@ -954,6 +957,10 @@
       </toolspecific>
     </arc>
     <arc id="a24" source="t7" target="p12">
+      <graphics>
+        <position x="1498" y="202" />
+        <position x="1498" y="51" />
+      </graphics>
       <inscription>
         <value>1</value>
         <graphics>
@@ -970,6 +977,10 @@
       </toolspecific>
     </arc>
     <arc id="a25" source="t6" target="p12">
+      <graphics>
+        <position x="1286" y="303" />
+        <position x="1285" y="81" />
+      </graphics>
       <inscription>
         <value>1</value>
         <graphics>
