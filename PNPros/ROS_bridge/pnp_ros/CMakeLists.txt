@@ -123,6 +123,9 @@ add_library(aamas
    ${BOOST_LIBRARIES}
  )
 
+## Add cmake target dependencies of the executable/library
+ add_dependencies(aamas pnp_msgs_gencpp)
+
 add_library(PNPAS src/PNPActionServer.cpp)
 target_link_libraries(PNPAS
    aamas
@@ -135,8 +138,7 @@ target_link_libraries(PNPAS
  add_executable(pnp_node src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-# add_dependencies(pnp_node pnp_generate_messages_cpp)
+ add_dependencies(pnp_node pnp_msgs_gencpp)
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(pnp_node
