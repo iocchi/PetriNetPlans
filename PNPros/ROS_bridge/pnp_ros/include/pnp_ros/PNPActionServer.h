@@ -9,6 +9,7 @@
 #include <pnp_msgs/PNPLastEvent.h>
 #include <pnp_msgs/PNPClearBuffer.h>
 #include <pnp_msgs/PNPGetVariableValue.h>
+#include <pnp_msgs/PNPSetVariableValue.h>
 
 #include <boost/thread/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -53,6 +54,7 @@ protected:
     ros::ServiceServer getEvent_service;
     ros::ServiceServer clearBuffer_service;
     ros::ServiceServer getVarValue_service;
+    ros::ServiceServer setVarValue_service;
     ros::Subscriber event_topic_sub;
 
     boost::mutex state_mutex;
@@ -86,7 +88,7 @@ protected:
     // void cancelCallback(PNPAS::GoalHandle gh)
     void ActionExecutionThread(PNPAS::GoalHandle gh);
     void CancelAction(string robotname, string action_name, string action_params);
-    virtual void actionExecutionThread(string robotname, string action_name, string action_params, bool *run);
+    void actionExecutionThread(string robotname, string action_name, string action_params, bool *run);
 
     // Condition evaluation
     void addEvent_callback(const std_msgs::String::ConstPtr& msg);
@@ -96,17 +98,19 @@ protected:
     // 1: true, 0: false, -1: unknown
     virtual int evalCondition(string cond);
     bool EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,
-             pnp_msgs::PNPCondition::Response &res);
+             pnp_msgs::PNPCondition::Response &res); 
     bool GetEventStartingWith(pnp_msgs::PNPLastEvent::Request  &req,
-             pnp_msgs::PNPLastEvent::Response &res);
+             pnp_msgs::PNPLastEvent::Response &res); 
     bool ClearBuffer(pnp_msgs::PNPClearBuffer::Request  &req,
          pnp_msgs::PNPClearBuffer::Response &res);
     bool GetVariableValue(pnp_msgs::PNPGetVariableValue::Request  &req,
          pnp_msgs::PNPGetVariableValue::Response &res);
+    bool SetVariableValue(pnp_msgs::PNPSetVariableValue::Request  &req,
+         pnp_msgs::PNPSetVariableValue::Response &res);
     
     vector<string> split_condition(string);
     vector<string> get_variables_values(vector<std::string> );
-    string get_variable_value(string);
+    string get_variable_value(string, string = "");
     string replace_vars_with_values(string);
     bool well_formatted_with_variables(string);
     void update_variable_with_value(string, string);
@@ -115,3 +119,6 @@ protected:
 };
 
 #endif
+
+
+

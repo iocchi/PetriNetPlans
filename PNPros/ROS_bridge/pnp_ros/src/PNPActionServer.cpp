@@ -6,13 +6,11 @@
 #include <pnp_msgs/PNPLastEvent.h>
 #include <pnp_msgs/PNPClearBuffer.h>
 
-
 #include <boost/thread/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include <pnp_ros/PNPActionServer.h>
-
 
 //DO NOT DELETE IT. NEEDED FOR INITILIZING THE global_PNPROS_variables map that otherwhise gives a seg fault at the first insert.
 bool first_insert = true;    
@@ -27,6 +25,8 @@ PNPActionServer::PNPActionServer() : as(nh, "PNP", false)
                 &PNPActionServer::ClearBuffer, this);
     getVarValue_service = nh.advertiseService("PNPGetVariableValue",
                 &PNPActionServer::GetVariableValue, this);
+    setVarValue_service = nh.advertiseService("PNPSetVariableValue",
+                &PNPActionServer::SetVariableValue, this);
     
     as.registerGoalCallback(boost::bind(&PNPActionServer::goalCallback, this, _1) );
     // as.registerCancelCallback(boost::bind(&PNPActionServer::cancelCallback, this, _1) );
@@ -176,6 +176,13 @@ bool PNPActionServer::GetVariableValue(pnp_msgs::PNPGetVariableValue::Request  &
   return true;
 }
 
+bool PNPActionServer::SetVariableValue(pnp_msgs::PNPSetVariableValue::Request  &req,
+  pnp_msgs::PNPSetVariableValue::Response &res){
+  
+  update_variable_with_value(req.variable, req.value);
+  return true;
+}
+
 void PNPActionServer::internal_clear_buffer(){
   eventBuffer_mutex.lock();
   for (vector<Event>::reverse_iterator rit = eventBuffer.rbegin(); rit!= eventBuffer.rend(); ++rit)
@@ -218,7 +225,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
     if (f!=NULL)
       (*f)(robotname,action_params,run);
     else
-      ROS_ERROR_STREAM("??? UNKNOWN Action " << robotname << "#" << action_name << " ??? " );
+      cout << "??? UNKNOWN Action " << robotname << "#" << action_name << " ??? " << endl;
   }
   else {
     action_fn_t f = get_action_fn(action_name);
@@ -230,7 +237,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
         (*f)(replace_vars_with_values(action_params),run);
     }
     else
-       ROS_ERROR_STREAM("??? UNKNOWN Action " << robotname << "#" << action_name << " ??? " );
+      cout << "??? UNKNOWN Action " << action_name << " ??? " << endl;
   }
 
 }
@@ -294,7 +301,7 @@ int PNPActionServer::check_for_event(string cond){
   {    
     vector<std::string> splitted_condition = split_condition(cond);
     vector<std::string> variable_values = get_variables_values(splitted_condition);
-    
+
     if(variable_values.size() + 1 == splitted_condition.size())
     {
       cond = splitted_condition[0].substr(0,splitted_condition[0].length()-1);
@@ -304,7 +311,7 @@ int PNPActionServer::check_for_event(string cond){
       }
     }
   }
-  
+
   time_t current_time;
   time(&current_time);
   
@@ -410,7 +417,7 @@ vector<std::string> PNPActionServer::get_variables_values(vector<std::string> sp
     {
       std::string truncated_event = rit->eventName.substr(splitted_condition[0].length(), rit->eventName.length()-splitted_condition[0].length());
       
-      if (truncated_event.find('@') == std::string::npos)
+      if (truncated_event.find("_@") == std::string::npos)
         boost::split(variables_values, truncated_event, boost::is_any_of("_"));
       
       if(variables_values.size() + 1 == splitted_condition[0].size())
@@ -425,12 +432,16 @@ vector<std::string> PNPActionServer::get_variables_values(vector<std::string> sp
   return variables_values;
 }
 
-string PNPActionServer::get_variable_value(string var_name){
+string PNPActionServer::get_variable_value(string var_name, string default_value){
   
   if(global_PNPROS_variables.find(var_name) != global_PNPROS_variables.end())
       return global_PNPROS_variables[var_name];
-  else
-  {
+  else if (default_value != "") {
+    update_variable_with_value(var_name, default_value);
+    ROS_WARN("Variable %s not initialized, instantiating it to the input default value", var_name.c_str());
+    return default_value;
+  }
+  else {
     ROS_ERROR("??? Variable %s not initialized ???", var_name.c_str());
     throw new runtime_error("??? Variable not initialized ???");
   }
@@ -495,3 +506,7 @@ void PNPActionServer::cancelCallback(PNPAS::GoalHandle gh)
     current_gh.setCanceled();
 }
 #endif
+
+
+
+
