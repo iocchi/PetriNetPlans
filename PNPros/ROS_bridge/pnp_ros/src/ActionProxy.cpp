@@ -44,7 +44,7 @@ namespace pnpros
             ros::NodeHandle nh;
             if (!nh.hasParam("robot_name"))
             {
-                ROS_ERROR_STREAM("No robot name was defined!!! please define in robot_name if not in plan name included");
+                ROS_WARN_STREAM("No robot name was defined. You should probably define it in the plan name included");
             }
             nh.getParam("robot_name", robotname);
         }

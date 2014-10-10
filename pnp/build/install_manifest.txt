@@ -1,0 +1,1 @@
+/home/guglielmo/ros_workspaces/indigo_catkin/src/PetriNetPlans/pnp/lib/libpnp.so
