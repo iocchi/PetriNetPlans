@@ -42,10 +42,13 @@ int main(int argc, char** argv)
 	string planName = "test1", planFolder = "plans/";
 	int episodes, epochs, learningPeriod, samples;
 	bool learning = false, logPlaces = false;
+	bool use_java_connection = false;
 	
 	np.param("current_plan",planName,string("test1"));
 	np.param("plan_folder",planFolder,string("plans/"));
 	np.param("learning",learning,false);
+	np.param("use_java_connection",use_java_connection,false);
+
 	
 	cerr << "\033[22;31;1mCurrent plan: \033[0m\033[22;37;1m" << planName << "\033[0m" << endl;
 	cerr << "\033[22;31;1mPlan folder: \033[0m\033[22;37;1m" << planFolder << "\033[0m" << endl;
@@ -171,7 +174,7 @@ int main(int argc, char** argv)
         ExecutableInstantiator* instantiator = new ROSInst(conditionChecker,planFolder);
 
         PnpExecuter<PnpPlan> executor(instantiator);
-        ConnectionObserver observer(planName);
+        ConnectionObserver observer(planName, use_java_connection);
         PlanObserver* new_observer = &observer;
 
         executor.setMainPlan(planName);
