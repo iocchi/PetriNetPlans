@@ -19,7 +19,7 @@
 class ConnectionObserver : public PetriNetPlans::PlanObserver
 {
 public:
-    ConnectionObserver(const std::string& name);
+    ConnectionObserver(const std::string& name, bool use_java_connection);
     ~ConnectionObserver();
 
     void markingChanged(const std::map< std::string, int, std::less< std::string >, std::allocator< std::pair< const std::string, int > > >& new_marking);

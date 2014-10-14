@@ -12,23 +12,26 @@
 
 
 
-ConnectionObserver::ConnectionObserver(const std::string& name) :
+ConnectionObserver::ConnectionObserver(const std::string& name, bool use_java_connection) :
     newsockfd_(-1),
     plan_name_(name)
 {
 
-    int sockfd = startServer();
-    if(sockfd < 0)
-        return;
+    if(use_java_connection)
+	{
+	    int sockfd = startServer();
+	    if(sockfd < 0)
+		return;
 
-    struct sockaddr_in cli_addr;
-    socklen_t clilen = sizeof(cli_addr);
-    newsockfd_ = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+	    struct sockaddr_in cli_addr;
+	    socklen_t clilen = sizeof(cli_addr);
+	    newsockfd_ = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
 
-    if (newsockfd_ < 0)
-    {
-        std::cerr << "ERROR on accept" << std::endl;
-    }
+	    if (newsockfd_ < 0)
+	    {
+		std::cerr << "ERROR on accept" << std::endl;
+	    }
+	}
 }
 
 ConnectionObserver::~ConnectionObserver()
