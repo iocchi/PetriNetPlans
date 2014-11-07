@@ -39,17 +39,14 @@ namespace pnpros
 		}
 		
         //I think robot's name should be in plan name but is NOT!!
-        if(robotname == "")
-        {
+          if (robotname == "") {
             ros::NodeHandle nh;
-            if (!nh.hasParam("robot_name"))
-            {
-                ROS_WARN_STREAM("No robot name was defined. You should probably define it in the plan name included");
+            if(nh.hasParam("robot_name")) {
+              nh.getParam("robot_name", robotname);
+              ROS_DEBUG_STREAM("Exec: " << robotname << "#" << name << " " << params );
             }
-            nh.getParam("robot_name", robotname);
-        }
-
-         ROS_DEBUG_STREAM("Exec: " << robotname << "#" << name << " " << params );
+            else ROS_WARN_STREAM("[PNPros]: No robot name defined. You should probably define it by setting the ros patameter \"robot_name\"");
+          }
 	}
 	
     void ActionProxy::actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message)
