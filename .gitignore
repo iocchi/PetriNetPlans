@@ -2,11 +2,11 @@
 *.bak
 .kdev4
 *.kdev4
-PNP/build
-PNP/doc
+pnp/build
+pnp/doc
 Jarp/jarp.properties
-PNP/lib
-PNP/src/parser/ConditionScanner.cpp
+pnp/lib
+pnp/src/parser/ConditionScanner.cpp
 frames.gv
 frames.pdf
 
