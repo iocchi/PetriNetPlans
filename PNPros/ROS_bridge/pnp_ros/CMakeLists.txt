@@ -130,18 +130,17 @@ target_link_libraries(PNPAS
  )
 
 ## Declare a cpp executable
- add_executable(pnp_node src/main.cpp)
+add_executable(pnp_node src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(pnp_node pnp_generate_messages_cpp)
+add_dependencies(pnp_node pnp_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(pnp_node
+target_link_libraries(pnp_node
    aamas
    pnp
    ${catkin_LIBRARIES}
-   $ENV{PNP_LIB}
    ${BOOST_LIBRARIES}
  )
 
