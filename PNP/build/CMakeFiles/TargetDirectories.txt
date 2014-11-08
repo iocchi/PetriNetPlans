@@ -1,1 +1,0 @@
-/home/guglielmo/ros_workspaces/PetriNetPlans/PNP/build/src/CMakeFiles/pnp.dir
