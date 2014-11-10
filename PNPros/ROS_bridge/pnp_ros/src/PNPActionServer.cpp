@@ -219,18 +219,20 @@ MRaction_fn_t PNPActionServer::get_MRaction_fn(string actionname) {
 // run must be used read-only!!!
 // The function must return only when the action is finished.
 void PNPActionServer::actionExecutionThread(string robotname, string action_name, string action_params, bool *run)  {
+  bool found=false;
   if (robotname!="") {
     MRaction_fn_t f = get_MRaction_fn(action_name);
     if (f!=NULL){
+      found=true;
       if (action_params.find('@') == std::string::npos)
         (*f)(robotname,action_params,run);
       else
         (*f)(robotname, replace_vars_with_values(action_params),run);
     }
-    else
-      ROS_ERROR_STREAM("??? UNKNOWN Action " << robotname << "#" << action_name << " ??? ");
+    //else
+    //  ROS_ERROR_STREAM("??? UNKNOWN Action " << robotname << "#" << action_name << " ??? ");
   }
-  else {
+  if (!found) {
     action_fn_t f = get_action_fn(action_name);
     if (f!=NULL)
     {

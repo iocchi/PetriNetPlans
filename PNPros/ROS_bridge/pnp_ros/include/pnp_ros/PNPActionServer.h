@@ -18,8 +18,8 @@
 #define TIME_THRESHOLD 3
 #define REMEMBERING_TIME 60
 
-typedef void (*action_fn_t)(std::string, bool *); 
-typedef void (*MRaction_fn_t)(std::string, std::string, bool *); 
+typedef void (*action_fn_t)(std::string, bool *); // action name, run flag
+typedef void (*MRaction_fn_t)(std::string, std::string, bool *);  // robot name, action name, run flag
 
 #define DECLARE_ACTION_IMPLEMENTATION(f) \
 void f(string params, bool *run);
@@ -88,7 +88,7 @@ protected:
     // void cancelCallback(PNPAS::GoalHandle gh)
     void ActionExecutionThread(PNPAS::GoalHandle gh);
     void CancelAction(string robotname, string action_name, string action_params);
-    void actionExecutionThread(string robotname, string action_name, string action_params, bool *run);
+    virtual void actionExecutionThread(string robotname, string action_name, string action_params, bool *run);
 
     // Condition evaluation
     void addEvent_callback(const std_msgs::String::ConstPtr& msg);

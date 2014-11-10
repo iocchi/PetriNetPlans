@@ -219,9 +219,9 @@
         <size width="57" height="11" />
       </graphics>
       <name>
-        <value>gotopose_6_2_0.interrupt [conditionA]</value>
+        <value>gotopose_6_2_0.interrupt [obstacle]</value>
         <graphics>
-          <offset x="-255" y="2" />
+          <offset x="-249" y="2" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">

@@ -113,7 +113,7 @@ add_executable(stopmove src/nodes/stopmove.cpp)
 target_link_libraries(stopmove ${catkin_LIBRARIES})
 add_executable(turn src/nodes/turn.cpp src/nodes/robotpose.cpp)
 target_link_libraries(turn ${catkin_LIBRARIES})
-add_executable(mypnpas src/nodes/MyPNPAS.cpp)
+add_executable(mypnpas src/nodes/MyPNPAS.cpp src/nodes/MyActions.cpp src/nodes/robotpose.cpp)
 target_link_libraries(mypnpas ${pnp_ros_LIBRARIES} ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library

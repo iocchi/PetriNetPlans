@@ -1,11 +1,15 @@
 #include <boost/thread/thread.hpp>
 #include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
 #include <actionlib/server/simple_action_server.h>
+#include <actionlib/client/simple_action_client.h>
+#include <move_base_msgs/MoveBaseAction.h>
+
 #include <pnp_msgs/PNPAction.h>
 #include <pnp_msgs/PNPCondition.h>
 #include <pnp_ros/PNPActionServer.h>
-#include <actionlib/client/simple_action_client.h>
-#include <move_base_msgs/MoveBaseAction.h>
+
+#include "MyActions.h"
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -15,18 +19,36 @@ class MyPNPActionServer : public PNPActionServer
 {
 private:
 
-    int status;
-    std::string movebase_topic;
+    ros::NodeHandle handle;
+    ros::Publisher event_pub;
+    ros::Subscriber laser_sub;
+    std::string robotname;
+    
+    //int status;
+    //std::string movebase_topic;
     // Define the action client (true: we want to spin a thread)
-    MoveBaseClient *ac;  
+    //MoveBaseClient *ac;  
 
 public:
 
-    MyPNPActionServer() : PNPActionServer(), status(0), movebase_topic(""), ac(NULL)
+    MyPNPActionServer() : PNPActionServer() //, status(0), movebase_topic(""), ac(NULL)
     { 
-        boost::thread t(boost::bind(&MyPNPActionServer::changeStatus, this));
+        // boost::thread t(boost::bind(&MyPNPActionServer::changeStatus, this));
+	event_pub = handle.advertise<std_msgs::String>("PNPConditionEvent", 10); 
+	laser_sub = handle.subscribe("scan", 10, &MyPNPActionServer::laser_callback, this);
+
+	handle.param("robot_name",robotname,std::string(""));
+	ROS_INFO("ROBOTNAME: %s",robotname.c_str());
+	
+	register_MRaction("init",&init);
+	register_MRaction("gotopose",&gotopose);
+	register_MRaction("home",&home);
+	register_MRaction("wave",&wave);
+	register_MRaction("sense1",&sense1);
+	
     }
 
+#if 0  
     // change the status used for condition every 10 seconds
     void changeStatus() {
         while (true) {
@@ -34,7 +56,7 @@ public:
             status++;
         }
     }
-    
+  
     // This function is called in a separate thread for each action to be executed
     // Action implementation must check if run is true during execution, 
     // if not it must abort the action.
@@ -77,7 +99,20 @@ public:
         cout << "+++ Evaluating condition " << condition << " -> " << r << endl;
         return r;
     }
+#endif
+    
+    void laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg)
+    {
+      std::vector<float> scans;
+      scans=std::vector<float>(msg->ranges);
+      if (scans[scans.size()/2]<1.0) {
+	std_msgs::String cond;
+	cond.data = "obstacle";
+	event_pub.publish(cond);
+      }
+    }
 
+#if 0
     // Aux functions
     
     // Goto to target point with move_base client (GX,GY [m in /map frame], GTh [degrees])
@@ -169,6 +204,7 @@ public:
         else
             cout << "### Aborted Sense1  " << endl;
     }
+#endif
 
 };
 
