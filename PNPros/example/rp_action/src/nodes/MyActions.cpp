@@ -13,6 +13,8 @@
 
 #define radians(a) ((a)/180.0*M_PI)
 
+std::string robotname="";
+
 // defined in robotpose.cpp
 bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad);
 
@@ -26,7 +28,7 @@ actionlib::SimpleActionClient<rp_action_msgs::TurnAction> *ac_turn = NULL;
 actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *ac_movebase = NULL;  
 
 
-void start_gotopose(string robotname, float GX, float GY, float GTh, bool *run) {
+void start_gotopose(float GX, float GY, float GTh, bool *run) {
 
   if (ac_movebase==NULL) {
     // Define the action client (true: we want to spin a thread)
@@ -87,7 +89,7 @@ void start_gotopose(string robotname, float GX, float GY, float GTh, bool *run) 
 
 // Action implementation
 
-void init(string robotname, string params, bool *run) {
+void init(string params, bool *run) {
   cout << "### Executing Init ... " << params << endl;
   // Set turn topic
 
@@ -95,7 +97,7 @@ void init(string robotname, string params, bool *run) {
   float GY=2.0;
   float GTh=0;
 
-  start_gotopose(robotname, GX, GY, GTh, run);
+  start_gotopose(GX, GY, GTh, run);
 
   if (*run)
       cout << "### Finished Init " << endl;
@@ -107,7 +109,7 @@ void init(string robotname, string params, bool *run) {
 
 
 
-void gotopose(string robotname, string params, bool *run) {
+void gotopose(string params, bool *run) {
   cout << "### Executing Gotopose ... " << params << endl;
 
   int i=params.find("_");	
@@ -116,7 +118,7 @@ void gotopose(string robotname, string params, bool *run) {
   float GY=atof(params.substr(i+1,j).c_str());
   float GTh=atof(params.substr(j+1).c_str());
 
-  start_gotopose(robotname, GX, GY, GTh, run);
+  start_gotopose(GX, GY, GTh, run);
 
   if (*run)
     cout << "### Finished Gotopose " << endl;
@@ -124,7 +126,7 @@ void gotopose(string robotname, string params, bool *run) {
     cout << "### Aborted Gotopose  " << endl;
 }
 
-void home(string robotname, string params, bool *run) 
+void home(string params, bool *run) 
 {
   cout << "### Executing Home ... " << params << endl;
 
@@ -132,7 +134,7 @@ void home(string robotname, string params, bool *run)
   float GY=2.0;
   float GTh=0;
 
-  start_gotopose(robotname, GX, GY, GTh, run);
+  start_gotopose(GX, GY, GTh, run);
 
   if (*run)
     cout << "### Finished Home " << endl;
@@ -140,7 +142,7 @@ void home(string robotname, string params, bool *run)
     cout << "### Aborted Home  " << endl;
 }
 
-void wave(string robotname, string params, bool *run) {
+void wave(string params, bool *run) {
     cout << "### Executing Wave ... " << params << endl;
     
     cout << "HELLO FROM " << robotname << " !!!"<<endl;
@@ -152,7 +154,7 @@ void wave(string robotname, string params, bool *run) {
         cout << "### Aborted Wave  " << endl;
 }
 
-void sense1(string robotname, string params, bool *run) {
+void sense1(string params, bool *run) {
   cout << "### Executing Sense1 ... " << params << endl;
 }
 
