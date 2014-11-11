@@ -2,9 +2,6 @@
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
-//#include <PNPros/PNPAction.h>
-//#include <PNPros/PNPCondition.h>
-//#include <PNPros/PNPActionServer.h>
 #include <sensor_msgs/LaserScan.h>
 
 #include <rp_action_msgs/TurnAction.h>

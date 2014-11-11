@@ -1,34 +1,65 @@
 <launch>
 
     <arg name="robotname" default="robot_0" />
-    
+    <arg name="initial_pose_x" default="0.0" />
+    <arg name="initial_pose_y" default="1.8" />
+    <arg name="initial_pose_a" default="0.0" />
+    <arg name="laser_topic" default="scan" />
+  
     <group ns="$(arg robotname)">
         <param name="robot_name" value="$(arg robotname)" />
         <param name="tf_prefix" value="$(arg robotname)" />
 
-        <include file="$(find rp_action)/config/localization/amcl_node.xml" />
-        
-        <include file="$(find rp_action)/config/navigation/move_base.xml" />
+        <!-- move_base -->
+        <node pkg="move_base" type="move_base" respawn="false" name="move_base_node" output="screen">
+		<remap from="map" to="/map" />
+		<remap from="odom" to="odom" />
+		<remap from="cmd_vel" to="cmd_vel" />
 
+		<rosparam file="$(find rp_action)/config/navigation/move_base_params.yaml" command="load" />
+		<rosparam file="$(find rp_action)/config/navigation/costmap_common_params.yaml" command="load" ns="global_costmap" />
+		<rosparam file="$(find rp_action)/config/navigation/costmap_common_params.yaml" command="load" ns="local_costmap" />
+		<rosparam file="$(find rp_action)/config/navigation/local_costmap_params.yaml" command="load" />
+		<rosparam file="$(find rp_action)/config/navigation/global_costmap_params.yaml" command="load" />
+		<rosparam file="$(find rp_action)/config/navigation/base_local_planner_params.yaml" command="load" />
+		
+		<!-- Override MOVE_BASE Frame Params to include prefix -->
+		<param name="global_costmap/laser_scan_sensor/sensor_frame" value="/$(arg robotname)/base_laser_link"/>
+		<param name="global_costmap/laser_scan_sensor/topic" value="/$(arg robotname)/$(arg laser_topic)"/>
+		<param name="global_costmap/robot_base_frame" value="/$(arg robotname)/base_link"/>   
+		<param name="local_costmap/global_frame" value="/$(arg robotname)/odom"/>
+		<param name="local_costmap/laser_scan_sensor/sensor_frame" value="/$(arg robotname)/base_laser_link"/>
+		<param name="local_costmap/laser_scan_sensor/topic" value="/$(arg robotname)/$(arg laser_topic)"/>
+		<param name="local_costmap/robot_base_frame" value="/$(arg robotname)/base_link"/> 
+
+	</node>
+	
         <node pkg="tf" type="static_transform_publisher" name="link_broadcaster_$(arg robotname)" args="0 0 0 0 0 0 /map /$(arg robotname)/map 100" />
 
+	<!-- amcl -->
+        <node pkg="amcl" type="amcl" name="amcl" respawn="true">
+    
+	  <remap from="scan" to="$(arg laser_topic)"/>
+	  <remap from="static_map" to="/static_map" />
 
-        <!-- node pkg="tf" type="static_transform_publisher" name="link_broadcaster_1" args="0 0 0 0 0 0 /$(arg robotname)/base_laser_link /$(arg robotname)/laser_frame 100" / -->
+	  <!-- Default parameters -->
+	  <rosparam file="$(find rp_action)/config/localization/amcl.yaml" command="load" />
+	  
+	  <!-- Override Params to include prefix -->
+	  <param name="base_frame_id" value="/$(arg robotname)/base_link"/>
+	  <param name="odom_frame_id" value="/$(arg robotname)/odom"/>
+	  <param name="global_frame_id" value="/map"/> <!--common map frame for all robots -->
 
-        
-	<!-- Override AMCL Frame Params to include prefix -->
-	<param name="/$(arg robotname)/amcl/base_frame_id" value="$(arg robotname)/base_link"/>
-	<param name="/$(arg robotname)/amcl/odom_frame_id" value="$(arg robotname)/odom"/>
-	<param name="/$(arg robotname)/amcl/global_frame_id" value="map"/> <!--common map frame for all robots -->
-
-        <param name="/$(arg robotname)/amcl/initial_pose_x" value="0.0" />
-        <param name="/$(arg robotname)/amcl/initial_pose_y" value="1.8" />
-        <param name="/$(arg robotname)/amcl/initial_pose_a" value="0.0" />
-        <param name="/$(arg robotname)/amcl/initial_cov_xx" value="0.25" />
-        <param name="/$(arg robotname)/amcl/initial_cov_yy" value="0.25" />
-        <param name="/$(arg robotname)/amcl/initial_cov_aa" value="0.25" />
-
-        
+	  <!-- Set initial pose -->
+	  <param name="initial_pose_x" value="$(arg initial_pose_x)" />
+	  <param name="initial_pose_y" value="$(arg initial_pose_y)" />
+	  <param name="initial_pose_a" value="$(arg initial_pose_a)" />
+	  <param name="initial_cov_xx" value="0.25" />
+	  <param name="initial_cov_yy" value="0.25" />
+	  <param name="initial_cov_aa" value="0.25" />
+	
+	</node>
+	
         <node pkg="rp_action" type="turn" name="turn" args="-server" output="screen" />
 
     </group>

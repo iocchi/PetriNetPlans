@@ -18,19 +18,13 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 class MyPNPActionServer : public PNPActionServer
 {
 private:
-
     ros::NodeHandle handle;
     ros::Publisher event_pub;
     ros::Subscriber laser_sub;
     
-    //int status;
-    //std::string movebase_topic;
-    // Define the action client (true: we want to spin a thread)
-    //MoveBaseClient *ac;  
-
 public:
 
-    MyPNPActionServer() : PNPActionServer() //, status(0), movebase_topic(""), ac(NULL)
+    MyPNPActionServer() : PNPActionServer()
     { 
         // boost::thread t(boost::bind(&MyPNPActionServer::changeStatus, this));
 	event_pub = handle.advertise<std_msgs::String>("PNPConditionEvent", 10); 
