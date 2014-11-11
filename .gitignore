@@ -4,7 +4,7 @@
 *.kdev4
 PNP/build
 PNP/doc
-Jarp/jarp.properties
+jarp.properties
 PNP/lib
 PNP/src/parser/ConditionScanner.cpp
 frames.gv

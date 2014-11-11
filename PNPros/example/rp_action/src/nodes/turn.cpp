@@ -139,7 +139,7 @@ void turn_action_client(std::string robotname, double GTh, std::string absrel) {
 
 	// Wait for termination
     while (!ac.waitForResult(ros::Duration(1.0))) {
-	    ROS_INFO_STREAM("Running... [" << ac.getState().toString() << "]");
+	ROS_INFO_STREAM("Running... [" << ac.getState().toString() << "]");
     }
     ROS_INFO_STREAM("Finished [" << ac.getState().toString() << "]");
 

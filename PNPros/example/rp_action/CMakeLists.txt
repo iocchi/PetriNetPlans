@@ -97,7 +97,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(include)
-include_directories(  ${pnp_ros_INCLUDE_DIRS}
+include_directories(  
+  ${pnp_ros_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 

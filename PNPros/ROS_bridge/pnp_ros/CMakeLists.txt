@@ -125,7 +125,6 @@ add_library(PNPAS src/PNPActionServer.cpp)
 target_link_libraries(PNPAS
    aamas
    ${catkin_LIBRARIES}
-   $ENV{PNP_LIB}
    ${BOOST_LIBRARIES}
  )
 
