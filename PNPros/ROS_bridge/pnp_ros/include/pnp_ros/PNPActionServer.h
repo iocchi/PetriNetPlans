@@ -74,6 +74,77 @@ public:
     void start();
 
 protected:
+    //--------------------------------------------------------------------------
+    // Callbacks; can be overridden in subclasses:
+    //--------------------------------------------------------------------------
+
+    /**
+     * Checks a condition.
+     * @param cond  name of the condition, as defined in the plan. The default
+     * implementation always returns -1.
+     * @return 1 if cond is true,
+     *         0 if cond is false, and
+     *         -1 if cond is unknown.
+     */
+    virtual int evalCondition(std::string cond);
+
+    /**
+     * Called when an action (i.e., a place with ".ex" in its name) is started
+     * (i.e., a "start" transition is encountered). The default implementation
+     * does nothing.
+     * @param robot   name of the robot in multi-robot plans.
+     * @param action  name of the action (name of the place without the ".ex").
+     * @param params  optional parameters (anything after a "_" in the place's
+     *                name).
+     */
+    virtual void actionStart(const std::string & robot,
+                             const std::string & action,
+                             const std::string & params);
+
+    /**
+     * The action's "main" function. Called in a separate thread, which is
+     * started after actionStart() returns. May take an arbitrary amount of
+     * time, but should return fast when *run becomes false, which happens
+     * when the action is ended or interrupted.
+     * @param robot   name of the robot in multi-robot plans.
+     * @param action  name of the action (name of the place without the ".ex").
+     * @param params  optional parameters (anything after a "_" in the place's
+     *                name).
+     * @param run     indicates if the action may continue running or should
+     *                stop.
+     */
+    virtual void actionExecutionThread(std::string robot, std::string action,
+                                       std::string params, bool * run);
+
+    /**
+     * Called when an action is ended (i.e., a "end" transition is encountered).
+     * This is called right before *run in actionExecutionThread() is set to
+     * false. The default implementation does nothing.
+     * @param robot   name of the robot in multi-robot plans.
+     * @param action  name of the action (name of the place without the ".ex").
+     * @param params  optional parameters (anything after a "_" in the place's
+     *                name).
+     */
+    virtual void actionEnd(const std::string & robot,
+                           const std::string & action,
+                           const std::string & params);
+
+    /**
+     * Called when an action is interrupted (i.e., a "interrupt" transition is
+     * encountered). This is called right before *run in actionExecutionThread()
+     * is set to false. The default implementation does nothing.
+     * @param robot   name of the robot in multi-robot plans.
+     * @param action  name of the action (name of the place without the ".ex").
+     * @param params  optional parameters (anything after a "_" in the place's
+     *                name).
+     */
+    virtual void actionInterrupt(const std::string & robot,
+                                 const std::string & action,
+                                 const std::string & params);
+
+    //--------------------------------------------------------------------------
+
+
 
     // For registering and retrieving action functions
     void register_action(string actionname, action_fn_t actionfn);
@@ -86,15 +157,11 @@ protected:
     // void cancelCallback(PNPAS::GoalHandle gh)
     void ActionExecutionThread(PNPAS::GoalHandle gh);
     void CancelAction(string robotname, string action_name, string action_params);
-    virtual void actionExecutionThread(string robotname, string action_name, string action_params, bool *run);
 
     // Condition evaluation
     void addEvent_callback(const std_msgs::String::ConstPtr& msg);
     int check_for_event(string cond);
     void remove_old_elements();
-    // Can be redefined by actual implementation
-    // 1: true, 0: false, -1: unknown
-    virtual int evalCondition(string cond);
     bool EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,
              pnp_msgs::PNPCondition::Response &res);
     bool GetEventStartingWith(pnp_msgs::PNPLastEvent::Request  &req,

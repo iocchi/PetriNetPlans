@@ -83,8 +83,8 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES PNPAS
-  CATKIN_DEPENDS actionlib pnp_msgs roscpp rospy
-  DEPENDS system_lib
+  CATKIN_DEPENDS actionlib pnp_msgs
+#  DEPENDS system_lib
 )
 
 ###########
@@ -93,61 +93,57 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS}
+  include
   $ENV{PNP_INCLUDE}
+  ${catkin_INCLUDE_DIRS}
   ${BOOST_INCLUDE_DIRS}
 )
 link_directories($ENV{PNP_LIB})
-message(include_var $ENV{PNP_INCLUDE})
+#message(include_var $ENV{PNP_INCLUDE})
+
 ## Declare a cpp library
 add_library(aamas
-  include/pnp_ros/ActionProxy.h
-  include/pnp_ros/ROSConds.h
-  include/pnp_ros/ROSInst.h
-  include/pnp_ros/LearnPNP/ROSLearnInstantiator.h
-  include/pnp_ros/LearnPNP/ROSReward.h
-  include/pnp_ros/LearnPNP/World/World.h
-  include/pnp_ros/connection_observer.h
-	src/ActionProxy.cpp
-	src/ROSInst.cpp
-	src/ROSConds.cpp
-	src/LearnPNP/ROSLearnInstantiator.cpp
-	src/LearnPNP/ROSReward.cpp
-	src/LearnPNP/World/World.cpp
-    src/connection_observer.cpp
- )
- target_link_libraries(aamas
-   ${catkin_LIBRARIES}
-   ${BOOST_LIBRARIES}
- )
+  src/ActionProxy.cpp include/${PROJECT_NAME}/ActionProxy.h
+  src/ROSConds.cpp include/${PROJECT_NAME}/ROSConds.h
+  src/ROSInst.cpp include/${PROJECT_NAME}/ROSInst.h
+  src/connection_observer.cpp include/${PROJECT_NAME}/connection_observer.h
+  src/LearnPNP/ROSLearnInstantiator.cpp include/${PROJECT_NAME}/LearnPNP/ROSLearnInstantiator.h
+  src/LearnPNP/ROSReward.cpp include/${PROJECT_NAME}/LearnPNP/ROSReward.h
+  src/LearnPNP/World/World.cpp include/${PROJECT_NAME}/LearnPNP/World/World.h
+)
+
+target_link_libraries(aamas
+  ${catkin_LIBRARIES}
+  ${BOOST_LIBRARIES}
+)
 
 ## Add cmake target dependencies of the executable/library
- add_dependencies(aamas pnp_msgs_gencpp)
+add_dependencies(aamas pnp_msgs_gencpp)
 
-add_library(PNPAS src/PNPActionServer.cpp)
+add_library(PNPAS
+  src/PNPActionServer.cpp include/${PROJECT_NAME}/PNPActionServer.h
+)
+
 target_link_libraries(PNPAS
-   aamas
-   ${catkin_LIBRARIES}
-   $ENV{PNP_LIB}
-   ${BOOST_LIBRARIES}
- )
+  aamas
+  ${catkin_LIBRARIES}
+  ${BOOST_LIBRARIES}
+)
 
 ## Declare a cpp executable
- add_executable(pnp_node src/main.cpp)
+add_executable(pnp_node src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
- add_dependencies(pnp_node pnp_msgs_gencpp)
+add_dependencies(pnp_node pnp_msgs_gencpp)
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(pnp_node
-   aamas
-   pnp
-   ${catkin_LIBRARIES}
-   $ENV{PNP_LIB}
-   ${BOOST_LIBRARIES}
- )
+target_link_libraries(pnp_node
+  aamas
+  pnp
+  ${catkin_LIBRARIES}
+  ${BOOST_LIBRARIES}
+)
 
 #############
 ## Install ##
