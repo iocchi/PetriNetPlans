@@ -116,6 +116,8 @@ add_library(aamas
 	src/LearnPNP/ROSReward.cpp
 	src/LearnPNP/World/World.cpp
  )
+add_dependencies(aamas pnp_msgs_generate_messages_cpp)
+
  target_link_libraries(aamas
    ${catkin_LIBRARIES}
    ${BOOST_LIBRARIES}
