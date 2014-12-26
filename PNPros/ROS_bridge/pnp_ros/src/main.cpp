@@ -22,6 +22,18 @@ using namespace pnpros;
 using namespace pnpros::LearnPNP;
 using std_msgs::String;
 
+
+#define TOPIC_PLAN_TO_EXEC "planToExec"
+std::string planToExec = "";
+
+// rostopic pub /robot_0/planToExec std_msgs/String "data: 'stop'" --once
+void planToExecuteCallback(const std_msgs::String::ConstPtr& msg)
+{
+  planToExec = msg->data;
+  ROS_INFO("Plan received from topic %s. Executing plan %s ... ", TOPIC_PLAN_TO_EXEC, planToExec.c_str());
+  
+}
+
 void spinThread()
 {
 	ros::NodeHandle nh;
@@ -35,7 +47,12 @@ int main(int argc, char** argv)
 	// Needed by actionclient.
 	boost::thread spin_thread(&spinThread);
 	
+
+	
 	ros::NodeHandle n, np("~");
+	
+	ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLAN_TO_EXEC, 1, planToExecuteCallback);
+	
 	ExternalConditionChecker* conditionChecker;
 	string planName = "test1", planFolder = "plans/";
 	int episodes, epochs, learningPeriod, samples;
@@ -45,9 +62,9 @@ int main(int argc, char** argv)
 	np.param("plan_folder",planFolder,string("plans/"));
 	np.param("learning",learning,false);
 	
-	cerr << "\033[22;31;1mCurrent plan: \033[0m\033[22;37;1m" << planName << "\033[0m" << endl;
-	cerr << "\033[22;31;1mPlan folder: \033[0m\033[22;37;1m" << planFolder << "\033[0m" << endl;
-	cerr << "\033[22;31;1mLearning: \033[0m\033[22;37;1m" << (learning ? "Enabled" : "Disabled") << "\033[0m" << endl;
+	cerr << "\033[22;31;1mCurrent plan: \033[0m\033[22;32;1m" << planName << "\033[0m" << endl;
+	cerr << "\033[22;31;1mPlan folder: \033[0m\033[22;32;1m" << planFolder << "\033[0m" << endl;
+	cerr << "\033[22;31;1mLearning: \033[0m\033[22;32;1m" << (learning ? "Enabled" : "Disabled") << "\033[0m" << endl;
 	
 	if (learning)
 	{
@@ -170,28 +187,46 @@ int main(int argc, char** argv)
 		
 		while (ros::ok())
 		{
-			cerr << "\033[22;37;1mExecuting plan: " << planName << "\033[0m" << endl;
+		  
+			if (planToExec!="") {
+			  planName = planToExec;
+			  planToExec = "";
+			}			
+
+			if (planName=="stop") {
+			  cerr << "\033[22;31;1mWaiting for a plan...\033[0m" << endl;
+
+			  while (planToExec=="") {
+			      rate.sleep();
+			  }
+
+			}
 			
-			executor.setMainPlan(planName);
-			
-			while (!executor.goalReached() && ros::ok())
-			{
-				String activePlaces;
-				
-				vector<string> nepForTest = executor.getNonEmptyPlaces();
-				
-				activePlaces.data = "";
-				
-				for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
-				{
-					activePlaces.data += *it;
-				}
-				
-				currentActivePlacesPublisher.publish(activePlaces);
-				
-				executor.execMainPlanStep();
-				
-				rate.sleep();
+			else {
+			  
+			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m" << endl;
+
+			  executor.setMainPlan(planName);
+			  
+			  while (!executor.goalReached() && ros::ok() && planToExec=="")
+			  {
+				  String activePlaces;
+				  
+				  vector<string> nepForTest = executor.getNonEmptyPlaces();
+				  
+				  activePlaces.data = "";
+				  
+				  for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
+				  {
+					  activePlaces.data += *it;
+				  }
+				  
+				  currentActivePlacesPublisher.publish(activePlaces);
+				  
+				  executor.execMainPlanStep();
+				  
+				  rate.sleep();
+			  }
 			}
 		}
 	}
@@ -201,3 +236,4 @@ int main(int argc, char** argv)
 	
 	return 0;
 }
+
