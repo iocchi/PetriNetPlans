@@ -49,6 +49,12 @@ namespace pnpros
           }
 	}
 	
+	ActionProxy::~ActionProxy() {
+	    ROS_DEBUG_STREAM("ActionProxy: terminating action " << name);
+	    // terminate this action
+	    end();
+	}
+	
     void ActionProxy::actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message)
 	{
 		ROS_INFO_STREAM("Deleting " << message->id);

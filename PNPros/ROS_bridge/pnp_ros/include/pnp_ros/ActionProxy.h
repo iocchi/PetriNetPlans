@@ -38,6 +38,7 @@ namespace pnpros
 			static ros::Publisher publisher;
 			
 			ActionProxy(const std::string& name);
+			~ActionProxy();
 			
             static void actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message);
 			

@@ -182,12 +182,9 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		// The executor owns the instantiator.
-		PnpExecuter<PnpPlan> executor(new ROSInst(conditionChecker,planFolder));
 		
 		while (ros::ok())
 		{
-		  
 			if (planToExec!="") {
 			  planName = planToExec;
 			  planToExec = "";
@@ -206,13 +203,16 @@ int main(int argc, char** argv)
 			  
 			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m" << endl;
 
-			  executor.setMainPlan(planName);
+			  // The executor owns the instantiator.
+			  PnpExecuter<PnpPlan> *executor = new PnpExecuter<PnpPlan>(new ROSInst(conditionChecker,planFolder));
+
+			  executor->setMainPlan(planName);
 			  
-			  while (!executor.goalReached() && ros::ok() && planToExec=="")
+			  while (!executor->goalReached() && ros::ok() && planToExec=="")
 			  {
 				  String activePlaces;
 				  
-				  vector<string> nepForTest = executor.getNonEmptyPlaces();
+				  vector<string> nepForTest = executor->getNonEmptyPlaces();
 				  
 				  activePlaces.data = "";
 				  
@@ -223,10 +223,12 @@ int main(int argc, char** argv)
 				  
 				  currentActivePlacesPublisher.publish(activePlaces);
 				  
-				  executor.execMainPlanStep();
+				  executor->execMainPlanStep();
 				  
 				  rate.sleep();
 			  }
+			  
+			  delete executor;
 			}
 		}
 	}
