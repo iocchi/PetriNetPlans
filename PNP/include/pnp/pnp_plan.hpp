@@ -14,7 +14,7 @@ template<typename PnpPlaceClass, typename PnpTransitionClass>
     PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::PnpPlanTemplate(
                       ExecutableInstantiator* ei, ExternalConditionChecker* cc, const std::string name) :
 	planName(name), executableInstantiator(ei), conditionChecker(cc), observer(NULL)
-{ }
+{ activePlaces.clear(); }
 
 template<typename PnpPlaceClass, typename PnpTransitionClass>
 PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::~PnpPlanTemplate()
@@ -31,6 +31,8 @@ PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::~PnpPlanTemplate()
 		PNP_OUT("  Destroying sub-executable '"<<it->first<<"'");
 		delete it->second;
 	}
+	
+	activePlaces.clear();
 }
 
 template<typename PnpPlaceClass, typename PnpTransitionClass>

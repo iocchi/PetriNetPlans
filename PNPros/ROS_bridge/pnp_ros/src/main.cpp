@@ -179,7 +179,7 @@ int main(int argc, char** argv)
 			
 			file.close();
 		}
-	}
+	} // if learning
 	else
 	{
 		
@@ -193,7 +193,7 @@ int main(int argc, char** argv)
 			if (planName=="stop") {
 			  cerr << "\033[22;31;1mWaiting for a plan...\033[0m" << endl;
 
-			  while (planToExec=="") {
+			  while (planToExec=="" && ros::ok()) {
 			      rate.sleep();
 			  }
 
@@ -210,6 +210,9 @@ int main(int argc, char** argv)
 			  
 			  while (!executor->goalReached() && ros::ok() && planToExec=="")
 			  {
+			    
+				  executor->execMainPlanStep();
+			    
 				  String activePlaces;
 				  
 				  vector<string> nepForTest = executor->getNonEmptyPlaces();
@@ -222,8 +225,6 @@ int main(int argc, char** argv)
 				  }
 				  
 				  currentActivePlacesPublisher.publish(activePlaces);
-				  
-				  executor->execMainPlanStep();
 				  
 				  rate.sleep();
 			  }

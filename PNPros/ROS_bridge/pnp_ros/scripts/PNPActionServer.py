@@ -92,7 +92,8 @@ def cancelAction(goalhandler):
   print "Terminating "+goal.name+" "+goal.params
   # accept the goal
   goalhandler.set_accepted()
-  valid_goals.remove(goal.id)
+  if goal.id in valid_goals:
+    valid_goals.remove(goal.id)
   
 
 
