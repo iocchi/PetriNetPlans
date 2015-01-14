@@ -26,7 +26,7 @@ condvalue=0
 
 def generateConditions():
   global condvalue
-  r = rospy.Rate(0.333)
+  r = rospy.Rate(0.1)
   while not rospy.is_shutdown():
     condvalue = 1 - condvalue
     print 'Condition value = ',condvalue

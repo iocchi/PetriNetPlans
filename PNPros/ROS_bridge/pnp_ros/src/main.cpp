@@ -56,11 +56,12 @@ int main(int argc, char** argv)
 	ExternalConditionChecker* conditionChecker;
 	string planName = "test1", planFolder = "plans/";
 	int episodes, epochs, learningPeriod, samples;
-	bool learning = false, logPlaces = false;
+	bool learning = false, logPlaces = false, autorestart = false;
 	
 	np.param("current_plan",planName,string("test1"));
 	np.param("plan_folder",planFolder,string("plans/"));
 	np.param("learning",learning,false);
+	np.param("autorestart",autorestart,false);
 	
 	cerr << "\033[22;31;1mCurrent plan: \033[0m\033[22;32;1m" << planName << "\033[0m" << endl;
 	cerr << "\033[22;31;1mPlan folder: \033[0m\033[22;32;1m" << planFolder << "\033[0m" << endl;
@@ -201,37 +202,74 @@ int main(int argc, char** argv)
 			
 			else {
 			  
-			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m" << endl;
+			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m  autorestart: " << autorestart << endl;
 
+			  PnpExecuter<PnpPlan> *executor = NULL;
+			  
 			  // The executor owns the instantiator.
-			  PnpExecuter<PnpPlan> *executor = new PnpExecuter<PnpPlan>(new ROSInst(conditionChecker,planFolder));
-
-			  executor->setMainPlan(planName);
-			  
-			  while (!executor->goalReached() && ros::ok() && planToExec=="")
-			  {
-			    
-				  executor->execMainPlanStep();
-			    
-				  String activePlaces;
-				  
-				  vector<string> nepForTest = executor->getNonEmptyPlaces();
-				  
-				  activePlaces.data = "";
-				  
-				  for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
-				  {
-					  activePlaces.data += *it;
-				  }
-				  
-				  currentActivePlacesPublisher.publish(activePlaces);
-				  
-				  rate.sleep();
+			  try {
+			    ExecutableInstantiator* i = new ROSInst(conditionChecker,planFolder);
+			    if (i!=NULL)
+			      executor = new PnpExecuter<PnpPlan>(i);
 			  }
+			  catch(int e) {
+			    cerr << "No plan found!!!" << endl;
+			    planToExec="stop"; continue;
+			  }
+
+			  if (executor!=NULL) {
+			    
+			      executor->setMainPlan(planName);
+			      
+			      if (executor->getMainPlanName()!="") {
+				
+				cout << "Here " << executor->getMainPlanName() << endl;
+				
+				while (!executor->goalReached() && ros::ok() && planToExec=="")
+				{
+				  
+					executor->execMainPlanStep();
+				  
+					String activePlaces;
+					
+					vector<string> nepForTest = executor->getNonEmptyPlaces();
+					
+					activePlaces.data = "";
+					
+					for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
+					{
+						activePlaces.data += *it;
+					}
+					
+					currentActivePlacesPublisher.publish(activePlaces);
+					
+					rate.sleep();
+				}
+				
+				if (executor->goalReached()) {
+				    cout << "GOAL REACHED!!!" << endl;
+				    String activePlaces;
+				    activePlaces.data = "goal";
+				    currentActivePlacesPublisher.publish(activePlaces);
+				}
+				else {
+				    cout << "PLAN STOPPED OR CHANGED!!!" << endl;
+				    String activePlaces;
+				    activePlaces.data = "abort";
+				    currentActivePlacesPublisher.publish(activePlaces);			    
+				}
+
+			      } // if executor getMainPlanName ...
+			      
+			      delete executor;
+
+			      if (!autorestart)
+				  planToExec="stop";
 			  
-			  delete executor;
-			}
-		}
+			  } // if executior!=NULL
+
+			} // else
+		} // while
 	}
 	
 	// Cleanup.
