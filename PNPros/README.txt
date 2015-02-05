@@ -53,13 +53,46 @@ Note: Install 'xterm' if the system complains about it
 How to test rp_action
 =====================
 
-Move to the PNPros/example/rp_action/scripts folder
+From the PNPros/example/rp_action/scripts folder, run
 
-Run ./run-dis-B1-plan.sh
+  $ ./run-dis-B1-plan.sh
 
 You should see a robot moving on stage following the plan
 specified in run-dis-B1-plan.sh (sensing, by default)
 
 If it does not work, try to run ./run-dis-B1.sh
 and debug your ROS setting with rviz
+
+You can change plan on-line by using:
+
+  $ rostopic pub /robot_0/planToExec std_msgs/String "data: '<plan_name>'" -1 
+
+Special plan_name 'stop' is used to stop/abort the current plan.
+
+
+How to visualize the execution of the plan
+==========================================
+
+From the PNPros/example/rp_action/scripts folder, run
+
+  $ ./run-dis-B1-plan-GUI.sh
+
+Run the PNPjarp: from the Jarp folder, run
+
+  $ ./jarp.sh
+
+In PNPjarp load the plan that is in execution on the robot,
+plans executed in rp_action are in the folder 'PNPros/ROS_bridge/pnp_ros/plans/'.
+
+Then push Start on the GUI and specify the host where PNP is running 
+(127.0.0.1 for local host).
+
+You will see the tokens in PNP moving according to the execution
+of the plan.
+
+Note: at this moment the Stop button does not work and closing the 
+Jarp program make the plan fail. Sorry...
+
+
+
 

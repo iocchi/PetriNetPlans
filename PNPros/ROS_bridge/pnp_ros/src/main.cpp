@@ -16,6 +16,8 @@
 #include <cstdlib>
 #include <fstream>
 
+#include <pnp_ros/connection_observer.h>
+
 using namespace std;
 using namespace PetriNetPlans;
 using namespace pnpros;
@@ -56,12 +58,15 @@ int main(int argc, char** argv)
 	ExternalConditionChecker* conditionChecker;
 	string planName = "test1", planFolder = "plans/";
 	int episodes, epochs, learningPeriod, samples;
+
 	bool learning = false, logPlaces = false, autorestart = false;
+	bool use_java_connection = false;
 	
 	np.param("current_plan",planName,string("test1"));
 	np.param("plan_folder",planFolder,string("plans/"));
 	np.param("learning",learning,false);
 	np.param("autorestart",autorestart,false);
+	np.param("use_java_connection",use_java_connection,false);
 	
 	cerr << "\033[22;31;1mCurrent plan: \033[0m\033[22;32;1m" << planName << "\033[0m" << endl;
 	cerr << "\033[22;31;1mPlan folder: \033[0m\033[22;32;1m" << planFolder << "\033[0m" << endl;
@@ -89,7 +94,7 @@ int main(int argc, char** argv)
 		}
 	}
 	
-    ActionProxy::publisher = n.advertise<pnp_msgs::Action>("pnp_action",1);
+	ActionProxy::publisher = n.advertise<pnp_msgs::Action>("pnp_action",1);
 	ros::Publisher currentActivePlacesPublisher = np.advertise<String>("currentActivePlaces",1);
 	ros::Subscriber sub = n.subscribe("pnp_action_termination",100,&ActionProxy::actionTerminationCallback);
 	
@@ -183,6 +188,7 @@ int main(int argc, char** argv)
 	} // if learning
 	else
 	{
+//<<<<<<< HEAD
 		
 		while (ros::ok())
 		{
@@ -199,10 +205,24 @@ int main(int argc, char** argv)
 			  }
 
 			}
-			
+#if 0
+=======
+		// The executor owns the instantiator.
+        ExecutableInstantiator* instantiator = new ROSInst(conditionChecker,planFolder);
+        PnpExecuter<PnpPlan> executor(instantiator);
+        
+        ConnectionObserver observer(planName, use_java_connection);
+        PlanObserver* new_observer = &observer;
+
+        executor.setMainPlan(planName);
+        executor.setObserver(new_observer);
+
+>>>>>>> origin/tug_examples
+#endif			
 			else {
 			  
-			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m  autorestart: " << autorestart << endl;
+			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m  autorestart: " << autorestart <<
+			  " use_java_connection: " << use_java_connection << endl;
 
 			  PnpExecuter<PnpPlan> *executor = NULL;
 			  
@@ -219,15 +239,21 @@ int main(int argc, char** argv)
 
 			  if (executor!=NULL) {
 			    
+			      if (use_java_connection)
+				  cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
+			      
+			      ConnectionObserver observer(planName, use_java_connection);
+			      PlanObserver* new_observer = &observer;
+
 			      executor->setMainPlan(planName);
+			      executor->setObserver(new_observer);
 			      
 			      if (executor->getMainPlanName()!="") {
 				
-				cout << "Here " << executor->getMainPlanName() << endl;
+				cout << "Starting " << executor->getMainPlanName() << endl;
 				
 				while (!executor->goalReached() && ros::ok() && planToExec=="")
 				{
-				  
 					executor->execMainPlanStep();
 				  
 					String activePlaces;

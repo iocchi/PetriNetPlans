@@ -10,6 +10,7 @@
 #include "externalconditionchecker.h"
 #include "pnp_instantiators.h"
 
+
 namespace PetriNetPlans {
 /**
 * \brief The Main class for executing Petri Net Plans
@@ -96,6 +97,17 @@ public:
 	 * \attention deletes the main plan \em and the instantiator.
 	 * */
 	~PnpExecuter();
+
+        /**
+    *\brief sets observer of Planner
+    *
+    * */
+    inline void setObserver( PlanObserver *observer)
+    {
+
+        mainPlan->setObserver(observer);
+    }
+
 
 protected:
 	PnpPlanClass* mainPlan;

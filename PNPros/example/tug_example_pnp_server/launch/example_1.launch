@@ -1,0 +1,28 @@
+<launch>
+    
+    <arg name="robotname" default="example_1" />
+    <arg name="planname" default="fetch_box_plan" />
+    <arg name="use_gui" default="true" />
+    
+    <group ns="$(arg robotname)">
+        <param name="robot_name" value="$(arg robotname)" />
+        <param name="tf_prefix" value="$(arg robotname)" />
+
+        <!-- Action servers -->
+        <node name="example_actions_node" pkg="tug_example_actions" type="example_actions_node"/>
+
+       
+
+        <!-- Test pnp server -->
+        <node pkg="tug_example_pnp_server" type="example_pnp_server_node" name="example_pnp_server_node" args="" output="screen" >
+             <param name="current_plan" value="$(arg planname)" />
+        </node>
+
+        <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen" >
+            <param name="plan_folder" value="$(find tug_example_pnp_server)/plans/" />
+            <param name="current_plan" value="$(arg planname)" />
+            <param name="use_java_connection" value="$(arg use_gui)" />
+        </node>
+
+    </group>
+</launch>

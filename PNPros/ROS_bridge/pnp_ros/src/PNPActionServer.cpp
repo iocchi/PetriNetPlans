@@ -58,6 +58,7 @@ void PNPActionServer::goalCallback(PNPAS::GoalHandle gh){
         ROS_DEBUG_STREAM("Starting action " << goal.robotname << " " << goal.name << " " << 
                         goal.params);
         current_gh.setAccepted();
+        actionStart(goal.robotname, goal.name, goal.params);
         boost::thread t(
             boost::bind(&PNPActionServer::ActionExecutionThread, this, _1),
             current_gh);
@@ -65,6 +66,7 @@ void PNPActionServer::goalCallback(PNPAS::GoalHandle gh){
     else if (goal.function=="end") {
         ROS_DEBUG_STREAM("Terminating action " << goal.robotname << " " << goal.name << " " << 
                         goal.params);
+        actionEnd(goal.robotname, goal.name, goal.params);
         CancelAction(goal.robotname,goal.name,goal.params);
         current_gh.setAccepted();
         boost::this_thread::sleep(boost::posix_time::milliseconds(200));
@@ -73,6 +75,7 @@ void PNPActionServer::goalCallback(PNPAS::GoalHandle gh){
     else if (goal.function=="interrupt") {
         ROS_DEBUG_STREAM("Interrupting action " << goal.robotname << " " << goal.name << " " << 
                         goal.params);
+        actionInterrupt(goal.robotname, goal.name, goal.params);
         CancelAction(goal.robotname,goal.name,goal.params);
         current_gh.setAccepted();
         boost::this_thread::sleep(boost::posix_time::milliseconds(200));
@@ -249,6 +252,21 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
 
 int PNPActionServer::evalCondition(string cond){
   return -1;
+}
+
+void PNPActionServer::actionStart(const std::string & robot, const std::string & action, const std::string & params)
+{
+    // Default implementation does nothing.
+}
+
+void PNPActionServer::actionEnd(const std::string & robot, const std::string & action, const std::string & params)
+{
+    // Default implementation does nothing.
+}
+
+void PNPActionServer::actionInterrupt(const std::string & robot, const std::string & action, const std::string & params)
+{
+    // Default implementation does nothing.
 }
 
 #if 0
