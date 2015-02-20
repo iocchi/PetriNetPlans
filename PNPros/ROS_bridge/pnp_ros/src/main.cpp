@@ -187,9 +187,7 @@ int main(int argc, char** argv)
 		}
 	} // if learning
 	else
-	{
-//<<<<<<< HEAD
-		
+	{		
 		while (ros::ok())
 		{
 			if (planToExec!="") {
@@ -206,7 +204,6 @@ int main(int argc, char** argv)
 
 			}
 #if 0
-=======
 		// The executor owns the instantiator.
         ExecutableInstantiator* instantiator = new ROSInst(conditionChecker,planFolder);
         PnpExecuter<PnpPlan> executor(instantiator);
@@ -216,8 +213,6 @@ int main(int argc, char** argv)
 
         executor.setMainPlan(planName);
         executor.setObserver(new_observer);
-
->>>>>>> origin/tug_examples
 #endif			
 			else {
 			  
@@ -240,7 +235,7 @@ int main(int argc, char** argv)
 			  if (executor!=NULL) {
 			    
 			      if (use_java_connection)
-				  cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
+                    cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
 			      
 			      ConnectionObserver observer(planName, use_java_connection);
 			      PlanObserver* new_observer = &observer;
@@ -277,6 +272,8 @@ int main(int argc, char** argv)
 				    String activePlaces;
 				    activePlaces.data = "goal";
 				    currentActivePlacesPublisher.publish(activePlaces);
+                    if (!autorestart)
+                      planToExec="stop";
 				}
 				else {
 				    cout << "PLAN STOPPED OR CHANGED!!!" << endl;
@@ -289,10 +286,7 @@ int main(int argc, char** argv)
 			      
 			      delete executor;
 
-			      if (!autorestart)
-				  planToExec="stop";
-			  
-			  } // if executior!=NULL
+              } // if executor!=NULL
 
 			} // else
 		} // while

@@ -197,7 +197,7 @@ void PNPActionServer::internal_clear_buffer(){
 }
 
 void PNPActionServer::register_action(string actionname, action_fn_t actionfn) {
-  cout << "*** REGISTERING ACTION " << actionname << " *** " << endl;
+  cout << "PNPROS:: REGISTERING ACTION " << actionname << endl;
   //boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
   global_PNPROS_action_fns[actionname] = actionfn;
 }
@@ -207,7 +207,7 @@ action_fn_t PNPActionServer::get_action_fn(string actionname) {
 }
 
 void PNPActionServer::register_MRaction(string actionname, MRaction_fn_t actionfn) {
-  cout << "*** REGISTERING ACTION " << actionname << " *** " << endl;
+  cout << "PNPROS:: REGISTERING ACTION " << actionname << endl;
   //boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
   global_PNPROS_MRaction_fns[actionname] = actionfn;
 }

@@ -11,6 +11,7 @@ namespace pnpros
 	ros::Publisher ActionProxy::publisher;
 	set<string> ActionProxy::activeActions;
 	unsigned long long ActionProxy::maxID;
+    bool active;
 	
 	ActionProxy::ActionProxy(const string& nm)
 	{
@@ -47,6 +48,8 @@ namespace pnpros
             }
             else ROS_WARN_STREAM("[PNPros]: No robot name defined. You should probably define it by setting the ros patameter \"robot_name\"");
           }
+
+          active=false;
 	}
 	
 	ActionProxy::~ActionProxy() {
@@ -130,12 +133,15 @@ namespace pnpros
 
 #endif
 
+        active=true;
 		ROS_INFO_STREAM("Start: "+robotname+" "+ name + " " + params + " - ID: " + id);
 
 	}
 	
 	void ActionProxy::end()
 	{
+        if (!active) return;
+        active=false;
 #if USE_MESSAGES
 		Action action;
 		
@@ -249,7 +255,7 @@ namespace pnpros
 		{
 			actionlib::TerminalState ts = goalhandler.getTerminalState();
 			
-			ROS_INFO_STREAM("Finish: " << robotname << " " << name << " " << params << " - ID: " << id << " - " << ts.toString() << " " << ts.getText());
+            ROS_DEBUG_STREAM("Finish: " << robotname << " " << name << " " << params << " - ID: " << id << " - " << ts.toString() << " " << ts.getText());
 							
 			if (ts == actionlib::TerminalState::SUCCEEDED)  return true;
 		}
