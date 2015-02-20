@@ -164,7 +164,7 @@ namespace pnpros
 
 		if (!pnpac->waitForActionServerToStart(ros::Duration(0.1)))
 		{
-			cout << "PNP: cannote execute action " << name << endl;
+            cout << "PNP: cannote terminate action " << name << endl;
 
 			return;
 		}
@@ -172,7 +172,7 @@ namespace pnpros
         pnp_msgs::PNPGoal goal;
 
 		goal.id = maxID;
-    goal.robotname = robotname;
+        goal.robotname = robotname;
 		goal.name = name;
 		goal.params = params;
 		goal.function = "end";
@@ -190,7 +190,7 @@ namespace pnpros
         //cout << "### In end function: gh state = " << goalhandler.getCommState().toString() << endl;
 #endif
 
-    ROS_INFO_STREAM("End: "+robotname+" "+ name + " " + params + " - ID: " + id);
+        ROS_INFO_STREAM("End: "+robotname+" "+ name + " " + params + " - ID: " + id);
 	}
 
 	void ActionProxy::interrupt()

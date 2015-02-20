@@ -15,7 +15,7 @@
 #include <boost/interprocess/sync/scoped_lock.hpp>
 
 // Timing for event buffer
-#define TIME_THRESHOLD 3
+#define TIME_THRESHOLD 10
 #define REMEMBERING_TIME 60
 
 typedef void (*action_fn_t)(std::string, bool *); // action name, run flag

@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 	if (learning) conditionChecker = new ROSReward();
 	else conditionChecker = new ROSConds();
 	
-	double refreshRate = 10.0; // Hz
+    double refreshRate = 10.0; // Hz
 	
 	ros::Rate rate(refreshRate);
 	
@@ -271,7 +271,7 @@ int main(int argc, char** argv)
 				    cout << "GOAL REACHED!!!" << endl;
 				    String activePlaces;
 				    activePlaces.data = "goal";
-				    currentActivePlacesPublisher.publish(activePlaces);
+                    currentActivePlacesPublisher.publish(activePlaces);
                     if (!autorestart)
                       planToExec="stop";
 				}
@@ -284,7 +284,7 @@ int main(int argc, char** argv)
 
 			      } // if executor getMainPlanName ...
 			      
-			      delete executor;
+                  delete executor;
 
               } // if executor!=NULL
 
