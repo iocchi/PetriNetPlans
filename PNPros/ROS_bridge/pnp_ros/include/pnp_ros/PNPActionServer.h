@@ -20,9 +20,8 @@
 
 typedef void (*action_fn_t)(std::string, bool *); // action name, run flag
 typedef void (*MRaction_fn_t)(std::string, std::string, bool *);  // robot name, action name, run flag
-
-#define DECLARE_ACTION_IMPLEMENTATION(f) \
-void f(string params, bool *run);
+typedef boost::function<void(std::string, bool *)> boost_action_fn_t;
+typedef boost::function<void(std::string, std::string, bool *)> boost_MRaction_fn_t;
 
 typedef actionlib::ActionServer<pnp_msgs::PNPAction> PNPAS;
 
@@ -64,8 +63,8 @@ protected:
     vector<Event> eventBuffer; 
     
     map<string,bool> run;
-    map<string,action_fn_t> global_PNPROS_action_fns;
-    map<string,MRaction_fn_t> global_PNPROS_MRaction_fns;
+    map<string,boost_action_fn_t> global_PNPROS_action_fns;
+    map<string,boost_MRaction_fn_t> global_PNPROS_MRaction_fns;
     map<string,string> global_PNPROS_variables;
 
 public:
@@ -150,9 +149,24 @@ protected:
 
     // For registering and retrieving action functions
     void register_action(string actionname, action_fn_t actionfn);
-    action_fn_t get_action_fn(string actionname);
+
     void register_MRaction(string actionname, MRaction_fn_t actionfn); // multi-robot version
-    MRaction_fn_t get_MRaction_fn(string actionname);
+
+
+    template<class T>
+    void register_action(string actionname, void(T::*fp)(std::string, bool *), T* obj)  {
+        cout << "PNPROS:: REGISTERING ACTION " << actionname << " (class method)" << endl;
+        global_PNPROS_action_fns[actionname] = boost::bind(fp, obj, _1, _2);
+    }
+
+    template<class T>
+    void register_MRaction(string actionname, void(T::*fp)(std::string, std::string, bool *), T* obj)  {
+        cout << "PNPROS:: REGISTERING MR ACTION " << actionname << " (class method)" << endl;
+        global_PNPROS_MRaction_fns[actionname] = boost::bind(fp, obj, _1, _2, _3);
+    }
+
+    boost_action_fn_t get_action_fn(string actionname);
+    boost_MRaction_fn_t get_MRaction_fn(string actionname);
 
     // Action execution
     void goalCallback(PNPAS::GoalHandle gh);
