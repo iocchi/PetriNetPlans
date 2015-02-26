@@ -17,6 +17,17 @@ void generate(string name, vector<string> &plan, vector<pair<string,string> > &s
 }
 
 
+void generateH(string name, vector<pair<string,string> > &socialrules)
+{
+    PNPGenerator g(name);
+    if (name=="HloadPaper")
+        g.genHumanAction("say_getPapers","say_printerThanks","say_sorry","objectPickedUp");
+    else if (name=="HopenDoor")
+        g.genHumanAction("say_openDoor","say_door","say_sorry","doorOpen");
+    g.applyRules(socialrules);
+    g.save();
+}
+
 int main(int argc, char **argv)
 {
     vector<pair<string,string> > socialrules;
@@ -41,16 +52,10 @@ int main(int argc, char **argv)
     generate("main",plan,socialrules);
 
     // H_loadPaper
-    plan.clear(); plan.push_back("preLoadPaper"); plan.push_back("say_loadPaper");
-    plan.push_back("percLoadPaper");
-
-    generate("HloadPaper",plan,socialrules);
+    generateH("HloadPaper",socialrules);
 
     // H_openDoor
-    plan.clear(); plan.push_back("preOpenDoor"); plan.push_back("say_openDoor");
-    plan.push_back("percOpenDoor");
-
-    generate("HopenDoor",plan,socialrules);
+    generateH("HopenDoor",socialrules);
 
     return 0;
 }

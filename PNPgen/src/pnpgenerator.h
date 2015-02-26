@@ -131,7 +131,7 @@ protected:
 
 public:
     PNP(string _name) : name(_name) {
-        node_id=0;  arc_id=0;
+        node_id=0;  arc_id=0; P.clear(); T.clear(); E.clear();
     }
     string getName() { return name; }
 
@@ -162,6 +162,7 @@ public:
     PNPGenerator(string name);
 
     void genLinear(vector<string> plan);
+    void genHumanAction(string say_ask, string say_do, string say_dont, string condition);
     void applyRules(vector<pair<string,string> > socialrules);
 
     void save();
