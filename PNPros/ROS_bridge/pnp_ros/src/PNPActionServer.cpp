@@ -1,10 +1,4 @@
-#include <ros/ros.h>
-#include <actionlib/server/simple_action_server.h>
 #include <std_msgs/String.h>
-#include <pnp_msgs/PNPAction.h>
-#include <pnp_msgs/PNPCondition.h>
-#include <pnp_msgs/PNPLastEvent.h>
-#include <pnp_msgs/PNPClearBuffer.h>
 
 #include <boost/thread/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
@@ -197,22 +191,21 @@ void PNPActionServer::internal_clear_buffer(){
 }
 
 void PNPActionServer::register_action(string actionname, action_fn_t actionfn) {
-  cout << "*** REGISTERING ACTION " << actionname << " *** " << endl;
-  //boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-  global_PNPROS_action_fns[actionname] = actionfn;
-}
+  cout << "PNPROS:: REGISTERING ACTION " << actionname << endl;
+  global_PNPROS_action_fns[actionname] = boost::bind(*actionfn,_1,_2);
 
-action_fn_t PNPActionServer::get_action_fn(string actionname) {
-  return global_PNPROS_action_fns[actionname];
 }
 
 void PNPActionServer::register_MRaction(string actionname, MRaction_fn_t actionfn) {
-  cout << "*** REGISTERING ACTION " << actionname << " *** " << endl;
-  //boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-  global_PNPROS_MRaction_fns[actionname] = actionfn;
+  cout << "PNPROS:: REGISTERING MR ACTION " << actionname << endl;
+  global_PNPROS_MRaction_fns[actionname] = boost::bind(*actionfn,_1,_2,_3);
 }
 
-MRaction_fn_t PNPActionServer::get_MRaction_fn(string actionname) {
+boost_action_fn_t PNPActionServer::get_action_fn(string actionname) {
+  return global_PNPROS_action_fns[actionname];
+}
+
+boost_MRaction_fn_t PNPActionServer::get_MRaction_fn(string actionname) {
   return global_PNPROS_MRaction_fns[actionname];
 }
 
@@ -224,25 +217,25 @@ MRaction_fn_t PNPActionServer::get_MRaction_fn(string actionname) {
 void PNPActionServer::actionExecutionThread(string robotname, string action_name, string action_params, bool *run)  {
   bool found=false;
   if (robotname!="") {
-    MRaction_fn_t f = get_MRaction_fn(action_name);
+    boost_MRaction_fn_t f = get_MRaction_fn(action_name);
     if (f!=NULL){
       found=true;
       if (action_params.find('@') == std::string::npos)
-        (*f)(robotname,action_params,run);
+        f(robotname,action_params,run);
       else
-        (*f)(robotname, replace_vars_with_values(action_params),run);
+        f(robotname, replace_vars_with_values(action_params),run);
     }
     //else
     //  ROS_ERROR_STREAM("??? UNKNOWN Action " << robotname << "#" << action_name << " ??? ");
   }
   if (!found) {
-    action_fn_t f = get_action_fn(action_name);
+    boost_action_fn_t f = get_action_fn(action_name);
     if (f!=NULL)
     {
       if (action_params.find('@') == std::string::npos)
-        (*f)(action_params,run);
+        f(action_params,run);
       else
-        (*f)(replace_vars_with_values(action_params),run);
+        f(replace_vars_with_values(action_params),run);
     }
     else
       ROS_ERROR_STREAM("??? UNKNOWN Action " << action_name << " ??? ");
