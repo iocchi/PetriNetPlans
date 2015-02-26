@@ -38,6 +38,10 @@ public:
        return X;
     }
 
+    void addX(int dx) {
+        setX(X+dx);
+    }
+
     void setX(int x) {
         X=x; posx = offx + X * dx;
     }
@@ -45,6 +49,11 @@ public:
     int getY() {
         return Y;
     }
+
+    void addY(int dy) {
+        setY(Y+dy);
+    }
+
 
     void setY(int y) {
         Y=y; posy = offy + Y * dy;
@@ -101,9 +110,14 @@ class Edge {
     Node *n1, *n2;
     Arc a;
 public:
+
     Edge(Node* _n1, Node* _n2) : n1(_n1), n2(_n2), a(n1->getID(),n2->getID()) {
     }
 
+    Node* first() { return n1; }
+    Node* second() { return n2; }
+
+    friend bool operator== (const Edge& e1, const Edge& e2);
     friend std::ostream& operator<< (std::ostream& stream, const Edge& edge);
 };
 
@@ -121,12 +135,18 @@ public:
     }
     string getName() { return name; }
 
+    Node *next(Node *n);
+    void connect(Node* n1, Node* n2);
+    void disconnect(Node* n1, Node* n2);
+    Node* disconnect(Node* p);
+
     Place* addPlace(string name);
     Transition* addTransition(string name);
-    void connect(Node* n1, Node* n2);
+
     std::pair<Transition*,Place*> addCondition(string name, Place* p0, int dy=0);
     void addConditionBack(string name, Place* pfrom, Place *pto, int dy=0);
     Place* addAction(string name, Place* p0);
+    Place* addAction(string name, Node* p0);
 
     friend std::ostream& operator<< (std::ostream& stream, const PNP& pnp);
 };
@@ -136,7 +156,7 @@ class PNPGenerator
 private:
     PNP pnp;
     Place *pinit;
-    stack< pair<string, Place*> > SK;
+    stack< pair<string, Node*> > SK;
 
 public:
     PNPGenerator(string name);

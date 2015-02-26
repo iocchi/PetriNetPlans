@@ -98,6 +98,10 @@ std::ostream& operator<< (std::ostream& stream, const Edge& edge) {
     return stream;
 }
 
+bool operator== (const Edge& e1, const Edge& e2)
+{
+    return (e1.n1==e2.n1 && e1.n2==e2.n2);
+}
 
 std::ostream& operator<< (std::ostream& stream, const PNP& pnp) {
 
@@ -151,6 +155,46 @@ void PNP::connect(Node* n1, Node* n2) {
     E.push_back(e);
 }
 
+void PNP::disconnect(Node* n1, Node* n2) {
+    vector<Edge*>::iterator it = E.begin();
+    Edge* ee = new Edge(n1,n2);
+    while (it!=E.end()) {
+        if (ee==*it) break;
+        it++;
+    }
+    if (it!=E.end()) E.erase(it);
+}
+
+Node* PNP::disconnect(Node* n) {
+    // search for connected Nodes
+    Node* nn;
+    vector<Edge*>::iterator it = E.begin();
+    while (it!=E.end()) {
+        Edge *e=*it;
+        if (e->first()==n) {
+            nn = e->second(); break;
+        }
+        it++;
+    }
+    if (it!=E.end()) E.erase(it);
+    return nn;
+}
+
+Node* PNP::next(Node *n) {
+    // search for connected Nodes
+    Node* nn;
+    vector<Edge*>::iterator it = E.begin();
+    while (it!=E.end()) {
+        Edge *e=*it;
+        if (e->first()==n) {
+            nn = e->second(); break;
+        }
+        it++;
+    }
+    return nn;
+}
+
+
 std::pair<Transition*,Place*> PNP::addCondition(string name, Place* p0, int dy) {
     Transition *t = addTransition(name);
     Place *p1 = addPlace("X");
@@ -167,7 +211,7 @@ void PNP::addConditionBack(string name, Place* pfrom, Place *pto, int dy) {
     connect(pfrom,t); connect(t,pto);
 }
 
-Place* PNP::addAction(string name, Place* p0) {
+Place* PNP::addAction(string name, Node *p0) {
     Transition *ts = addTransition(name+".start");
     Place *pe = addPlace(name+".exec");
     Transition *te = addTransition(name+".end");
@@ -179,6 +223,20 @@ Place* PNP::addAction(string name, Place* p0) {
     connect(p0,ts); connect(ts,pe); connect(pe,te); connect(te,pf);
     return pf;
 }
+
+Place* PNP::addAction(string name, Place *p0) {
+    Transition *ts = addTransition(name+".start");
+    Place *pe = addPlace(name+".exec");
+    Transition *te = addTransition(name+".end");
+    Place *pf = addPlace("X");
+    ts->setY(p0->getY()); pe->setY(p0->getY()); // same line as p0
+    te->setY(p0->getY()); pf->setY(p0->getY());
+    ts->setX(p0->getX()+1);  pe->setX(p0->getX()+2); // X pos after p0
+    te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
+    connect(p0,ts); connect(ts,pe); connect(pe,te); connect(te,pf);
+    return pf;
+}
+
 
 
 PNPGenerator::PNPGenerator(string name) : pnp(name) {
@@ -200,18 +258,20 @@ void PNPGenerator::genLinear(vector<string> v)
     Place *p = pinit;
     while (i!=v.end()) {
         string a = *i++;
-        p = pnp.addAction(a,p);
-        //stringstream ss; ss << "S_" << a;
         SK.push(make_pair(a,p));
+        p = pnp.addAction(a,p);
     }
+    p->setName("goal");
 }
 
 void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
-    pair<string, Place*> current;
+    pair<string, Node*> current; Node* noplace=NULL;
     while (!SK.empty()) {
         current=SK.top(); SK.pop();
-        string current_action = current.first;
-        Place* current_place = current.second;
+        string current_action_param = current.first;
+        vector<string> tk; boost::split(tk,current_action_param,boost::is_any_of("_"));
+        string current_action = tk[0];
+        Node* current_place = current.second;
 
         // before
         vector<pair<string,string> >::iterator sit = socialrules.begin();
@@ -221,8 +281,71 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
             if (tk[0]=="before" && tk[1]==current_action) {
                 // add b before this action
                 cout << "-- add " << b << " before " << current_action << endl;
+                Node* p2 = pnp.disconnect(current_place);
+                current_place->addX(-2); current_place->addY(1);
+                Place* p1 = pnp.addAction(b,current_place); SK.push(make_pair(b,current_place));
+                //p1->addY(-1); p1->addX(-2);
+                pnp.connect(p1,p2);
+                current_place=p1;
             }
         }
+
+        // after
+        sit = socialrules.end();
+        while (sit!=socialrules.begin()) {
+            sit--;
+            string a = sit->first, b = sit->second;
+            vector<string> tk; boost::split(tk,a,boost::is_any_of(" "));
+            if (tk[0]=="after" && tk[1]==current_action) {
+                // add b after this action
+                cout << "-- add " << b << " after " << current_action << endl;
+
+                Node* n = current_place;
+                for (int k=0; k<4; k++)
+                    n = pnp.next(n);
+
+                Node* p2 = pnp.disconnect(n);
+                n->addX(-2); n->addY(1);
+                Place* p1 = pnp.addAction(b,n); SK.push(make_pair(b,n));
+                pnp.connect(p1,p2);
+
+            }
+        }
+
+        // during
+        sit = socialrules.begin();
+        while (sit!=socialrules.end()) {
+            string a = sit->first, b = sit->second; sit++;
+            vector<string> tk; boost::split(tk,a,boost::is_any_of(" "));
+            if (tk[0]=="during" && tk[1]==current_action) {
+                // add b during this action
+                cout << "-- add " << b << " in parallel with " << current_action << endl;
+
+                Node* t1 = pnp.disconnect(current_place);
+                Transition* tf = pnp.addTransition("[true]"); tf->setX(current_place->getX()+1); tf->setY(current_place->getY());
+                pnp.connect(current_place,tf);
+                Place* p1 = pnp.addPlace("Y1"); p1->setX(tf->getX()+1); p1->setY(tf->getY());
+                pnp.connect(tf,p1); pnp.connect(p1,t1); current_place=p1;
+                Place* p2 = pnp.addPlace("Y2"); p2->setX(tf->getX()+1); p2->setY(tf->getY()+1);
+                pnp.connect(tf,p2);
+                Place* p2e = pnp.addAction(b,p2); SK.push(make_pair(b,p2));
+
+                Transition* tj = pnp.addTransition("[true]"); tj->setX(p2e->getX()+1); tj->setY(p2e->getY());
+                pnp.connect(p2e,tj);
+
+                for (int k=0; k<3; k++)
+                    t1 = pnp.next(t1);
+                Node* t3 = pnp.disconnect(t1);
+                pnp.connect(t1,tj);
+
+                Place *po = pnp.addPlace("Z"); po->setX(tj->getX()+2); po->setY(tj->getY());
+                pnp.connect(tj,po);
+
+                pnp.connect(po,t3);
+
+            }
+        }
+
 
     }
 }
