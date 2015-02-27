@@ -41,7 +41,6 @@ int main(int argc, char **argv)
     socialrules.push_back(make_pair("during say","S_face"));
     socialrules.push_back(make_pair("during say","S_display_text"));
 
-
     vector<string> plan;
 
     // main plan

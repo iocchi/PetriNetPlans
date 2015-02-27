@@ -128,10 +128,11 @@ protected:
     vector<Place*> P;
     vector<Transition*> T;
     vector<Edge*> E;
+    int nactions;
 
 public:
     PNP(string _name) : name(_name) {
-        node_id=0;  arc_id=0; P.clear(); T.clear(); E.clear();
+        node_id=0;  arc_id=0; P.clear(); T.clear(); E.clear(); nactions=0;
     }
     string getName() { return name; }
 
@@ -147,6 +148,7 @@ public:
     void addConditionBack(string name, Place* pfrom, Place *pto, int dy=0);
     Place* addAction(string name, Place* p0);
     Place* addAction(string name, Node* p0);
+    std::string stats();
 
     friend std::ostream& operator<< (std::ostream& stream, const PNP& pnp);
 };

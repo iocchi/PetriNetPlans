@@ -221,6 +221,7 @@ Place* PNP::addAction(string name, Node *p0) {
     ts->setX(p0->getX()+1);  pe->setX(p0->getX()+2); // X pos after p0
     te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
     connect(p0,ts); connect(ts,pe); connect(pe,te); connect(te,pf);
+    nactions++;
     return pf;
 }
 
@@ -234,14 +235,25 @@ Place* PNP::addAction(string name, Place *p0) {
     ts->setX(p0->getX()+1);  pe->setX(p0->getX()+2); // X pos after p0
     te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
     connect(p0,ts); connect(ts,pe); connect(pe,te); connect(te,pf);
+    nactions++;
     return pf;
+}
+
+std::string PNP::stats()
+{
+    stringstream ss;
+    ss << "Actions: " << nactions << " Places: " <<
+        P.size() << " Transitions: " << T.size() << " Edges: " << E.size();
+    return ss.str();
 }
 
 
 
 PNPGenerator::PNPGenerator(string name) : pnp(name) {
+    cout << endl << "Generation of PNP '" << name << "'" << endl;
     pinit = pnp.addPlace("init"); pinit->setInitialMarking();
 }
+
 
 void PNPGenerator::save() {
     stringstream ss; ss << pnp.getName() << ".pnml";
@@ -249,6 +261,8 @@ void PNPGenerator::save() {
     of << pnp;
     of.close();
     std::cout << "PNP '" << pnp.getName() << "' saved." << std::endl;
+    std::cout << "PNP stats: '" << pnp.stats() << std::endl;
+
 }
 
 
