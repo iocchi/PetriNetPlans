@@ -225,6 +225,13 @@ Place* PNP::addAction(string name, Node *p0) {
     return pf;
 }
 
+void PNP::addInterrupt(Place *pi, string condition, Place *po) {
+    Node *pe = next(next(pi)); // exec place
+    Transition *ts = addTransition("interrupt ["+condition+"]");
+    ts->setY(pe->getY()-1); ts->setX(pe->getX()); // same line as p0
+    connect(pe,ts); connect(ts,po);
+}
+
 Place* PNP::addAction(string name, Place *p0) {
     Transition *ts = addTransition(name+".start");
     Place *pe = addPlace(name+".exec");
@@ -281,12 +288,12 @@ void PNPGenerator::genLinear(vector<string> v)
 
 void PNPGenerator::genHumanAction(string say_ask, string say_do, string say_dont, string condition)
 {
-    Place *p0 = pnp.addAction(say_ask,pinit); SK.push(make_pair(say_ask,pinit));
-    pair<Transition*,Place*> ptg = pnp.addCondition("true",p0);
+    Place *p1 = pnp.addAction("findHuman",pinit); SK.push(make_pair("findHuman",pinit));
+    Place *p2 = pnp.addAction(say_ask,p1); SK.push(make_pair(say_ask,p1));
+    pair<Transition*,Place*> ptg = pnp.addCondition(" ",p2);
     Place *p = ptg.second;
-
-    stringstream ss; ss << "[" << condition << "]"; condition=ss.str();
-    Transition* t1 = pnp.addTransition(condition); t1->setY(p->getY()-1); t1->setX(p->getX()+1);
+    
+    Transition* t1 = pnp.addTransition("["+condition+"]"); t1->setY(p->getY()-1); t1->setX(p->getX()+1);
     Transition* t2 = pnp.addTransition("[saidYes]"); t2->setY(p->getY()+0); t2->setX(p->getX()+1);
     Transition* t3 = pnp.addTransition("[saidNo]");  t3->setY(p->getY()+1); t3->setX(p->getX()+1);
     Transition* t4 = pnp.addTransition("[timeout]"); t4->setY(p->getY()+2); t4->setX(p->getX()+1);
@@ -297,16 +304,17 @@ void PNPGenerator::genHumanAction(string say_ask, string say_do, string say_dont
     pnp.connect(t3,pn);
 
     Place *pd = pnp.addAction(say_do,py); SK.push(make_pair(say_do,py));
-    ptg = pnp.addCondition(condition,pd);
+    ptg = pnp.addCondition("["+condition+"]",pd);
     Place *pg = ptg.second;
     pg->setName("goal");
 
     Place *pf1 = pnp.addAction(say_dont,pn); SK.push(make_pair(say_dont,pn));
-    ptg = pnp.addCondition("[true]",pf1);
-    Place* pf2=ptg.second;
-    pf2->setName("fail");
+    Transition* tf1 = pnp.addTransition(" "); tf1->setY(pf1->getY()); tf1->setX(pf1->getX()+1); 
+    pnp.connect(pf1,tf1); pnp.connect(tf1,pinit);
 
-    pnp.connect(t1,pg); pnp.connect(t4,pf2);
+    pnp.connect(t1,pg); pnp.connect(t4,pinit); 
+    
+    pnp.addInterrupt(pinit, condition, pg); 
 
 }
 
@@ -371,7 +379,7 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
                 cout << "-- add " << b << " in parallel with " << current_action << endl;
 
                 Node* t1 = pnp.disconnect(current_place);
-                Transition* tf = pnp.addTransition("[true]"); tf->setX(current_place->getX()+1); tf->setY(current_place->getY());
+                Transition* tf = pnp.addTransition(" "); tf->setX(current_place->getX()+1); tf->setY(current_place->getY());
                 pnp.connect(current_place,tf);
                 Place* p1 = pnp.addPlace("Y1"); p1->setX(tf->getX()+1); p1->setY(tf->getY());
                 pnp.connect(tf,p1); pnp.connect(p1,t1); current_place=p1;
@@ -379,7 +387,7 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
                 pnp.connect(tf,p2);
                 Place* p2e = pnp.addAction(b,p2); SK.push(make_pair(b,p2));
 
-                Transition* tj = pnp.addTransition("[true]"); tj->setX(p2e->getX()+1); tj->setY(p2e->getY());
+                Transition* tj = pnp.addTransition(" "); tj->setX(p2e->getX()+1); tj->setY(p2e->getY());
                 pnp.connect(p2e,tj);
 
                 for (int k=0; k<3; k++)

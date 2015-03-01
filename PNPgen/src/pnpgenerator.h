@@ -148,6 +148,8 @@ public:
     void addConditionBack(string name, Place* pfrom, Place *pto, int dy=0);
     Place* addAction(string name, Place* p0);
     Place* addAction(string name, Node* p0);
+    void addInterrupt(Place *pi, string condition, Place *po);
+
     std::string stats();
 
     friend std::ostream& operator<< (std::ostream& stream, const PNP& pnp);

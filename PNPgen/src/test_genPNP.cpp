@@ -23,7 +23,7 @@ void generateH(string name, vector<pair<string,string> > &socialrules)
     if (name=="HloadPaper")
         g.genHumanAction("say_getPapers","say_printerThanks","say_sorry","objectPickedUp");
     else if (name=="HopenDoor")
-        g.genHumanAction("say_openDoor","say_door","say_sorry","doorOpen");
+        g.genHumanAction("say_openDoor","say_doorThanks","say_sorry","doorOpen");
     g.applyRules(socialrules);
     g.save();
 }
@@ -31,22 +31,34 @@ void generateH(string name, vector<pair<string,string> > &socialrules)
 int main(int argc, char **argv)
 {
     vector<pair<string,string> > socialrules;
-    socialrules.push_back(make_pair("before HloadPaper","Sapproach"));
-    socialrules.push_back(make_pair("during Sapproach","Sexplainapproach"));
-    socialrules.push_back(make_pair("after Sapproach","Ssayplease"));
-    socialrules.push_back(make_pair("after Sapproach","Sexplainhelp"));
-    socialrules.push_back(make_pair("after HloadPaper","Sthank"));
-    socialrules.push_back(make_pair("before HopenDoor","Sapproach"));
-    socialrules.push_back(make_pair("after HopenDoor","Sthank"));
-    socialrules.push_back(make_pair("during say","S_face"));
-    socialrules.push_back(make_pair("during say","S_display_text"));
+    /*
+    socialrules.push_back(make_pair("after findHuman","approach"));
+    socialrules.push_back(make_pair("after findHuman","say_greet"));
+    socialrules.push_back(make_pair("after findHuman","explain_help"));
+    socialrules.push_back(make_pair("after HloadPaper","say_thank"));
+    socialrules.push_back(make_pair("after HopenDoor","say_thank"));
+    socialrules.push_back(make_pair("during approach","explain_approach"));
+    socialrules.push_back(make_pair("during say","face"));
+*/
+    socialrules.push_back(make_pair("during say","display_text"));
 
+
+
+/*  NOT USED!!!
+    socialrules.push_back(make_pair("before HopenDoor","approach"));
+    socialrules.push_back(make_pair("before HopenDoor","say_greet"));
+    socialrules.push_back(make_pair("before HopenDoor","explain_help"));
+*/    
     vector<string> plan;
 
     // main plan
-    plan.push_back("gotoPrinter"); plan.push_back("findHuman");
-    plan.push_back("HloadPaper"); plan.push_back("gotoDoor"); plan.push_back("HopenDoor");
-    plan.push_back("passDoor");
+    plan.push_back("goto_printer");
+    //plan.push_back("findHuman"); 
+    plan.push_back("HloadPaper"); 
+    plan.push_back("goto_door"); 
+    //plan.push_back("findHuman"); 
+    plan.push_back("HopenDoor"); 
+    plan.push_back("enter_door");
 
     generate("main",plan,socialrules);
 
