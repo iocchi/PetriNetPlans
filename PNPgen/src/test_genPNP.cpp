@@ -31,7 +31,7 @@ void generateH(string name, vector<pair<string,string> > &socialrules)
 int main(int argc, char **argv)
 {
     vector<pair<string,string> > socialrules;
-    /*
+    
     socialrules.push_back(make_pair("after findHuman","approach"));
     socialrules.push_back(make_pair("after findHuman","say_greet"));
     socialrules.push_back(make_pair("after findHuman","explain_help"));
@@ -39,16 +39,8 @@ int main(int argc, char **argv)
     socialrules.push_back(make_pair("after HopenDoor","say_thank"));
     socialrules.push_back(make_pair("during approach","explain_approach"));
     socialrules.push_back(make_pair("during say","face"));
-*/
     socialrules.push_back(make_pair("during say","display_text"));
-
-
-
-/*  NOT USED!!!
-    socialrules.push_back(make_pair("before HopenDoor","approach"));
-    socialrules.push_back(make_pair("before HopenDoor","say_greet"));
-    socialrules.push_back(make_pair("before HopenDoor","explain_help"));
-*/    
+    
     vector<string> plan;
 
     // main plan
