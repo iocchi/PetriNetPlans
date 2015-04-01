@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 project (PNPgen) 
 
-
-#source file list, add new files here
-
-SET( test_SRC src/test_genPNP.cpp src/pnpgenerator.cpp )
-
 #search for boost
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
@@ -19,7 +14,11 @@ include_directories(${Boost_INCLUDE_DIR})
 #ADD_LIBRARY(pnp SHARED ${pnp_SRC})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-add_executable(test_genPNP ${test_SRC})
+ADD_LIBRARY(genpnp SHARED src/pnpgenerator.cpp)
 
-target_link_libraries(test_genPNP ${LIBS})
+add_executable(test_genPNP src/test_genPNP.cpp)
+
+target_link_libraries(test_genPNP genpnp)
+
