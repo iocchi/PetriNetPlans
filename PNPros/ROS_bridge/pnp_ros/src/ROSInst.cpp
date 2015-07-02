@@ -39,8 +39,7 @@ namespace pnpros
 			file.clear(ios::failbit);
 			// cout << "No plan found. Trying with an action ..." << endl;
 			
-			PnpExecutable* result = new ActionProxy(name);
-			return result;
+			return new ActionProxy(name);
 		}
 		
 		PnpPlan *plan = new PnpPlan(this,checker);
