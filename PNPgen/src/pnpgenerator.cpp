@@ -408,7 +408,7 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
 		while (!found) {
 		  string naction = pnp.next(nn)->getName();
 		  found = naction.substr(0,current_action.size())==current_action;
-		  cout << naction << "=" << current_action << "  " << found << endl;
+		  // cout << naction << "=" << current_action << "  " << found << endl;
 		  if (!found)
 		    nn = pnp.next(nn);
 		}

@@ -37,8 +37,8 @@ int main(int argc, char **argv)
     socialrules.push_back(make_pair("after findHuman","explain_help"));
     socialrules.push_back(make_pair("after HloadPaper","say_thank"));
     socialrules.push_back(make_pair("after HopenDoor","say_thank"));
-    //socialrules.push_back(make_pair("during approach","explain_approach"));
-    //socialrules.push_back(make_pair("during say","face"));
+    socialrules.push_back(make_pair("during approach","explain_approach"));
+    socialrules.push_back(make_pair("during say","face"));
     socialrules.push_back(make_pair("during say","display_text"));
     
     vector<string> plan;
