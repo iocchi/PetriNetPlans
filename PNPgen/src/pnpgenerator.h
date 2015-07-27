@@ -66,6 +66,8 @@ public:
     void setName(string _name) {
         name=_name;
     }
+    
+    string getName() { return name; }
 };
 
 
@@ -142,6 +144,7 @@ public:
     Node* disconnect(Node* p);
 
     Place* addPlace(string name);
+    Place* addPlace(string name, int n); // n=-1: use node_id
     Transition* addTransition(string name);
 
     std::pair<Transition*,Place*> addCondition(string name, Place* p0, int dy=0);
@@ -160,15 +163,16 @@ class PNPGenerator
 private:
     PNP pnp;
     Place *pinit;
-    stack< pair<string, Node*> > SK;
+    stack< pair<string, Place*> > SK;
 
 public:
     PNPGenerator(string name);
 
     void genLinear(vector<string> plan);
-    void genHumanAction(string say_ask, string say_do, string say_dont, string condition);
+    void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);
     void applyRules(vector<pair<string,string> > socialrules);
-
+    Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
+    Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);
     void save();
 
 };

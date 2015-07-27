@@ -142,6 +142,15 @@ Place* PNP::addPlace(string name) {
     return p;
 }
 
+Place* PNP::addPlace(string name, int n) {
+    stringstream ss; ss << name;
+    if (n==-1) ss << node_id;
+    else ss << n;
+    Place* p = new Place(ss.str());
+    P.push_back(p);
+    return p;
+}
+
 
 Transition* PNP::addTransition(string name) {
     Transition* t = new Transition(name);
@@ -197,7 +206,7 @@ Node* PNP::next(Node *n) {
 
 std::pair<Transition*,Place*> PNP::addCondition(string name, Place* p0, int dy) {
     Transition *t = addTransition(name);
-    Place *p1 = addPlace("X");
+    Place *p1 = addPlace("X",-1);
     t->setY(p0->getY()+dy); p1->setY(p0->getY()+dy); // same line as p0 + dy
     t->setX(p0->getX()+1);  p1->setX(p0->getX()+2);  // X pos after p0
     connect(p0,t); connect(t,p1);
@@ -215,7 +224,7 @@ Place* PNP::addAction(string name, Node *p0) {
     Transition *ts = addTransition(name+".start");
     Place *pe = addPlace(name+".exec");
     Transition *te = addTransition(name+".end");
-    Place *pf = addPlace("X");
+    Place *pf = addPlace("X",-1);
     ts->setY(p0->getY()); pe->setY(p0->getY()); // same line as p0
     te->setY(p0->getY()); pf->setY(p0->getY());
     ts->setX(p0->getX()+1);  pe->setX(p0->getX()+2); // X pos after p0
@@ -236,7 +245,7 @@ Place* PNP::addAction(string name, Place *p0) {
     Transition *ts = addTransition(name+".start");
     Place *pe = addPlace(name+".exec");
     Transition *te = addTransition(name+".end");
-    Place *pf = addPlace("X");
+    Place *pf = addPlace("X",-1);
     ts->setY(p0->getY()); pe->setY(p0->getY()); // same line as p0
     te->setY(p0->getY()); pf->setY(p0->getY());
     ts->setX(p0->getX()+1);  pe->setX(p0->getX()+2); // X pos after p0
@@ -258,7 +267,7 @@ std::string PNP::stats()
 
 PNPGenerator::PNPGenerator(string name) : pnp(name) {
     cout << endl << "Generation of PNP '" << name << "'" << endl;
-    pinit = pnp.addPlace("init"); pinit->setInitialMarking();
+    pinit = pnp.addPlace("init"); pinit->setInitialMarking(); pinit->setX(3);
 }
 
 
@@ -286,7 +295,7 @@ void PNPGenerator::genLinear(vector<string> v)
 }
 
 
-void PNPGenerator::genHumanAction(string say_ask, string say_do, string say_dont, string condition)
+void PNPGenerator::genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition)
 {
     Place *p1 = pnp.addAction("findHuman",pinit); SK.push(make_pair("findHuman",pinit));
     Place *p2 = pnp.addAction(say_ask,p1); SK.push(make_pair(say_ask,p1));
@@ -298,18 +307,21 @@ void PNPGenerator::genHumanAction(string say_ask, string say_do, string say_dont
     Transition* t3 = pnp.addTransition("[saidNo]");  t3->setY(p->getY()+1); t3->setX(p->getX()+1);
     Transition* t4 = pnp.addTransition("[timeout]"); t4->setY(p->getY()+2); t4->setX(p->getX()+1);
     pnp.connect(p,t1); pnp.connect(p,t2); pnp.connect(p,t3); pnp.connect(p,t4);
-    Place *py = pnp.addPlace("Y"); py->setY(t2->getY()); py->setX(t2->getX()+1);
+    Place *py = pnp.addPlace("Y",-1); py->setY(t2->getY()); py->setX(t2->getX()+1);
     pnp.connect(t2,py);
-    Place *pn = pnp.addPlace("N"); pn->setY(t3->getY()); pn->setX(t3->getX()+1);
+    Place *pn = pnp.addPlace("N",-1); pn->setY(t3->getY()); pn->setX(t3->getX()+1);
     pnp.connect(t3,pn);
 
-    Place *pd = pnp.addAction(say_do,py); SK.push(make_pair(say_do,py));
-    ptg = pnp.addCondition("["+condition+"]",pd);
+    // say_do, action_do
+    Place *pd1 = pnp.addAction(say_do,py); SK.push(make_pair(say_do,py));
+    Place *pd2 = pnp.addAction(action_do,pd1); SK.push(make_pair(action_do,pd1));
+    ptg = pnp.addCondition("["+condition+"]",pd2);
     Place *pg = ptg.second;
     pg->setName("goal");
 
+    // say_dont
     Place *pf1 = pnp.addAction(say_dont,pn); SK.push(make_pair(say_dont,pn));
-    Transition* tf1 = pnp.addTransition(" "); tf1->setY(pf1->getY()); tf1->setX(pf1->getX()+1); 
+    Transition* tf1 = pnp.addTransition("[not humanDetected]"); tf1->setY(pf1->getY()); tf1->setX(pf1->getX()+1); 
     pnp.connect(pf1,tf1); pnp.connect(tf1,pinit);
 
     pnp.connect(t1,pg); pnp.connect(t4,pinit); 
@@ -318,17 +330,41 @@ void PNPGenerator::genHumanAction(string say_ask, string say_do, string say_dont
 
 }
 
+Place *PNPGenerator::add_before(PNP &pnp, string b, string current_action, Place* current_place) {
+    // add b before this action
+    cout << "-- add " << b << " before " << current_action << endl;
+    Node* p2 = pnp.disconnect(current_place);
+    current_place->addX(-2); current_place->addY(1);
+    Place* p1 = pnp.addAction(b,current_place); SK.push(make_pair(b,current_place));
+    //p1->addY(-1); p1->addX(-2);
+    pnp.connect(p1,p2);
+    return p1;
+}
 
+Place *PNPGenerator::add_after(PNP &pnp, string b, string current_action, Place* current_place) {
+    // add b after this action
+    cout << "-- add " << b << " after " << current_action << endl;
+    Node* n = current_place;
+    for (int k=0; k<4; k++)
+	n = pnp.next(n);
+    Node* p2 = pnp.disconnect(n);
+    n->addX(-2); n->addY(1);
+    Place *pn = static_cast<Place*>(n);
+    Place* p1 = pnp.addAction(b,n); SK.push(make_pair(b,pn));
+    //cout << "  ** push " << b << ","  << n->getName() << endl;
+    pnp.connect(p1,p2);
+    return pn;
+}
 
 
 void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
-    pair<string, Node*> current; Node* noplace=NULL;
+    pair<string, Place*> current; Place* noplace=NULL;
     while (!SK.empty()) {
         current=SK.top(); SK.pop();
         string current_action_param = current.first;
         vector<string> tk; boost::split(tk,current_action_param,boost::is_any_of("_"));
         string current_action = tk[0];
-        Node* current_place = current.second;
+        Place* current_place = current.second;
 
         // before
         vector<pair<string,string> >::iterator sit = socialrules.begin();
@@ -336,14 +372,9 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
             string a = sit->first, b = sit->second; sit++;
             vector<string> tk; boost::split(tk,a,boost::is_any_of(" "));
             if (tk[0]=="before" && tk[1]==current_action) {
-                // add b before this action
-                cout << "-- add " << b << " before " << current_action << endl;
-                Node* p2 = pnp.disconnect(current_place);
-                current_place->addX(-2); current_place->addY(1);
-                Place* p1 = pnp.addAction(b,current_place); SK.push(make_pair(b,current_place));
-                //p1->addY(-1); p1->addX(-2);
-                pnp.connect(p1,p2);
-                current_place=p1;
+                current_place=add_before(pnp,b,current_action,current_place);
+		if (b=="approach")
+		    pnp.addInterrupt(current_place,"not humanDetected",pinit);
             }
         }
 
@@ -354,18 +385,9 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
             string a = sit->first, b = sit->second;
             vector<string> tk; boost::split(tk,a,boost::is_any_of(" "));
             if (tk[0]=="after" && tk[1]==current_action) {
-                // add b after this action
-                cout << "-- add " << b << " after " << current_action << endl;
-
-                Node* n = current_place;
-                for (int k=0; k<4; k++)
-                    n = pnp.next(n);
-
-                Node* p2 = pnp.disconnect(n);
-                n->addX(-2); n->addY(1);
-                Place* p1 = pnp.addAction(b,n); SK.push(make_pair(b,n));
-                pnp.connect(p1,p2);
-
+	       Place *pp = add_after(pnp,b,current_action,current_place);
+	       if (b=="approach")
+		  pnp.addInterrupt(pp,"not humanDetected",pinit);
             }
         }
 
@@ -378,12 +400,25 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
                 // add b during this action
                 cout << "-- add " << b << " in parallel with " << current_action << endl;
 
-                Node* t1 = pnp.disconnect(current_place);
-                Transition* tf = pnp.addTransition(" "); tf->setX(current_place->getX()+1); tf->setY(current_place->getY());
-                pnp.connect(current_place,tf);
-                Place* p1 = pnp.addPlace("Y1"); p1->setX(tf->getX()+1); p1->setY(tf->getY());
+		// search for action after place current_place
+		// it may be different when after and before add actions around...
+		
+		Node* nn = current_place;
+		bool found=false;
+		while (!found) {
+		  string naction = pnp.next(nn)->getName();
+		  found = naction.substr(0,current_action.size())==current_action;
+		  cout << naction << "=" << current_action << "  " << found << endl;
+		  if (!found)
+		    nn = pnp.next(nn);
+		}
+		
+                Node* t1 = pnp.disconnect(nn);
+                Transition* tf = pnp.addTransition(" "); tf->setX(nn->getX()+1); tf->setY(nn->getY());
+                pnp.connect(nn,tf);
+                Place* p1 = pnp.addPlace("YA",-1); p1->setX(tf->getX()+1); p1->setY(tf->getY());
                 pnp.connect(tf,p1); pnp.connect(p1,t1); current_place=p1;
-                Place* p2 = pnp.addPlace("Y2"); p2->setX(tf->getX()+1); p2->setY(tf->getY()+1);
+                Place* p2 = pnp.addPlace("YB",-1); p2->setX(tf->getX()+1); p2->setY(tf->getY()+1);
                 pnp.connect(tf,p2);
                 Place* p2e = pnp.addAction(b,p2); SK.push(make_pair(b,p2));
 
@@ -395,7 +430,7 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
                 Node* t3 = pnp.disconnect(t1);
                 pnp.connect(t1,tj);
 
-                Place *po = pnp.addPlace("Z"); po->setX(tj->getX()+2); po->setY(tj->getY());
+                Place *po = pnp.addPlace("Z",-1); po->setX(tj->getX()+2); po->setY(tj->getY());
                 pnp.connect(tj,po);
 
                 pnp.connect(po,t3);
