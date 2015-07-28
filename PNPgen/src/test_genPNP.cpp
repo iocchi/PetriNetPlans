@@ -31,15 +31,32 @@ void generateH(string name, vector<pair<string,string> > &socialrules)
 int main(int argc, char **argv)
 {
     vector<pair<string,string> > socialrules;
+
     
+    // V1
     socialrules.push_back(make_pair("after findHuman","approach"));
+
+    // V3
     socialrules.push_back(make_pair("after findHuman","say_greet"));
-    socialrules.push_back(make_pair("after findHuman","explain_help"));
+    
+    // V4
+    // socialrules.push_back(make_pair("after findHuman","explain_help"));
+    
+    // True
     socialrules.push_back(make_pair("after HloadPaper","say_thank"));
+
+    // True
     socialrules.push_back(make_pair("after HopenDoor","say_thank"));
-    socialrules.push_back(make_pair("during approach","explain_approach"));
-    socialrules.push_back(make_pair("during say","face"));
-    socialrules.push_back(make_pair("during say","display_text"));
+    
+    // False
+    // socialrules.push_back(make_pair("during approach","explain_approach"));
+
+    // False
+    // socialrules.push_back(make_pair("during say","face"));
+
+    // V2
+    // socialrules.push_back(make_pair("during say","display_text"));
+    
     
     vector<string> plan;
 

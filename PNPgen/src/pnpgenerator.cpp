@@ -373,8 +373,10 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
             vector<string> tk; boost::split(tk,a,boost::is_any_of(" "));
             if (tk[0]=="before" && tk[1]==current_action) {
                 current_place=add_before(pnp,b,current_action,current_place);
-		if (b=="approach")
-		    pnp.addInterrupt(current_place,"not humanDetected",pinit);
+                if (b=="approach")
+                    pnp.addInterrupt(current_place,"not humanDetected",pinit);
+                if (b=="explain_approach")
+                    pnp.addInterrupt(current_place,"not humanDetected",pinit);
             }
         }
 
@@ -387,7 +389,9 @@ void PNPGenerator::applyRules(vector<pair<string,string> > socialrules) {
             if (tk[0]=="after" && tk[1]==current_action) {
 	       Place *pp = add_after(pnp,b,current_action,current_place);
 	       if (b=="approach")
-		  pnp.addInterrupt(pp,"not humanDetected",pinit);
+		  pnp.addInterrupt(pp,"not humanDetected",pinit);  // not humanDetected
+                if (b=="explain_approach")
+                    pnp.addInterrupt(current_place,"not humanDetected",pinit);
             }
         }
 
