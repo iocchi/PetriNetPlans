@@ -139,7 +139,7 @@ def handle_PNPConditionEval(req):
      res=1
   elif (cond=='true'): 
       res = 1
-  elif (cond=='false'): 
+  elif (cond=='false'):
       res = 0
   else: 
       res = condvalue

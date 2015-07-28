@@ -18,13 +18,19 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 class MyPNPActionServer : public PNPActionServer
 {
 private:
+
     ros::NodeHandle handle;
     ros::Publisher event_pub;
     ros::Subscriber laser_sub;
     
+    //int status;
+    //std::string movebase_topic;
+    // Define the action client (true: we want to spin a thread)
+    //MoveBaseClient *ac;  
+
 public:
 
-    MyPNPActionServer() : PNPActionServer()
+    MyPNPActionServer() : PNPActionServer() //, status(0), movebase_topic(""), ac(NULL)
     { 
         // boost::thread t(boost::bind(&MyPNPActionServer::changeStatus, this));
 	event_pub = handle.advertise<std_msgs::String>("PNPConditionEvent", 10); 
@@ -39,12 +45,22 @@ public:
 	register_action("home",&home);
 	register_action("wave",&wave);
 	register_action("sense1",&sense1);
+	register_action("turn360",&turn360);
 	
     }
     
-    
-    virtual int evalCondition(string cond) {
-	return PNPActionServer::evalCondition(cond);
+    virtual int evalCondition(string cond)
+    {
+      if (cond == "closeToHome")
+      {
+	int res = closeToHomeCond();
+	
+	cerr << "\033[22;34;1mCloseToHome: " << ((res == 1) ? "true" : "false") << "\033[0m" << endl;
+	
+	return res;
+      }
+      
+      return PNPActionServer::evalCondition(cond);
     }
     
     void laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg)
