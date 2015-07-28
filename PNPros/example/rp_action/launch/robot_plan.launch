@@ -1,7 +1,8 @@
 <launch>
     
     <arg name="robotname" default="robot_0" />
-    <arg name="plannamename" default="sensing" />
+    <arg name="planname" default="sensing" />
+    <arg name="use_gui" default="false" />
     
     <group ns="$(arg robotname)">
         <param name="robot_name" value="$(arg robotname)" />
@@ -12,6 +13,7 @@
         <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen">
             <param name="plan_folder" value="$(find pnp_ros)/plans/" />
             <param name="current_plan" value="$(arg planname)" />
+            <param name="use_java_connection" value="$(arg use_gui)" />
         </node>
 
     </group>

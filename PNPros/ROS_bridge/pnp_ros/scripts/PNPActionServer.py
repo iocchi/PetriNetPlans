@@ -26,7 +26,7 @@ condvalue=0
 
 def generateConditions():
   global condvalue
-  r = rospy.Rate(0.333)
+  r = rospy.Rate(0.1)
   while not rospy.is_shutdown():
     condvalue = 1 - condvalue
     print 'Condition value = ',condvalue
@@ -92,7 +92,8 @@ def cancelAction(goalhandler):
   print "Terminating "+goal.name+" "+goal.params
   # accept the goal
   goalhandler.set_accepted()
-  valid_goals.remove(goal.id)
+  if goal.id in valid_goals:
+    valid_goals.remove(goal.id)
   
 
 

@@ -1,18 +1,17 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pnp_ros)
+project(tug_example_actions)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   actionlib
-  pnp_msgs
   roscpp
-  rospy
+  tug_example_msgs
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system thread)
+# find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -68,7 +67,7 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   pnp_msgs
+#   std_msgs  # Or other packages containing msgs
 # )
 
 ###################################
@@ -82,8 +81,8 @@ find_package(Boost REQUIRED COMPONENTS system thread)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES PNPAS
-  CATKIN_DEPENDS actionlib pnp_msgs
+#  LIBRARIES tug_example_actions
+  CATKIN_DEPENDS actionlib roscpp tug_example_msgs
 #  DEPENDS system_lib
 )
 
@@ -93,60 +92,26 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
+include_directories(include)
 include_directories(
-  include
-  $ENV{PNP_INCLUDE}
   ${catkin_INCLUDE_DIRS}
-  ${BOOST_INCLUDE_DIRS}
 )
-link_directories($ENV{PNP_LIB})
-#message(include_var $ENV{PNP_INCLUDE})
 
 ## Declare a cpp library
-add_library(pnpros
-  src/ActionProxy.cpp include/${PROJECT_NAME}/ActionProxy.h
-  src/ROSConds.cpp include/${PROJECT_NAME}/ROSConds.h
-  src/ROSInst.cpp include/${PROJECT_NAME}/ROSInst.h
-  src/connection_observer.cpp include/${PROJECT_NAME}/connection_observer.h
-  src/LearnPNP/ROSLearnInstantiator.cpp include/${PROJECT_NAME}/LearnPNP/ROSLearnInstantiator.h
-  src/LearnPNP/ROSReward.cpp include/${PROJECT_NAME}/LearnPNP/ROSReward.h
-  src/LearnPNP/World/World.cpp include/${PROJECT_NAME}/LearnPNP/World/World.h
-)
-
-add_dependencies(pnpros pnp_msgs_generate_messages_cpp)
-
-target_link_libraries(pnpros
-   ${catkin_LIBRARIES}
-   ${BOOST_LIBRARIES}
-)
-
-add_library(PNPAS
-  src/PNPActionServer.cpp include/${PROJECT_NAME}/PNPActionServer.h
-)
-
-target_link_libraries(PNPAS
-   pnpros
-   ${catkin_LIBRARIES}
-   ${BOOST_LIBRARIES}
-)
+# add_library(tug_example_actions
+#   src/${PROJECT_NAME}/tug_example_actions.cpp
+# )
 
 ## Declare a cpp executable
-add_executable(pnp_node src/main.cpp)
+add_executable(example_actions_node src/example_actions_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-add_dependencies(pnp_node pnp_msgs_generate_messages_cpp)
-
+add_dependencies(example_actions_node tug_example_msgs_gencpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(pnp_node
-   pnpros
-   pnp
+ target_link_libraries(example_actions_node
    ${catkin_LIBRARIES}
-   ${BOOST_LIBRARIES}
-)
-
-
+ )
 
 #############
 ## Install ##
@@ -163,7 +128,7 @@ target_link_libraries(pnp_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS PNPAS
+# install(TARGETS tug_example_actions tug_example_actions_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -188,7 +153,7 @@ target_link_libraries(pnp_node
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pnp.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_tug_example_actions.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

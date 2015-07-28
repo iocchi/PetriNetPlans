@@ -16,6 +16,8 @@
 #include <cstdlib>
 #include <fstream>
 
+#include <pnp_ros/connection_observer.h>
+
 using namespace std;
 using namespace PetriNetPlans;
 using namespace pnpros;
@@ -56,11 +58,15 @@ int main(int argc, char** argv)
 	ExternalConditionChecker* conditionChecker;
 	string planName = "test1", planFolder = "plans/";
 	int episodes, epochs, learningPeriod, samples;
-	bool learning = false, logPlaces = false;
+
+	bool learning = false, logPlaces = false, autorestart = false;
+	bool use_java_connection = false;
 	
 	np.param("current_plan",planName,string("test1"));
 	np.param("plan_folder",planFolder,string("plans/"));
 	np.param("learning",learning,false);
+	np.param("autorestart",autorestart,false);
+	np.param("use_java_connection",use_java_connection,false);
 	
 	cerr << "\033[22;31;1mCurrent plan: \033[0m\033[22;32;1m" << planName << "\033[0m" << endl;
 	cerr << "\033[22;31;1mPlan folder: \033[0m\033[22;32;1m" << planFolder << "\033[0m" << endl;
@@ -88,7 +94,7 @@ int main(int argc, char** argv)
 		}
 	}
 	
-    ActionProxy::publisher = n.advertise<pnp_msgs::Action>("pnp_action",1);
+	ActionProxy::publisher = n.advertise<pnp_msgs::Action>("pnp_action",1);
 	ros::Publisher currentActivePlacesPublisher = np.advertise<String>("currentActivePlaces",1);
 	ros::Subscriber sub = n.subscribe("pnp_action_termination",100,&ActionProxy::actionTerminationCallback);
 	
@@ -98,7 +104,7 @@ int main(int argc, char** argv)
 	if (learning) conditionChecker = new ROSReward();
 	else conditionChecker = new ROSConds();
 	
-	double refreshRate = 10.0; // Hz
+    double refreshRate = 10.0; // Hz
 	
 	ros::Rate rate(refreshRate);
 	
@@ -179,10 +185,9 @@ int main(int argc, char** argv)
 			
 			file.close();
 		}
-	}
+	} // if learning
 	else
-	{
-		
+	{		
 		while (ros::ok())
 		{
 			if (planToExec!="") {
@@ -193,44 +198,98 @@ int main(int argc, char** argv)
 			if (planName=="stop") {
 			  cerr << "\033[22;31;1mWaiting for a plan...\033[0m" << endl;
 
-			  while (planToExec=="") {
+			  while (planToExec=="" && ros::ok()) {
 			      rate.sleep();
 			  }
 
 			}
-			
+#if 0
+		// The executor owns the instantiator.
+        ExecutableInstantiator* instantiator = new ROSInst(conditionChecker,planFolder);
+        PnpExecuter<PnpPlan> executor(instantiator);
+        
+        ConnectionObserver observer(planName, use_java_connection);
+        PlanObserver* new_observer = &observer;
+
+        executor.setMainPlan(planName);
+        executor.setObserver(new_observer);
+#endif			
 			else {
 			  
-			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m" << endl;
+			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m  autorestart: " << autorestart <<
+			  " use_java_connection: " << use_java_connection << endl;
 
+			  PnpExecuter<PnpPlan> *executor = NULL;
+			  
 			  // The executor owns the instantiator.
-			  PnpExecuter<PnpPlan> *executor = new PnpExecuter<PnpPlan>(new ROSInst(conditionChecker,planFolder));
-
-			  executor->setMainPlan(planName);
-			  
-			  while (!executor->goalReached() && ros::ok() && planToExec=="")
-			  {
-				  String activePlaces;
-				  
-				  vector<string> nepForTest = executor->getNonEmptyPlaces();
-				  
-				  activePlaces.data = "";
-				  
-				  for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
-				  {
-					  activePlaces.data += *it;
-				  }
-				  
-				  currentActivePlacesPublisher.publish(activePlaces);
-				  
-				  executor->execMainPlanStep();
-				  
-				  rate.sleep();
+			  try {
+			    ExecutableInstantiator* i = new ROSInst(conditionChecker,planFolder);
+			    if (i!=NULL)
+			      executor = new PnpExecuter<PnpPlan>(i);
 			  }
-			  
-			  delete executor;
-			}
-		}
+			  catch(int e) {
+			    cerr << "No plan found!!!" << endl;
+			    planToExec="stop"; continue;
+			  }
+
+			  if (executor!=NULL) {
+			    
+			      if (use_java_connection)
+                    cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
+			      
+			      ConnectionObserver observer(planName, use_java_connection);
+			      PlanObserver* new_observer = &observer;
+
+			      executor->setMainPlan(planName);
+			      executor->setObserver(new_observer);
+			      
+			      if (executor->getMainPlanName()!="") {
+				
+				cout << "Starting " << executor->getMainPlanName() << endl;
+				
+				while (!executor->goalReached() && ros::ok() && planToExec=="")
+				{
+					executor->execMainPlanStep();
+				  
+					String activePlaces;
+					
+					vector<string> nepForTest = executor->getNonEmptyPlaces();
+					
+					activePlaces.data = "";
+					
+					for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
+					{
+						activePlaces.data += *it;
+					}
+					
+					currentActivePlacesPublisher.publish(activePlaces);
+					
+					rate.sleep();
+				}
+				
+				if (executor->goalReached()) {
+				    cout << "GOAL REACHED!!!" << endl;
+				    String activePlaces;
+				    activePlaces.data = "goal";
+                    currentActivePlacesPublisher.publish(activePlaces);
+                    if (!autorestart)
+                      planToExec="stop";
+				}
+				else {
+				    cout << "PLAN STOPPED OR CHANGED!!!" << endl;
+				    String activePlaces;
+				    activePlaces.data = "abort";
+				    currentActivePlacesPublisher.publish(activePlaces);			    
+				}
+
+			      } // if executor getMainPlanName ...
+			      
+                  delete executor;
+
+              } // if executor!=NULL
+
+			} // else
+		} // while
 	}
 	
 	// Cleanup.
