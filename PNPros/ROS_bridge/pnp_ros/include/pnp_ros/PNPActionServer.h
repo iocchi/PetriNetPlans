@@ -25,6 +25,10 @@ typedef boost::function<void(std::string, std::string, bool *)> boost_MRaction_f
 
 typedef actionlib::ActionServer<pnp_msgs::PNPAction> PNPAS;
 
+using namespace std;
+
+
+
 struct Event
 {
   time_t time;
@@ -33,7 +37,8 @@ struct Event
 };
 
 
-using namespace std;
+
+
 
 class PNPActionServer
 {
@@ -66,6 +71,8 @@ protected:
     map<string,boost_action_fn_t> global_PNPROS_action_fns;
     map<string,boost_MRaction_fn_t> global_PNPROS_MRaction_fns;
     map<string,string> global_PNPROS_variables;
+
+	map<string,int> ConditionCache;
 
 public:
 
