@@ -211,7 +211,8 @@ void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::executeStep()
 
 template<typename PnpPlaceClass, typename PnpTransitionClass>
 void  PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::fireAllEnabledTransitions() {
-	
+
+	PNP_OUT("Getting enabled transitions ...");	
 	std::set<PnpTransition*> enabledTr = getAllEnabledTransitions();
 
 	#if PNP_OUTPUT_ENABLED
@@ -292,7 +293,7 @@ template<typename PnpPlaceClass, typename PnpTransitionClass>
 void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::executeAllActiveActions() {
 	std::set<PnpPlace*> nep = this->getNonEmptyPlaces();
 	
-	PNP_OUT("EXECUTING NONEMPTY PLACES");
+	PNP_OUT("EXECUTING NONEMPTY PLACES ...");
 	for (std::set<PnpPlace*>::iterator p_iter=nep.begin();
 	p_iter!=nep.end();p_iter++) {
 		PnpPlace* p = *p_iter;
@@ -317,6 +318,8 @@ void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::executeAllActiveActions
 			}
 		}
 	}
+	PNP_OUT("EXECUTING NONEMPTY PLACES === DONE");
+
 }
 
 
@@ -324,6 +327,9 @@ template<typename PnpPlaceClass, typename PnpTransitionClass>
 std::set<PnpTransitionClass*> PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>
 	::getAllEnabledTransitions()
 {
+
+    conditionChecker->clearCache();
+
 	std::set<PnpTransitionClass*> r =
 		PetriNet<PnpPlaceClass, PnpTransitionClass>::getAllEnabledTransitions();
 		

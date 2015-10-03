@@ -2,6 +2,7 @@
 #define PetriNetPlans_ExternalConditionChecker_guard
 
 #include <string>
+#include <map>
 
 namespace PetriNetPlans {
 
@@ -14,6 +15,11 @@ namespace PetriNetPlans {
 	 * \author Matteo Leonetti
 	 * */
 	class ExternalConditionChecker {
+
+        protected:
+            // Stores values of conditions
+            std::map<std::string,bool> ConditionCache;
+
 		public:
 
 			/**
@@ -25,6 +31,8 @@ namespace PetriNetPlans {
 			 * \p atom condition actually exists) and log the error.
 			 * */
 			virtual bool evaluateAtomicExternalCondition(const std::string& atom) = 0;
+
+            void clearCache() { ConditionCache.clear(); }
 
 			/**
 			*\brief dtor

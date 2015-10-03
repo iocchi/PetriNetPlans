@@ -11,11 +11,14 @@ namespace pnpros
 	{
 		private:
 			ros::ServiceClient client;
+
+            // map<string,int> ConditionCache; - defined in ExternalConditionChecker
 			
 		public:
 			ROSConds();
 			
 			bool evaluateAtomicExternalCondition(const std::string& atom);
+
 	};
 }
 

@@ -24,8 +24,11 @@ PetriNetPlans::ConditionChecker::~ConditionChecker() {
 
 bool PetriNetPlans::ConditionChecker::evaluateCondition(const string& condition) {
 
+    // PNP_OUT("Parsing " << condition << " begin ...");
     theLexer->setString(condition);
-    if(theParser->parse() == 0)
+    int r = theParser->parse();
+    // PNP_OUT("Parsing " << condition << " ... end");
+    if(r == 0)
         return lastResult;
      
     PNP_ERR("parsing failed on condition: "<< condition);

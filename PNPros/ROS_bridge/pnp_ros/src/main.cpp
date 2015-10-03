@@ -104,7 +104,7 @@ int main(int argc, char** argv)
 	if (learning) conditionChecker = new ROSReward();
 	else conditionChecker = new ROSConds();
 	
-    double refreshRate = 10.0; // Hz
+    double refreshRate = 50.0; // Hz
 	
 	ros::Rate rate(refreshRate);
 	

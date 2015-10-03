@@ -63,7 +63,8 @@ void PNPActionServer::goalCallback(PNPAS::GoalHandle gh){
         actionEnd(goal.robotname, goal.name, goal.params);
         CancelAction(goal.robotname,goal.name,goal.params);
         current_gh.setAccepted();
-        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+        for (int k=0; k<3; k++) { ros::spinOnce(); }
+//        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
         current_gh.setSucceeded();
     }
     else if (goal.function=="interrupt") {
@@ -72,12 +73,14 @@ void PNPActionServer::goalCallback(PNPAS::GoalHandle gh){
         actionInterrupt(goal.robotname, goal.name, goal.params);
         CancelAction(goal.robotname,goal.name,goal.params);
         current_gh.setAccepted();
-        boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+        for (int k=0; k<3; k++) { ros::spinOnce(); }
+        //boost::this_thread::sleep(boost::posix_time::milliseconds(200));
         current_gh.setSucceeded();
     }
 
     // wait for actual delivery...
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    for (int k=0; k<5; k++) { ros::spinOnce(); }
+    // boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 }
 
 void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
@@ -121,6 +124,8 @@ void PNPActionServer::CancelAction(string robotname, string action_name, string 
 bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,
          pnp_msgs::PNPCondition::Response &res)  {
 
+    //cout << "EvalConditionWrapper started " << endl;
+
 	int r0 = -1;
 	// This is necessary because multiple calls to the same condition can happen
 	if (ConditionCache.find(req.cond) != ConditionCache.end()) {
@@ -130,7 +135,7 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
     int r1 = evalCondition(req.cond);
     int r2 = check_for_event(req.cond);
 
-	cout << "EvalConditionWrapper  " << req.cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
+	//cout << "EvalConditionWrapper  " << req.cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
 
     int result=-1;
     if (r0!=-1) result=r0;
@@ -140,7 +145,7 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
     //TODO implement unknown value of a condition in PNP
     if (result==-1) result=0;
 
-	cout << " RESULT = " << result << endl;
+	//cout << " RESULT = " << result << endl;
 	
 	ConditionCache[req.cond] = result;
     res.truth_value = result;
@@ -264,6 +269,8 @@ int PNPActionServer::evalCondition(string cond){
 void PNPActionServer::actionStart(const std::string & robot, const std::string & action, const std::string & params)
 {
     // Default implementation does nothing.
+  // Clear condition cache, since new event arrived...
+  ConditionCache.clear();
 }
 
 void PNPActionServer::actionEnd(const std::string & robot, const std::string & action, const std::string & params)
@@ -315,12 +322,12 @@ void PNPActionServer::addEvent_callback(const std_msgs::String::ConstPtr& msg){
   ConditionCache.clear();
 
 #if 0
-   cerr << endl;
-   cout << "Added event " << msg->data.c_str() << " to eventBuffer" << endl;
-   for(vector<Event>::const_iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i)
-   cout << i->eventName << " " << i->time << endl;
-   cout << "buffer current length:" << eventBuffer.size() << endl;
-   cerr << endl;
+//   cerr << endl;
+   cout << "+++ Added event " << msg->data.c_str() << " to eventBuffer" << endl;
+//   for(vector<Event>::const_iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i)
+//      cout << i->eventName << " " << i->time << endl;
+//   cout << "buffer current length:" << eventBuffer.size() << endl;
+//   cerr << endl;
 #endif
 }
 
@@ -328,6 +335,10 @@ void PNPActionServer::addEvent_callback(const std_msgs::String::ConstPtr& msg){
 * has currentTimestamp - eventTimestamp < TIME_THRESHOLD. If found, true is returned and the vector is cleared.
 */
 int PNPActionServer::check_for_event(string cond){
+
+//  cout << "   ++ Check for event:  cond = [" << cond << "] " << endl;
+
+
   int result=-1;
   
   //checking if _@X_@Y_..._@Z is contained in the condition. If so, appropriately instantiating the variables in global_PNPROS_variables
@@ -350,19 +361,30 @@ int PNPActionServer::check_for_event(string cond){
   time(&current_time);
   
   eventBuffer_mutex.lock();
-  for(vector<Event>::iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i) {
 
-	// cout << "Searching for condition:: dtime = " << (current_time - i->time) << endl;
 
-    if ((current_time - i->time) < TIME_THRESHOLD) {
+//  cout << "   -- Checking cond = [" << cond << "] ... " << endl;
 
-	  // cout << "Checking [" << i->eventName << "] cond = [" << cond << "]" << endl;
+  // ORIG
+  //  for(vector<Event>::iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i) {
+
+    // LI FIX: check !!!!  From most recent!!!
+  for(vector<Event>::iterator i = eventBuffer.end(); i != eventBuffer.begin(); ) {
+
+    i--;
+	time_t dtime = (current_time - i->time);
+	
+	// cout << "Searching for condition " << i->eventName << " :: dtime = " << (current_time - i->time) << endl;
+
+    if ((current_time - i->time) <= TIME_THRESHOLD) {
+
+//	  cout << "       -- cmp with buffer [" << i->eventName << "]  - dtime = " << dtime << endl;
 
       if (i->eventName == cond){
         i->eventName = string("***") + i->eventName;
         
            //cerr << endl;
-           cout << "### Found event " << cond << " in eventBuffer - True" << endl;
+           //cout << "### Found event " << cond << " in eventBuffer - True" << endl;
            //for(vector<Event>::const_iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i)
            //	   cout << i->eventName << " " << i->time << endl;
            //cout << "buffer current length:" << eventBuffer.size() << endl;
@@ -376,7 +398,7 @@ int PNPActionServer::check_for_event(string cond){
         i->eventName = string("***") + i->eventName;
 
            //cerr << endl;
-           cout << "### Found event " << cond << " in eventBuffer - False" << endl;
+           //cout << "### Found event " << cond << " in eventBuffer - False" << endl;
            //for(vector<Event>::const_iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i)
            //   cout << i->eventName << " " << i->time << endl;
            //cout << "buffer current length:" << eventBuffer.size() << endl;
@@ -554,7 +576,5 @@ void PNPActionServer::cancelCallback(PNPAS::GoalHandle gh)
     current_gh.setCanceled();
 }
 #endif
-
-
 
 

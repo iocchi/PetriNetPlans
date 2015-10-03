@@ -50,6 +50,13 @@ namespace pnpros
           }
 
           active=false;
+
+        if (pnpac == NULL) pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
+
+        while (!pnpac->waitForActionServerToStart(ros::Duration(5.0)))
+		{
+			ROS_INFO("Waiting for the PNP action server to come up.");
+		}
 	}
 	
 	ActionProxy::~ActionProxy() {
@@ -95,12 +102,9 @@ namespace pnpros
 #endif
 
 #if USE_ACTIONLIB
-        if (pnpac == NULL) pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
 		
-		while (!pnpac->waitForActionServerToStart(ros::Duration(5.0)))
-		{
-			ROS_INFO("Waiting for the PNP action server to come up.");
-		}
+		
+		ROS_INFO_STREAM("Start: "+robotname+" "+ name + " " + params + " - ID: " + id);
 		
 		if (!pnpac->waitForActionServerToStart(ros::Duration(0.1)))
 		{
@@ -108,6 +112,7 @@ namespace pnpros
 			
 			return;
 		}
+
 		
         pnp_msgs::PNPGoal goal;
         ROS_DEBUG_STREAM("ActionProxy Robotname "<<robotname);
@@ -134,7 +139,6 @@ namespace pnpros
 #endif
 
         active=true;
-		ROS_INFO_STREAM("Start: "+robotname+" "+ name + " " + params + " - ID: " + id);
 
 	}
 	
@@ -145,8 +149,8 @@ namespace pnpros
 #if USE_MESSAGES
 		Action action;
 		
-		action.id = id;
-    action.robotname = robotname;
+        action.id = id;
+        action.robotname = robotname;
 		action.name = name;
 		action.params = params;
 		action.function = "end";
@@ -155,12 +159,6 @@ namespace pnpros
 #endif
 		
 #if USE_ACTIONLIB
-        if (pnpac == NULL) pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
-
-		while (!pnpac->waitForActionServerToStart(ros::Duration(5.0)))
-		{
-			ROS_INFO("Waiting for the PNP action server to come up.");
-		}
 
 		if (!pnpac->waitForActionServerToStart(ros::Duration(0.1)))
 		{
