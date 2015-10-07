@@ -24,3 +24,19 @@ Ubuntu 14.04 + ROS indigo.
 If you encounter and problem, please contact one of the maintainers
 (e.g., iocchi@dis.uniroma1.it)
 
+How to use variables in PNP
+======================
+
+In PNP, there is the possibility to instantiate parametric plans (i.e., plans that contain variables).
+
+In PNP variables are represented with a string starting with the @ character.
+
+For example, it is possible to define a plan GoTo_@X_@Y_@Theta where the three variables @X, @Y, and @Theta are instatiated at run time. 
+
+In order to instatiate variables, we need to create a transition with a condition containing the variables name (e.g., "start [GoTo_@X_@Y_@Theta]" where the condition is [GoTo_@X_@Y_@Theta]). 
+
+At this point, every time PNP receives an event of the form GoTo_instance1_instance2_instance3, it will instatiate the variables with the instances provided (in this case X=instance1, Y=instance2, Theta=instance3). 
+
+From this point on, the global variables can be used in the plan (for example in execution nodes, such as in a node called "GoTo_@X_@Y_@Theta.exec").
+
+Finally, to modify the variables' value just reinstantiate them as previously explained.
