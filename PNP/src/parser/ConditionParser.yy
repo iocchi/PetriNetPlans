@@ -52,14 +52,16 @@ using namespace PetriNetPlans;
 
 %%
 
-cond: OP_BRACKET  inCond   CL_BRACKET {$$ = $2; condChecker->lastResult = $$;}
-      | atomic        {$$ = $1; condChecker->lastResult = $$;}
 
-inCond: AND andList  {$$ = $2; condChecker->lastResult = $$;}
-      | OR orList {$$ = $2; condChecker->lastResult = $$;}
-      | NOT cond {$$ = !$2; condChecker->lastResult = $$;}
-      | atomic {$$ = $1; condChecker->lastResult = $$;}
-      
+cond: OP_BRACKET  inCond   CL_BRACKET  {$$ = $2; condChecker->lastResult = $$;}
+      | atomic                         {$$ = $1; condChecker->lastResult = $$;}
+
+inCond: AND andList    {$$ = $2; condChecker->lastResult = $$;}
+      | OR orList      {$$ = $2; condChecker->lastResult = $$;}
+      | NOT cond       {$$ = !$2; condChecker->lastResult = $$;}
+      | OP_BRACKET NOT cond  CL_BRACKET     {$$ = !$3; condChecker->lastResult = $$;}
+      | atomic         {$$ = $1; condChecker->lastResult = $$;}
+
 andList:   andList cond {$$ = $1 && $2;}
          | cond cond {$$ = $1 && $2;};
          

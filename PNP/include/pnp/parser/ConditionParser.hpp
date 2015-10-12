@@ -108,10 +108,9 @@
 #endif
 
 namespace PetriNetPlans {
-class ConditionScanner;
-class ConditionChecker;
+  class ConditionScanner;
+  class ConditionChecker;
 }
-
 
 namespace yy {
 #line 113 "ConditionParser.hpp" // lalr1.cc:372
@@ -326,7 +325,7 @@ namespace yy {
   // number is the opposite.  If YYTABLE_NINF, syntax error.
   static const unsigned char yytable_[];
 
-  static const unsigned char yycheck_[];
+  static const signed char yycheck_[];
 
   // YYSTOS[STATE-NUM] -- The (internal number of the) accessing
   // symbol of state STATE-NUM.
@@ -438,10 +437,10 @@ namespace yy {
     enum
     {
       yyeof_ = 0,
-      yylast_ = 15,     ///< Last index in yytable_.
+      yylast_ = 23,     ///< Last index in yytable_.
       yynnts_ = 6,  ///< Number of nonterminal symbols.
       yyempty_ = -2,
-      yyfinal_ = 10, ///< Termination state number.
+      yyfinal_ = 11, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
       yyntokens_ = 9  ///< Number of tokens.

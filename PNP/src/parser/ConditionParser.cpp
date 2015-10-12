@@ -540,75 +540,81 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 55 "ConditionParser.yy" // lalr1.cc:847
+#line 56 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = (yystack_[1].value.bval); condChecker->lastResult = (yylhs.value.bval);}
 #line 546 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 3:
-#line 56 "ConditionParser.yy" // lalr1.cc:847
+#line 57 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = (yystack_[0].value.bval); condChecker->lastResult = (yylhs.value.bval);}
 #line 552 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 4:
-#line 58 "ConditionParser.yy" // lalr1.cc:847
+#line 59 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = (yystack_[0].value.bval); condChecker->lastResult = (yylhs.value.bval);}
 #line 558 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 5:
-#line 59 "ConditionParser.yy" // lalr1.cc:847
+#line 60 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = (yystack_[0].value.bval); condChecker->lastResult = (yylhs.value.bval);}
 #line 564 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 6:
-#line 60 "ConditionParser.yy" // lalr1.cc:847
+#line 61 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = !(yystack_[0].value.bval); condChecker->lastResult = (yylhs.value.bval);}
 #line 570 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 7:
-#line 61 "ConditionParser.yy" // lalr1.cc:847
-    {(yylhs.value.bval) = (yystack_[0].value.bval); condChecker->lastResult = (yylhs.value.bval);}
+#line 62 "ConditionParser.yy" // lalr1.cc:847
+    {(yylhs.value.bval) = !(yystack_[1].value.bval); condChecker->lastResult = (yylhs.value.bval);}
 #line 576 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 8:
 #line 63 "ConditionParser.yy" // lalr1.cc:847
-    {(yylhs.value.bval) = (yystack_[1].value.bval) && (yystack_[0].value.bval);}
+    {(yylhs.value.bval) = (yystack_[0].value.bval); condChecker->lastResult = (yylhs.value.bval);}
 #line 582 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 9:
-#line 64 "ConditionParser.yy" // lalr1.cc:847
+#line 65 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = (yystack_[1].value.bval) && (yystack_[0].value.bval);}
 #line 588 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 10:
 #line 66 "ConditionParser.yy" // lalr1.cc:847
-    {(yylhs.value.bval) = (yystack_[1].value.bval) || (yystack_[0].value.bval);}
+    {(yylhs.value.bval) = (yystack_[1].value.bval) && (yystack_[0].value.bval);}
 #line 594 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 11:
-#line 67 "ConditionParser.yy" // lalr1.cc:847
+#line 68 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = (yystack_[1].value.bval) || (yystack_[0].value.bval);}
 #line 600 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
   case 12:
 #line 69 "ConditionParser.yy" // lalr1.cc:847
+    {(yylhs.value.bval) = (yystack_[1].value.bval) || (yystack_[0].value.bval);}
+#line 606 "ConditionParser.cpp" // lalr1.cc:847
+    break;
+
+  case 13:
+#line 71 "ConditionParser.yy" // lalr1.cc:847
     {(yylhs.value.bval) = condChecker->evaluateAtomicCondition(*(yystack_[0].value.sval)); 
                      delete (yystack_[0].value.sval);
                      condChecker->lastResult = (yylhs.value.bval);}
-#line 608 "ConditionParser.cpp" // lalr1.cc:847
+#line 614 "ConditionParser.cpp" // lalr1.cc:847
     break;
 
 
-#line 612 "ConditionParser.cpp" // lalr1.cc:847
+#line 618 "ConditionParser.cpp" // lalr1.cc:847
             default:
               break;
             }
@@ -777,65 +783,67 @@ namespace yy {
   const signed char
   parser::yypact_[] =
   {
-      -5,     5,    -6,     2,    -6,    -5,    -5,    -5,    -3,    -6,
-      -6,    -5,    -5,    -5,    -6,    -6,    -6,    -6,    -6,    -5,
-      -6
+      -5,    15,    -6,     2,    -6,    -5,    -5,    -5,    -1,     1,
+      -6,    -6,    -5,    -5,    -5,    -6,    -6,    -5,    -6,    -6,
+      -6,    -5,    -6,     3,    -6
   };
 
   const unsigned char
   parser::yydefact_[] =
   {
-       0,     0,    12,     0,     3,     0,     0,     0,     0,     7,
-       1,     0,     4,     0,     5,     6,     2,     9,     8,    11,
-      10
+       0,     0,    13,     0,     3,     0,     0,     0,     0,     0,
+       8,     1,     0,     4,     0,     5,     6,     0,     2,    10,
+       9,    12,    11,     0,     7
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-      -6,     0,    -6,    -6,     8,    14
+      -6,     0,    -6,    -6,     5,     8
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-      -1,    19,     8,    12,    20,     4
+      -1,    21,     9,    13,    22,     4
   };
 
   const unsigned char
   parser::yytable_[] =
   {
-       3,     1,    10,     2,    16,    11,    13,    15,     5,     6,
-       7,    17,    18,     2,    14,     9
+       3,     1,    11,     2,    17,    12,    14,    16,    18,    10,
+      24,    15,    19,    20,     0,     0,     0,    23,     5,     6,
+       7,     8,     0,     2
   };
 
-  const unsigned char
+  const signed char
   parser::yycheck_[] =
   {
-       0,     6,     0,     8,     7,     5,     6,     7,     3,     4,
-       5,    11,    12,     8,     6,     1
+       0,     6,     0,     8,     5,     5,     6,     7,     7,     1,
+       7,     6,    12,    13,    -1,    -1,    -1,    17,     3,     4,
+       5,     6,    -1,     8
   };
 
   const unsigned char
   parser::yystos_[] =
   {
-       0,     6,     8,    10,    14,     3,     4,     5,    11,    14,
-       0,    10,    12,    10,    13,    10,     7,    10,    10,    10,
-      13
+       0,     6,     8,    10,    14,     3,     4,     5,     6,    11,
+      14,     0,    10,    12,    10,    13,    10,     5,     7,    10,
+      10,    10,    13,    10,     7
   };
 
   const unsigned char
   parser::yyr1_[] =
   {
-       0,     9,    10,    10,    11,    11,    11,    11,    12,    12,
-      13,    13,    14
+       0,     9,    10,    10,    11,    11,    11,    11,    11,    12,
+      12,    13,    13,    14
   };
 
   const unsigned char
   parser::yyr2_[] =
   {
-       0,     2,     3,     1,     2,     2,     2,     1,     2,     2,
-       2,     2,     1
+       0,     2,     3,     1,     2,     2,     2,     4,     1,     2,
+       2,     2,     2,     1
   };
 
 
@@ -854,8 +862,8 @@ namespace yy {
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    55,    55,    56,    58,    59,    60,    61,    63,    64,
-      66,    67,    69
+       0,    56,    56,    57,    59,    60,    61,    62,    63,    65,
+      66,    68,    69,    71
   };
 
   // Print the state stack on the debug stream.
@@ -937,8 +945,8 @@ namespace yy {
 
 
 } // yy
-#line 941 "ConditionParser.cpp" // lalr1.cc:1155
-#line 73 "ConditionParser.yy" // lalr1.cc:1156
+#line 949 "ConditionParser.cpp" // lalr1.cc:1155
+#line 75 "ConditionParser.yy" // lalr1.cc:1156
 
 
 
