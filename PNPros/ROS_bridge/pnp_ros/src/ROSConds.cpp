@@ -37,9 +37,11 @@ namespace pnpros
 
         int r=-1; bool result=false;
 
-        // Try to read condition from ROS parameters
-        string rospar = "PNPconditionsBuffer/" + atom;
-        ros::param::get(rospar,r);
+        if (atom.find('@') == std::string::npos) {
+            // Try to read condition from ROS parameters
+            string rospar = "PNPconditionsBuffer/" + atom;
+            ros::param::get(rospar,r);
+        }
 
         if (r==-1) {
             pnp_msgs::PNPCondition srv;
