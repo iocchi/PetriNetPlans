@@ -5,12 +5,14 @@
 #include <sstream>
 #include <vector>
 #include <stack>
+#include <map>
 
 using std::string;
 using std::stringstream;
 using std::vector;
 using std::stack;
 using std::pair;
+using std::map;
 
 static int dx=60, dy=100, offx=20, offy=200;  // draw parameters
 
@@ -126,16 +128,18 @@ public:
 class PNP {
 
 protected:
-    string name;
+    string name;  // name of the plan
     vector<Place*> P;
     vector<Transition*> T;
     vector<Edge*> E;
     int nactions;
+    // ??? map<string, vector<Place *> > initPlace; // initial place for each instance of an action
 
 public:
-    PNP(string _name) : name(_name) {
-        node_id=0;  arc_id=0; P.clear(); T.clear(); E.clear(); nactions=0;
-    }
+
+    Place *pinit; // init place of the plan
+
+    PNP(string _name);
     string getName() { return name; }
 
     Node *next(Node *n);
@@ -152,25 +156,58 @@ public:
     Place* addAction(string name, Place* p0);
     Place* addAction(string name, Node* p0);
     void addInterrupt(Place *pi, string condition, Place *po);
+    void connectActionToPlace(Place *pi, Place *po); // connect the action and the place with an empty transition
+    void connectPlaces(Place *pi, Place *po); // connect the two places with an empty transition
+
+    Place* execPlaceOf(Place *pi); // returns the exec place of action starting in pi
+    Place* endPlaceOf(Place *pi); // returns the end place of action starting in pi
 
     std::string stats();
 
     friend std::ostream& operator<< (std::ostream& stream, const PNP& pnp);
 };
 
+struct TExecutionRule
+{
+    string action;
+    string condition;
+    string recoveryplan;
+
+    TExecutionRule(string a, string c, string r) : action(a), condition(c), recoveryplan(r) { }
+};
+
+struct TExecutionRules {
+    vector<TExecutionRule> v;
+
+    void add(string action, string condition, string recoveryplan) {
+        v.push_back(TExecutionRule(action,condition,recoveryplan));
+    }
+};
+
+typedef vector<pair<string,string> > TSocialRules;
+
+
 class PNPGenerator
 {
 private:
     PNP pnp;
-    Place *pinit;
-    stack< pair<string, Place*> > SK;
+    stack< pair<string, Place*> > ASS;  // action, Place* map - stack of actions to be analized for applying the social rules
+    stack< pair<string, Place*> > ASE;  // action, Place* map - stack of actions to be analized for applying the execution rules
+
+    void addActionToStacks(string a, Place *p) {
+        ASS.push(make_pair(a,p)); ASE.push(make_pair(a,p));
+    }
 
 public:
     PNPGenerator(string name);
 
-    void genLinear(vector<string> plan);
+    Place *genLinearPlan(Place *pi, string plan, bool allinstack=true); // string format = action1; action2; ...; actionn - returns output place
+                                                                        // allinstack = true -> all actions are added in the stack for further processing
+                                                                        // allinstack = false -> only actions trerminating with '*' are added in the stack for further processing
+    void setMainLinearPlan(string plan); // set this plan as main plan for this generation
     void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);
-    void applyRules(vector<pair<string,string> > socialrules);
+    void applySocialRules(TSocialRules &socialrules);
+    void applyExecutionRules(TExecutionRules &executionrules);
     Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
     Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);
     void save();
