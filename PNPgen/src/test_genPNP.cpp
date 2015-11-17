@@ -80,15 +80,12 @@ void gen_ICAPS16_example() {
     TSocialRules socialrules;
     TExecutionRules executionrules;
 
-
-/*
     executionrules.add("goto","(and personhere closetotarget)","skip_action");
     executionrules.add("goto","(and personhere (not closetotarget))","say_MoveAway; waitfor_freespace; restart_action");
     executionrules.add("goto","obstacle", "lookForPerson; say_MoveObstacle; waitfor_freespace; restart_action");
     executionrules.add("goto","lowbattery","goto_rechargeStation; fail_plan");
     executionrules.add("say","(not personhere)","lookForPerson*; restart_action");
-    executionrules.add("lookForPerson","(not personfound)","goto_home; restart_plan");
-*/
+    executionrules.add("lookForPerson","timeout_lookForPerson","goto_home; restart_plan");
 
     string main_plan = "goto_printer; say_hello; goto_home";
 
