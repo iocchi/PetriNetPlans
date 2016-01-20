@@ -20,5 +20,5 @@ ADD_LIBRARY(genpnp SHARED src/pnpgenerator.cpp)
 
 add_executable(test_genPNP src/test_genPNP.cpp)
 
-target_link_libraries(test_genPNP genpnp)
+target_link_libraries(test_genPNP genpnp boost_regex)
 

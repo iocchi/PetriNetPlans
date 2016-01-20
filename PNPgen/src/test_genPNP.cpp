@@ -3,6 +3,11 @@
 #include <cstdlib>
 #include <map>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/regex.hpp>
+#include <boost/regex.hpp>
+
 #include "pnpgenerator.h"
 
 using namespace std;
@@ -76,7 +81,49 @@ void gen_IROS15_example() {
     generateH("HopenDoor",socialrules,executionrules);
 }
 
+bool parseERline(const string line, string &action, string &cond, string &plan)
+{
+    bool r=false;
+    //printf("### Parsing: %s\n",line.c_str());   
+    vector<string> strs;
+    boost::algorithm::split_regex( strs, line, boost::regex( "\\*[^ ]*\\*" ) ) ;
+    
+    if (strs.size()>=3) {
+        action=strs[2]; boost::algorithm::trim(action);
+        cond=strs[1]; boost::algorithm::trim(cond);
+        plan=strs[3]; boost::algorithm::trim(plan);
+        r = true;
+        
+        //printf("### action: [%s] ",action.c_str());
+        //printf("cond: [%s] ",cond.c_str());
+        //printf("plan: [%s]\n",plan.c_str());
+    } 
+    
+    return r;
+}
+
+
+void parseERfile(const char*filename, TExecutionRules &executionrules) {
+    
+    string line,action,cond,recoveryplan;
+    
+    ifstream f(filename);
+    while(getline(f,line)) {
+        if (parseERline(line,action,cond,recoveryplan))
+            executionrules.add(action,cond,recoveryplan);
+    }
+    f.close();
+}
+
+void readplanfromfile(const char*filename, string &plan)
+{
+    ifstream f(filename);
+    getline(f,plan);
+    f.close();
+}
+
 void gen_ICAPS16_example() {
+    
     TSocialRules socialrules;
     TExecutionRules executionrules;
 
@@ -93,11 +140,33 @@ void gen_ICAPS16_example() {
 
 }
 
+
+void genPNP(const char* planfile, const char* erfile, const char* planname) {
+    TSocialRules socialrules;
+    TExecutionRules executionrules;
+    string main_plan; 
+
+    readplanfromfile(planfile, main_plan);
+    parseERfile(erfile, executionrules);
+    
+
+    generate(planname,main_plan,socialrules,executionrules);
+}
+
+
 int main(int argc, char **argv)
 {
     // gen_IROS15_example();
 
-    gen_ICAPS16_example();
+    // gen_ICAPS16_example();
+    
+    if (argc<4) {
+        cout << "    Use: " << argv[0] << " <planfile> <erfile> <planname>" << endl;
+        cout << "Example: " << argv[0] << " icaps16_1.plan icaps16_1.er ICAPS16" << endl;
+        exit(-1);
+    }
+    
+    genPNP(argv[1],argv[2],argv[3]);
 
     return 0;
 }
