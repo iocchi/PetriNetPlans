@@ -2,6 +2,10 @@
 #include <fstream>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/regex.hpp>
+#include <boost/regex.hpp>
+
 
 int node_id=0;  // unique id of the nodes
 int arc_id=0;   // unique id of the arcs
@@ -300,20 +304,36 @@ PNPGenerator::PNPGenerator(string name) : pnp(name) {
 }
 
 
-void PNPGenerator::save() {
-    stringstream ss; ss << pnp.getName() << ".pnml";
+void PNPGenerator::save(const char* filename) {
+    
+    stringstream ss;
+    
+    if (filename==NULL) {
+        ss << pnp.getName().c_str() << ".pnml";
+    }
+    else {
+        ss << filename;
+        if (strcasestr(filename,".pnml")==NULL)
+            ss << ".pnml";        
+    }
     std::ofstream of(ss.str().c_str());
     of << pnp;
     of.close();
     std::cout << "PNP '" << pnp.getName() << "' saved." << std::endl;
     std::cout << "PNP stats: '" << pnp.stats() << std::endl;
-
 }
+
 
 void PNPGenerator::setMainLinearPlan(string plan) {
     Place *p = genLinearPlan(pnp.pinit,plan); p->setName("goal");
 }
 
+void PNPGenerator::readPlanFile(const char*filename, string &plan)
+{
+    ifstream f(filename);
+    getline(f,plan);
+    f.close();
+}
 
 Place *PNPGenerator::genLinearPlan(Place *pi, string plan, bool allinstack)
 {
@@ -401,7 +421,7 @@ Place *PNPGenerator::add_after(PNP &pnp, string b, string current_action, Place*
 }
 
 
-void PNPGenerator::applySocialRules(TSocialRules &socialrules) {
+void PNPGenerator::applySocialRules() {
     pair<string, Place*> current; Place* noplace=NULL;
     while (!ASS.empty()) {
         current=ASS.top(); ASS.pop();
@@ -496,7 +516,41 @@ void PNPGenerator::applySocialRules(TSocialRules &socialrules) {
     }
 }
 
-void PNPGenerator::applyExecutionRules(TExecutionRules &executionrules) {
+bool PNPGenerator::parseERline(const string line, string &action, string &cond, string &plan)
+{
+    bool r=false;
+    //printf("### Parsing: %s\n",line.c_str());   
+    vector<string> strs;
+    boost::algorithm::split_regex( strs, line, boost::regex( "\\*[^ ]*\\*" ) ) ;
+    
+    if (strs.size()>=3) {
+        action=strs[2]; boost::algorithm::trim(action);
+        cond=strs[1]; boost::algorithm::trim(cond);
+        plan=strs[3]; boost::algorithm::trim(plan);
+        r = true;
+        
+        //printf("### action: [%s] ",action.c_str());
+        //printf("cond: [%s] ",cond.c_str());
+        //printf("plan: [%s]\n",plan.c_str());
+    } 
+    
+    return r;
+}
+
+
+void PNPGenerator::readERFile(const char*filename) {
+    
+    string line,action,cond,recoveryplan;
+    
+    ifstream f(filename);
+    while(getline(f,line)) {
+        if (parseERline(line,action,cond,recoveryplan))
+            executionrules.add(action,cond,recoveryplan);
+    }
+    f.close();
+}
+
+void PNPGenerator::applyExecutionRules() {
 
     pair<string, Place*> current; Place* noplace=NULL;
     while (!ASE.empty()) {
@@ -557,3 +611,5 @@ void PNPGenerator::applyExecutionRules(TExecutionRules &executionrules) {
 
     }
 }
+
+

@@ -12,15 +12,15 @@
 
 using namespace std;
 
-
+#if 0
 void generate(string name, string plan, TSocialRules &socialrules, TExecutionRules &executionrules)
 {
-    PNPGenerator g(name);
+   PNPGenerator g(name);
 
     g.setMainLinearPlan(plan);
     g.applySocialRules(socialrules);
     g.applyExecutionRules(executionrules);
-    g.save();
+    g.save(); 
 }
 
 
@@ -81,46 +81,9 @@ void gen_IROS15_example() {
     generateH("HopenDoor",socialrules,executionrules);
 }
 
-bool parseERline(const string line, string &action, string &cond, string &plan)
-{
-    bool r=false;
-    //printf("### Parsing: %s\n",line.c_str());   
-    vector<string> strs;
-    boost::algorithm::split_regex( strs, line, boost::regex( "\\*[^ ]*\\*" ) ) ;
-    
-    if (strs.size()>=3) {
-        action=strs[2]; boost::algorithm::trim(action);
-        cond=strs[1]; boost::algorithm::trim(cond);
-        plan=strs[3]; boost::algorithm::trim(plan);
-        r = true;
-        
-        //printf("### action: [%s] ",action.c_str());
-        //printf("cond: [%s] ",cond.c_str());
-        //printf("plan: [%s]\n",plan.c_str());
-    } 
-    
-    return r;
-}
 
 
-void parseERfile(const char*filename, TExecutionRules &executionrules) {
-    
-    string line,action,cond,recoveryplan;
-    
-    ifstream f(filename);
-    while(getline(f,line)) {
-        if (parseERline(line,action,cond,recoveryplan))
-            executionrules.add(action,cond,recoveryplan);
-    }
-    f.close();
-}
 
-void readplanfromfile(const char*filename, string &plan)
-{
-    ifstream f(filename);
-    getline(f,plan);
-    f.close();
-}
 
 void gen_ICAPS16_example() {
     
@@ -139,18 +102,19 @@ void gen_ICAPS16_example() {
     generate("ICAPS16",main_plan,socialrules,executionrules);
 
 }
-
+#endif
 
 void genPNP(const char* planfile, const char* erfile, const char* planname) {
-    TSocialRules socialrules;
-    TExecutionRules executionrules;
     string main_plan; 
 
-    readplanfromfile(planfile, main_plan);
-    parseERfile(erfile, executionrules);
+    PNPGenerator g(planname);
+    g.readPlanFile(planfile, main_plan);
+    g.setMainLinearPlan(main_plan);
+    //g.applySocialRules(socialrules);
+    g.readERFile(erfile);
+    g.applyExecutionRules();
+    g.save();
     
-
-    generate(planname,main_plan,socialrules,executionrules);
 }
 
 

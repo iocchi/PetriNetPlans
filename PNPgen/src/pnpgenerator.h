@@ -190,27 +190,46 @@ typedef vector<pair<string,string> > TSocialRules;
 class PNPGenerator
 {
 private:
-    PNP pnp;
+
     stack< pair<string, Place*> > ASS;  // action, Place* map - stack of actions to be analized for applying the social rules
     stack< pair<string, Place*> > ASE;  // action, Place* map - stack of actions to be analized for applying the execution rules
 
     void addActionToStacks(string a, Place *p) {
         ASS.push(make_pair(a,p)); ASE.push(make_pair(a,p));
     }
+    
+    bool parseERline(const string line, string &action, string &cond, string &plan);
 
 public:
+    PNP pnp;
+    TSocialRules socialrules;
+    TExecutionRules executionrules;
+
     PNPGenerator(string name);
 
     Place *genLinearPlan(Place *pi, string plan, bool allinstack=true); // string format = action1; action2; ...; actionn - returns output place
                                                                         // allinstack = true -> all actions are added in the stack for further processing
                                                                         // allinstack = false -> only actions trerminating with '*' are added in the stack for further processing
+
     void setMainLinearPlan(string plan); // set this plan as main plan for this generation
+    void readPlanFile(const char*filename, string &plan);
+    
     void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);
-    void applySocialRules(TSocialRules &socialrules);
-    void applyExecutionRules(TExecutionRules &executionrules);
+    void applySocialRules();
+    void applyExecutionRules();
+        
+    void readERFile(const char* filename);
+
     Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
     Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);
-    void save();
+/*    
+    addAction() {
+            
+        pnp.addAction...
+        addActionToStacks(string a, Place *p)
+    }
+*/    
+    void save(const char* filename=NULL); // if NULL it uses the name of the plan as file name
 
 };
 
