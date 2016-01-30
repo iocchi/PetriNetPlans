@@ -222,13 +222,12 @@ public:
 
     Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
     Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);
-/*    
-    addAction() {
-            
-        pnp.addAction...
-        addActionToStacks(string a, Place *p)
+    
+    Place* addAction(string action, Place *place) {
+        addActionToStacks(action,place);
+        return pnp.addAction(action,place);
     }
-*/    
+
     void save(const char* filename=NULL); // if NULL it uses the name of the plan as file name
 
 };
