@@ -140,7 +140,7 @@ std::ostream& operator<< (std::ostream& stream, const PNP& pnp) {
 
 PNP::PNP(string _name) : name(_name) {
     node_id=0;  arc_id=0; P.clear(); T.clear(); E.clear(); nactions=0;
-    pinit = addPlace("init"); pinit->setInitialMarking(); pinit->setX(3);
+    pinit = NULL; //addPlace("init"); pinit->setInitialMarking(); pinit->setX(3);
 }
 
 Place* PNP::addPlace(string name) {
