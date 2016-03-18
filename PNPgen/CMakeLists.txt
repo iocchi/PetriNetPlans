@@ -19,6 +19,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 ADD_LIBRARY(genpnp SHARED src/pnpgenerator.cpp)
 
 add_executable(test_genPNP src/test_genPNP.cpp)
+add_executable(genPNP src/genPNP.cpp)
 
 target_link_libraries(test_genPNP genpnp boost_regex)
+target_link_libraries(genPNP genpnp boost_regex)
 
