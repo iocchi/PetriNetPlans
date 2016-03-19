@@ -647,7 +647,8 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
         string action = p.getActionForState(current_state);
 
         if (action=="") {
-            std::cerr << "PNPgen Warning: No action found for state " << current_state << std::endl;
+            if (current_state!=p.final_state)
+                std::cerr << "PNPgen Warning: No action found for state " << current_state << std::endl;
             continue;
         }
         std::cout << action << " -> ";
@@ -668,7 +669,10 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
         vector<StateOutcome>::iterator io;
         for (io = vo.begin(); io!=vo.end(); io++) {
             string succ_state = io->successor;
-            string cond = "["+io->observation+"]";
+
+            string cond = io->observation;
+            if (cond[0]!='[')
+                cond = "["+cond+"]";
 
             cout << cond << " " << succ_state << "    ";
 
