@@ -612,4 +612,89 @@ void PNPGenerator::applyExecutionRules() {
     }
 }
 
+bool PNPGenerator::genFromPolicy(Policy &p) {
+
+    bool _error = false; // check if errors occur during generation
+
+    // Map of visited states (with associated places)
+    std::map<string,Place*> visited;
+
+    cout << "Init: " << p.initial_state << endl;
+    Place *p0 = pnp.addPlace("init"); p0->setInitialMarking();
+    string current_state = p.initial_state;
+    // add a first fixed transition from the init place to the initial state
+    pair<Transition*,Place*> pa = pnp.addCondition("[]",p0);
+    Place *p1 = pa.second;
+    p1->setName(current_state);
+
+    // put place for initial state
+    visited[p.initial_state]=p1;
+
+    cout << "Final: " << p.final_state << endl;
+    //string final_state_str = transformState(final_state);
+
+
+    // Initialization of the stack
+    stack< pair<string, Place*> > SK; SK.push(make_pair(current_state,p1));
+
+    while (!SK.empty()) {
+
+        // get top element from stack
+        current_state=SK.top().first; Place* current_place = SK.top().second;
+        SK.pop();
+
+        std::cout << "PNPgen::  " << current_state << " : ";
+        string action = p.getActionForState(current_state);
+
+        if (action=="") {
+            std::cerr << "PNPgen Warning: No action found for state " << current_state << std::endl;
+            continue;
+        }
+        std::cout << action << " -> ";
+
+        vector<StateOutcome> vo = p.getOutcomes(current_state,action);
+
+        if (vo.size()==0) {
+            std::cerr << "PNPgen ERROR: No successor state found for state " << current_state << " and action " << action  << std::endl;
+            _error = true;
+            break;
+        }
+
+        Place *pe = addAction(action,current_place);  // pe: end place of action
+
+        // y coordinate of Petri Net layout
+        int dy=0;
+
+        vector<StateOutcome>::iterator io;
+        for (io = vo.begin(); io!=vo.end(); io++) {
+            string succ_state = io->successor;
+            string cond = "["+io->observation+"]";
+
+            cout << cond << " " << succ_state << "    ";
+
+            Place *ps = visited[succ_state];
+
+
+            // check if succ_state is already visited
+            if (ps==NULL) { // if not visited
+                pair<Transition*,Place*> pa = pnp.addCondition(cond,pe,dy); dy++;
+                Place* pc = pa.second;
+                SK.push(make_pair(succ_state,pc));
+                visited[succ_state]=pc;
+                pc->setName(succ_state);
+                if (succ_state==p.final_state)
+                    pc->setName("goal");
+            }
+            else { // if already visited
+                pnp.addConditionBack(cond,pe, ps, dy); dy++;
+            }
+
+        } // for io
+
+        std::cout << std::endl;
+
+    }
+
+    return !_error;
+}
 

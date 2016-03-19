@@ -6,6 +6,7 @@
 #include <vector>
 #include <stack>
 #include <map>
+#include "policy.h"
 
 using std::string;
 using std::stringstream;
@@ -210,6 +211,8 @@ public:
     Place *genLinearPlan(Place *pi, string plan, bool allinstack=true); // string format = action1; action2; ...; actionn - returns output place
                                                                         // allinstack = true -> all actions are added in the stack for further processing
                                                                         // allinstack = false -> only actions trerminating with '*' are added in the stack for further processing
+
+    bool genFromPolicy(Policy &p);
 
     void setMainLinearPlan(string plan); // set this plan as main plan for this generation
     void readPlanFile(const char*filename, string &plan);

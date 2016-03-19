@@ -8,6 +8,9 @@
 
 using namespace std;
 
+
+
+
 int main(int argc, char** argv) {
     Policy p;
     // ...
@@ -30,89 +33,13 @@ int main(int argc, char** argv) {
 
 
     // Generates the PNP
-    bool PNPgen_error = false; // check if errors occur during generation
 
     cout << "Policy name: " << p.goal_name << endl;
     PNPGenerator pnpgen(p.goal_name);
 
-    cout << "Init: " << p.initial_state << endl;
-    Place *p0 = pnpgen.pnp.addPlace("init"); p0->setInitialMarking();
-    string current_state = p.initial_state;
-    // add a first fixed transition from the init place to the initial state
-    pair<Transition*,Place*> pa = pnpgen.pnp.addCondition("[]",p0);
-    Place *p1 = pa.second;
-    p1->setName(current_state);
+    bool r=pnpgen.genFromPolicy(p);
 
-
-    cout << "Final: " << p.final_state << endl;
-    //string final_state_str = transformState(final_state);
-
-    // Map of visited states (with associated places)
-    std::map<string,Place*> visited;
-
-    // Initialization of the stack
-    stack< pair<string, Place*> > SK; SK.push(make_pair(current_state,p1));
-
-    while (!SK.empty()) {
-
-        // get top element from stack
-        current_state=SK.top().first; Place* current_place = SK.top().second;
-        SK.pop();
-
-        std::cout << "PNPgen::  " << current_state << " : ";
-        string action = p.getActionForState(current_state);
-
-        if (action=="") {
-            std::cerr << "PNPgen Warning: No action found for state " << current_state << std::endl;
-            continue;
-        }
-        std::cout << action << " -> ";
-
-        vector<StateOutcome> vo = p.getOutcomes(current_state,action);
-
-        if (vo.size()==0) {
-            std::cerr << "PNPgen ERROR: No successor state found for state " << current_state << " and action " << action  << std::endl;
-            PNPgen_error = true;
-            break;
-        }
-
-        Place *pe = pnpgen.addAction(action,current_place);  // pe: end place of action
-
-        // y coordinate of Petri Net layout
-        int dy=0;
-
-        vector<StateOutcome>::iterator io;
-        for (io = vo.begin(); io!=vo.end(); io++) {
-            string succ_state = io->successor;
-            string cond = io->observation;
-
-            cout << "[" << cond << "] " << succ_state << "    ";
-
-            Place *ps = visited[succ_state];
-
-
-            // check if succ_state is already visited
-            if (ps==NULL) { // if not visited
-                pair<Transition*,Place*> pa = pnpgen.pnp.addCondition(cond,pe,dy); dy++;
-                Place* pc = pa.second;
-                SK.push(make_pair(succ_state,pc));
-                visited[succ_state]=pc;
-                pc->setName(succ_state);
-                if (succ_state==p.final_state)
-                    pc->setName("goal");
-            }
-            else { // if already visited
-                pnpgen.pnp.addConditionBack(cond,pe, ps, dy); dy++;
-            }
-
-        } // for io
-
-        std::cout << std::endl;
-
-    }
-
-
-    if (!PNPgen_error) {
+    if (r) {
         string pnpoutfilename = p.goal_name+".pnml";
         pnpgen.save(pnpoutfilename.c_str());
         cout << "Saved PNP file " << pnpoutfilename << endl;
@@ -120,8 +47,5 @@ int main(int argc, char** argv) {
     else {
         cout << "PNP not generated!!!" << endl;
     }
-
-
-    
 
 }
