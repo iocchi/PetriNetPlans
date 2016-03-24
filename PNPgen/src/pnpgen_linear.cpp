@@ -109,6 +109,9 @@ void genPNP(const char* planfile, const char* erfile, const char* planname) {
 
     PNPGenerator g(planname);
     g.readPlanFile(planfile, main_plan);
+    
+    cout << "Plan: " << main_plan << endl;
+    
     g.setMainLinearPlan(main_plan);
     //g.applySocialRules(socialrules);
     g.readERFile(erfile);
@@ -126,7 +129,7 @@ int main(int argc, char **argv)
     
     if (argc<4) {
         cout << "    Use: " << argv[0] << " <planfile> <erfile> <planname>" << endl;
-        cout << "Example: " << argv[0] << " icaps16_1.plan icaps16_1.er ICAPS16" << endl;
+        cout << "Example: " << argv[0] << " DIAG_printer.plan DIAG_printer.er DIAG_printer" << endl;
         exit(-1);
     }
     

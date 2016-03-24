@@ -16,11 +16,12 @@ include_directories(${Boost_INCLUDE_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-ADD_LIBRARY(genpnp SHARED src/pnpgenerator.cpp)
+ADD_LIBRARY(pnpgen SHARED src/pnpgenerator.cpp)
 
-add_executable(test_genPNP src/test_genPNP.cpp)
-add_executable(genPNP src/genPNP.cpp)
+add_executable(pnpgen_linear src/pnpgen_linear.cpp)
+add_executable(pnpgen_policy src/pnpgen_policy.cpp)
 
-target_link_libraries(test_genPNP genpnp boost_regex)
-target_link_libraries(genPNP genpnp boost_regex)
+target_link_libraries(pnpgen_linear pnpgen boost_regex)
+target_link_libraries(pnpgen_policy pnpgen boost_regex)
+
 

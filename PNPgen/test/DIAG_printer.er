@@ -4,4 +4,3 @@
 *if* lowbattery *during* goto *do* goto_rechargeStation; fail_plan
 *if* (not personhere) *during* say *do* lookForPerson*; restart_action
 *if* timeout_lookForPerson *during* lookForPerson *do* goto_home; restart_plan
-    

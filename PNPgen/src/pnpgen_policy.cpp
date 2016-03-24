@@ -10,11 +10,10 @@ using namespace std;
 
 
 
-
-int main(int argc, char** argv) {
+void create_PNP_from_policy() {
     Policy p;
     // ...
-    p.goal_name = "Test";
+    p.goal_name = "SimplePolicy";
     p.initial_state = "S0";
     p.final_state = "S2";
     // ...
@@ -47,5 +46,11 @@ int main(int argc, char** argv) {
     else {
         cout << "PNP not generated!!!" << endl;
     }
+}
 
+
+int main(int argc, char** argv) {
+    
+    create_PNP_from_policy();
+    
 }
