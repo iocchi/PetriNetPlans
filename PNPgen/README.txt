@@ -12,19 +12,28 @@ Compile:
   
 Run:
 
-1) Generation of a PNP from a linear plan + execution rules
+1) Generation of a PNP from a linear plan
 
   $ cd test
-  $ ../bin/pnpgen_linear icaps16_1.plan icaps16_1.er ICAPS16
-  
-  Test: load output file DIAG_printer.pnml with Jarp. 
-  Unfortunately, it is not readable, unless you move some places, transitions, labels...
-  
-2) Generation of a PNP from a policy
+  $ ../bin/pnpgen_linear DIAG_printer.plan
+
+2) Generation of a PNP from a linear plan and execution rules
+
+  $ cd test
+  $ ../bin/pnpgen_linear DIAG_printer.plan DIAG_printer.er
+ 
+3) Generation of a PNP from a policy
 
   $ cd test
   $ ../bin/pnpgen_policy
   
-  Test: load output file SimplePolicy.pnml with Jarp.
-
+4) Generation of a PNP from a policy and execution rules
+ 
+  $ cd test
+  $ ../bin/pnpgen_policy DIAG_printer.er
   
+
+
+Test: 
+    Load output files pnml with Jarp. 
+    Unfortunately, they may not be readable, unless you move some places, transitions, labels...

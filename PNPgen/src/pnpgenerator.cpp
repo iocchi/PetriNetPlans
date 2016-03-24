@@ -301,6 +301,7 @@ std::string PNP::stats()
 
 PNPGenerator::PNPGenerator(string name) : pnp(name) {
     cout << endl << "Generation of PNP '" << name << "'" << endl;
+    pnp.pinit = pnp.addPlace("init"); pnp.pinit->setInitialMarking();
 }
 
 
@@ -325,7 +326,6 @@ void PNPGenerator::save(const char* filename) {
 
 
 void PNPGenerator::setMainLinearPlan(string plan) {
-    pnp.pinit = pnp.addPlace("init"); pnp.pinit->setInitialMarking();
     Place *p = genLinearPlan(pnp.pinit,plan); p->setName("goal");
 }
 
@@ -397,7 +397,7 @@ void PNPGenerator::genHumanAction(string say_ask, string say_do, string action_d
 
 Place *PNPGenerator::add_before(PNP &pnp, string b, string current_action, Place* current_place) {
     // add b before this action
-    cout << "-- add " << b << " before " << current_action << endl;
+    //cout << "-- add " << b << " before " << current_action << endl;
     Node* p2 = pnp.disconnect(current_place);
     current_place->addX(-2); current_place->addY(1);
     Place* p1 = pnp.addAction(b,current_place); addActionToStacks(b,current_place);
@@ -408,7 +408,7 @@ Place *PNPGenerator::add_before(PNP &pnp, string b, string current_action, Place
 
 Place *PNPGenerator::add_after(PNP &pnp, string b, string current_action, Place* current_place) {
     // add b after this action
-    cout << "-- add " << b << " after " << current_action << endl;
+    //cout << "-- add " << b << " after " << current_action << endl;
     Node* n = current_place;
     for (int k=0; k<4; k++)
 	n = pnp.next(n);
@@ -473,7 +473,7 @@ void PNPGenerator::applySocialRules() {
             vector<string> tk; boost::split(tk,a,boost::is_any_of(" "));
             if (tk[0]=="during" && tk[1]==current_action) {
                 // add b during this action
-                cout << "-- add " << b << " in parallel with " << current_action << endl;
+                //cout << "-- add " << b << " in parallel with " << current_action << endl;
 
                 // search for action after place current_place
                 // it may be different when after and before add actions around...
@@ -571,7 +571,7 @@ void PNPGenerator::applyExecutionRules() {
 
                 boost::trim(eit->recoveryplan);
                 vector<string> v; boost::split(v,eit->recoveryplan,boost::is_any_of("; "),boost::token_compress_on);
-
+                
                 Place *po = NULL; string R="";
                 Place *pi = pnp.addPlace("I",-1); pi->setY(current_place->getY()-1); pi->setX(current_place->getX()+3);
 
@@ -582,6 +582,7 @@ void PNPGenerator::applyExecutionRules() {
                         plan = plan + v[i] + ";";
                     plan = plan + v[i];
 
+                    //cout << "-- recovery plan " << plan << endl;
                     po = genLinearPlan(pi,plan,false); // output place of linear plan
 
                     R = v[v.size()-1];
@@ -591,8 +592,10 @@ void PNPGenerator::applyExecutionRules() {
                     po = pi;
                 }
 
+                
                 pnp.addInterrupt(current_place,eit->condition,pi);
-
+                
+                
                 if (R=="fail_plan") {
                     po->setName("fail");
                 }
@@ -621,10 +624,11 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
     std::map<string,Place*> visited;
 
     cout << "Init: " << p.initial_state << endl;
-    Place *p0 = pnp.addPlace("init"); p0->setInitialMarking();
+    
+    
     string current_state = p.initial_state;
     // add a first fixed transition from the init place to the initial state
-    pair<Transition*,Place*> pa = pnp.addCondition("[]",p0);
+    pair<Transition*,Place*> pa = pnp.addCondition("[]",pnp.pinit);
     Place *p1 = pa.second;
     p1->setName(current_state);
 

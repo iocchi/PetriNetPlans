@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-#include <cstdlib>
 #include <map>
 
 #include <boost/algorithm/string.hpp>
@@ -104,19 +103,31 @@ void gen_ICAPS16_example() {
 }
 #endif
 
-void genPNP(const char* planfile, const char* erfile, const char* planname) {
-    string main_plan; 
+void create_PNP_from_linear_plan(const char* planfile, const char* erfile) {
+    
+    vector<string> v; boost::split(v,planfile,boost::is_any_of("."),boost::token_compress_on);
 
-    PNPGenerator g(planname);
-    g.readPlanFile(planfile, main_plan);
+    string planname = "default";
+    if (v.size()>0) planname = v[0];
+    
+    PNPGenerator pnpgen(planname);
+    
+    // read the linear plan from file
+    string main_plan; 
+    pnpgen.readPlanFile(planfile, main_plan);
     
     cout << "Plan: " << main_plan << endl;
+    // generate the main PNP from the linear plan
+    pnpgen.setMainLinearPlan(main_plan);
     
-    g.setMainLinearPlan(main_plan);
-    //g.applySocialRules(socialrules);
-    g.readERFile(erfile);
-    g.applyExecutionRules();
-    g.save();
+    if (erfile!=NULL) {
+        // apply the execution rules
+        pnpgen.readERFile(erfile);
+        pnpgen.applyExecutionRules();
+    }
+    
+    // save the PNP
+    pnpgen.save();
     
 }
 
@@ -127,13 +138,17 @@ int main(int argc, char **argv)
 
     // gen_ICAPS16_example();
     
-    if (argc<4) {
-        cout << "    Use: " << argv[0] << " <planfile> <erfile> <planname>" << endl;
-        cout << "Example: " << argv[0] << " DIAG_printer.plan DIAG_printer.er DIAG_printer" << endl;
-        exit(-1);
+    if (argc<2) {
+        cout << "    Use: " << argv[0] << " <planfile> [<erfile>]" << endl;
+        cout << "Example: " << argv[0] << " DIAG_printer.plan DIAG_printer.er" << endl;
+        return -1;
     }
     
-    genPNP(argv[1],argv[2],argv[3]);
+    const char* erfile = NULL;
+    if (argc==3)
+        erfile = argv[2];
+    
+    create_PNP_from_linear_plan(argv[1],erfile);
 
     return 0;
 }
