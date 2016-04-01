@@ -5,12 +5,27 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/regex.hpp>
 #include <boost/regex.hpp>
-
+#include <sstream>
 
 int node_id=0;  // unique id of the nodes
 int arc_id=0;   // unique id of the arcs
 
 using namespace std;
+
+string clean(string s) {
+  stringstream os;
+  for (string::iterator it=s.begin(); it!=s.end(); ++it) {
+    switch (*it) {
+      case '&' : os << "&amp;"; break;
+      case '<' : os << "&lt;"; break;
+      case '>' : os << "&gt;"; break;
+      case '"' : os << "&quot;"; break;
+      default: os << *it;
+    }
+  }
+  return os.str();
+}
+
 
 static string place_color_str =
     "  <toolspecific tool=\"JARP\" version=\"1.2\">\n"
@@ -45,23 +60,23 @@ static string arc_color_str =
 
 
 std::ostream& operator<< (std::ostream& stream, const Place& place) {
-    stream << "<place id=\"" << place.sid << "\">\n"
-            << "  <graphics>\n"
-            << "    <position x=\"" << place.posx << "\" y=\"" << place.posy << "\" />"
-            << "    <size width=\"32\" height=\"32\" />"
-            << "  </graphics>\n"
-            << "  <name>\n"
-            << "    <value>" << place.name << "</value>\n"
-            << "    <graphics>\n"
-            << "      <offset x=\"0\" y=\"40\" />\n"
-            << "    </graphics>\n"
-            << "  </name>\n"
-            << "  <initialMarking>\n"
-            << "    <value>" << place.marking << "</value>\n"
-            << "  </initialMarking>\n"
-            << place_color_str
-            << "</place>\n";
-    return stream;
+  stream << "<place id=\"" << clean(place.sid) << "\">\n"
+	 << "  <graphics>\n"
+	 << "    <position x=\"" << place.posx << "\" y=\"" << place.posy << "\" />"
+	 << "    <size width=\"32\" height=\"32\" />\n"
+	 << "  </graphics>\n"
+	 << "  <name>\n"
+	 << "    <value>" << clean(place.name) << "</value>\n"
+	 << "    <graphics>\n"
+	 << "      <offset x=\"0\" y=\"40\" />\n"
+	 << "    </graphics>\n"
+	 << "  </name>\n"
+	 << "  <initialMarking>\n"
+	 << "    <value>" << place.marking << "</value>\n"
+	 << "  </initialMarking>\n"
+	 << place_color_str
+	 << "</place>\n";
+  return stream;
 }
 
 
