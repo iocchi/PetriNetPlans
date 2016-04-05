@@ -63,6 +63,7 @@ if(CPPUNIT_FOUND)
 	add_subdirectory(test)
 
 	add_executable(test_pnp ${test_SRC})
+	add_dependencies(test_pnp pnp)
 	
 
 	target_link_libraries(test_pnp ${LIBS} ${CPPUNIT_LIBRARY} libpnp.so)
