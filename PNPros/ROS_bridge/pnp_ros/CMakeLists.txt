@@ -91,6 +91,10 @@ catkin_package(
 ## Build ##
 ###########
 
+find_library(PNP_LIBRARY NAMES pnp)
+
+
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
@@ -141,7 +145,7 @@ add_dependencies(pnp_node pnp_msgs_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(pnp_node
    pnpros
-   pnp
+   ${PNP_LIBRARY}
    ${catkin_LIBRARIES}
    ${BOOST_LIBRARIES}
 )
