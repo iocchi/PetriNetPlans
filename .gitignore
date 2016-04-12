@@ -43,3 +43,5 @@ qtcreator-build
 .settings
 *.stlb
 
+/CMakeLists.txt
+

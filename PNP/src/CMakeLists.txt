@@ -63,6 +63,7 @@ if(CPPUNIT_FOUND)
 	add_subdirectory(test)
 
 	add_executable(test_pnp ${test_SRC})
+	add_dependencies(test_pnp pnp)
 	
 
 	target_link_libraries(test_pnp ${LIBS} ${CPPUNIT_LIBRARY} libpnp.so)
@@ -70,3 +71,5 @@ endif(CPPUNIT_FOUND)
 
 #add the target to copy the library in lib
 install(TARGETS pnp DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+install(TARGETS pnp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+

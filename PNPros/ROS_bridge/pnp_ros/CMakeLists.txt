@@ -91,6 +91,10 @@ catkin_package(
 ## Build ##
 ###########
 
+find_library(PNP_LIBRARY NAMES pnp)
+
+
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
@@ -141,7 +145,7 @@ add_dependencies(pnp_node pnp_msgs_generate_messages_cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(pnp_node
    pnpros
-   pnp
+   ${PNP_LIBRARY}
    ${catkin_LIBRARIES}
    ${BOOST_LIBRARIES}
 )
@@ -163,18 +167,18 @@ target_link_libraries(pnp_node
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS PNPAS
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS PNPAS pnp_node pnpros
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
-# install(DIRECTORY include/${PROJECT_NAME}/
-#   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#   FILES_MATCHING PATTERN "*.h"
-#   PATTERN ".svn" EXCLUDE
-# )
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h"
+  PATTERN ".svn" EXCLUDE
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
