@@ -91,7 +91,7 @@ catkin_package(
 ## Build ##
 ###########
 
-find_library(PNP_LIBRARY NAMES pnp)
+find_library(PNP_LIBRARY NAMES pnp PATHS $ENV{PNP_LIB})
 
 
 
