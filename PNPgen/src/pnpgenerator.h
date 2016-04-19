@@ -216,12 +216,16 @@ public:
 
     void setMainLinearPlan(string plan); // set this plan as main plan for this generation
     void readPlanFile(const char*filename, string &plan);
-    
+    void readPlanFile(const string& filename, string &plan) {
+        readPlanFile(filename.c_str(), plan);
+    }
+
     void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);
     void applySocialRules();
     void applyExecutionRules();
         
     void readERFile(const char* filename);
+    void readERFile(const string& filename) { readERFile(filename.c_str()); }
 
     Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
     Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);

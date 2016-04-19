@@ -18,7 +18,7 @@ float funcEmpty(const PRUstate& fromState, const PRUstate& toState, const PRUsta
   return 0;
 }
 
-void create_PNP_from_PRU(const char* prufile, const char* erfile) {
+void create_PNP_from_PRU(const string& prufile, const string& erfile) {
 
     std::locale::global(std::locale());
     setlocale(LC_NUMERIC,"C");
@@ -56,9 +56,18 @@ void create_PNP_from_PRU(const char* prufile, const char* erfile) {
     mdp->printPolicy(std::cout);
 
 
+    // Computing the policy
     std::cout << "\nOptimal plan is \n";
     Policy policy;
+
+    // Setting the goal name
     policy.goal_name  = prufile;
+
+    size_t p = string(prufile).find_last_of ('.');
+    if (p!=string::npos) {
+        policy.goal_name = prufile.substr(0,p);
+    }
+
 
     std::set<int> current_states,next_states;
     current_states.insert(0); // init
@@ -132,29 +141,6 @@ void create_PNP_from_PRU(const char* prufile, const char* erfile) {
         policy.final_state = goalState->getPredicates();
     }
 
-
-/*
-
-
-
-    Policy p;
-    // ...
-    p.goal_name = "SimplePolicy";
-    p.initial_state = "S0";
-    p.final_state = "S3";
-    // ...
-
-    vector<StateOutcome> v0; v0.push_back(StateOutcome("personhere","S1")); v0.push_back(StateOutcome("not personhere","S2"));
-    p.addStatePolicy("S0","goto_printer",v0);
-    
-    vector<StateOutcome> v1; v1.push_back(StateOutcome("","S2"));
-    p.addStatePolicy("S1","say_hello",v1);
-
-    vector<StateOutcome> v2; v2.push_back(StateOutcome("","S3"));
-    p.addStatePolicy("S2","goto_home",v2);
-
-*/
-
     policy.print();
 
 
@@ -167,7 +153,7 @@ void create_PNP_from_PRU(const char* prufile, const char* erfile) {
 
     if (r) {
 
-        if (erfile!=NULL) {
+        if (erfile!="") {
             // apply the execution rules
             pnpgen.readERFile(erfile);
             pnpgen.applyExecutionRules();
@@ -195,11 +181,11 @@ int main(int argc, char** argv) {
         return -1;
     }
 
-    const char* prufile = argv[1];
+    string prufile = string(argv[1]);
 
-    const char* erfile = NULL;
+    string erfile="";
     if (argc==3)
-        erfile = argv[2];
+        erfile = string(argv[2]);
 
     create_PNP_from_PRU(prufile,erfile);
     

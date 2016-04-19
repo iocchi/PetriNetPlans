@@ -10,7 +10,7 @@ using namespace std;
 
 
 
-void create_PNP_from_policy(const char* erfile) {
+void create_PNP_from_policy(const string& erfile) {
     Policy p;
     // ...
     p.goal_name = "SimplePolicy";
@@ -41,7 +41,7 @@ void create_PNP_from_policy(const char* erfile) {
 
     if (r) {
 
-        if (erfile!=NULL) {
+        if (erfile!="") {
             // apply the execution rules
             pnpgen.readERFile(erfile);
             pnpgen.applyExecutionRules();
@@ -59,17 +59,9 @@ void create_PNP_from_policy(const char* erfile) {
 
 int main(int argc, char** argv) {
 
-/*
-    if (argc<2) {
-        cout << "    Use: " << argv[0] << " [<erfile>]" << endl;
-        cout << "Example: " << argv[0] << " DIAG_printer.er" << endl;
-        return -1;
-    }
-  */  
-    const char* erfile = NULL;
+    string erfile="";
     if (argc==2)
-        erfile = argv[1];
-    
+        erfile = string(argv[1]);
 
     create_PNP_from_policy(erfile);
     

@@ -4,7 +4,7 @@ PNP Generator
 Luca Iocchi and Laurent Jeanpierre 2015-2016
 --------------------------------------------
 
-Required libraries: boost, libxml++
+Required libraries: boost, libxml++, pcrecpp
 
 Compile:
   $ mkdir build
@@ -41,5 +41,6 @@ Run:
 
 
 Test: 
-    Load output files pnml with Jarp. 
+    Load output pnml files with Jarp.
     Unfortunately, they may not be readable, unless you move some places, transitions, labels...
+
