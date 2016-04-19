@@ -1,8 +1,10 @@
-
+--------------------------------------------
 PNP Generator
 
-Luca Iocchi 2015
-----------------
+Luca Iocchi and Laurent Jeanpierre 2015-2016
+--------------------------------------------
+
+Required libraries: boost, libxml++
 
 Compile:
   $ mkdir build
@@ -32,6 +34,10 @@ Run:
   $ cd test
   $ ../bin/pnpgen_policy DIAG_printer.er
   
+5) Generation of a PNP from a PRU
+
+  $ cd test
+  $ ../bin/pnpgen_pru icaps16_ex1.xml
 
 
 Test: 

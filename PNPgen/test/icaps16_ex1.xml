@@ -1,0 +1,95 @@
+<pru>
+  <Start>
+    <Next> 
+      init.wait
+    </Next>
+  </Start>
+  <Layer id='init'>
+    <Action id='wait'>
+      <Outcome id='done' p='1.0'>
+        <Quality kind='null' const='0' />
+        <Duration kind='null' const='1' />
+        <Observe> person </Observe>
+        <Next> 
+          interact.ask
+          interact.greet
+        </Next>
+      </Outcome>
+    </Action>
+  </Layer>
+  <Layer id='interact'>
+    <Action id='ask'>
+      <Outcome id='goalA' p='0.40'>
+        <Quality kind='null' const='0' />
+        <Duration kind='null' const='1' />
+        <Observe> goalA </Observe>
+        <Next>
+          act.taskA1
+          act.taskA2
+        </Next>
+      </Outcome>
+      <Outcome id='goalB' p='0.40'>
+        <Quality kind='null' const='0' />
+        <Duration kind='null' const='1' />
+        <Observe> goalB </Observe>
+        <Next>
+          act.taskB1
+          act.taskB2
+        </Next>
+      </Outcome>
+      <Outcome id='none' p='0.20'>
+        <Quality kind='null' const='0' />
+        <Duration kind='null' const='1' />
+        <Observe> nogoal </Observe>
+        <Next> final.bye </Next>
+      </Outcome>
+    </Action>
+    <Action id='greet'>
+      <Outcome id='done' p='1.0'>
+        <Quality kind='null' const='3' />
+        <Duration kind='null' const='1' />
+        <Next> final.bye </Next>
+      </Outcome>
+    </Action>
+  </Layer>
+  <Layer id='act'>
+    <Action id='taskA1'>
+      <Outcome id='done' p='1.0'>
+        <Quality kind='null' const='10' />
+        <Duration kind='null' const='1' />
+        <Next> final.bye </Next>
+      </Outcome>
+    </Action>
+    <Action id='taskA2'>
+      <Outcome id='done' p='1.0'>
+        <Quality kind='null' const='10' />
+        <Duration kind='null' const='10' />
+        <Next> final.bye </Next>
+      </Outcome>
+    </Action>
+    <Action id='taskB1'>
+      <Outcome id='done' p='1.0'>
+        <Quality kind='null' const='10' />
+        <Duration kind='null' const='1' />
+        <Next> final.bye </Next>
+      </Outcome>
+    </Action>
+    <Action id='taskB2'>
+      <Outcome id='done' p='1.0'>
+        <Quality kind='null' const='10' />
+        <Duration kind='null' const='10' />
+        <Next> final.bye </Next>
+      </Outcome>
+    </Action>
+  </Layer>
+  <Layer id='final'>
+    <Action id='bye'>
+      <Outcome id='done' p='1.0'>
+        <Quality kind='null' const='0' />
+        <Duration kind='null' const='1' />
+        <Next> final.bye </Next>
+        <Final label='success'/>
+      </Outcome>
+    </Action>
+  </Layer>
+</pru>
