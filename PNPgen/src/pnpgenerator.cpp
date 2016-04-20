@@ -88,7 +88,7 @@ std::ostream& operator<< (std::ostream& stream, const Transition& transition) {
             << "    <size width=\"8\" height=\"32\" />"
             << "  </graphics>\n"
             << "  <name>\n"
-            << "    <value>" << transition.name << "</value>\n"
+	    << "    <value>" << clean(transition.name) << "</value>\n"
             << "    <graphics>\n"
             << "      <offset x=\"0\" y=\"-20\" />\n"
             << "    </graphics>\n"
