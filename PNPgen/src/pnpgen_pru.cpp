@@ -18,15 +18,10 @@ float funcEmpty(const PRUstate& fromState, const PRUstate& toState, const PRUsta
   return 0;
 }
 
-void create_PNP_from_PRU(const string& prufile, const string& erfile) {
+void create_PNP_from_PRU(const string& prufile, const string& erfile, int horizon, double gamma, double epsilon) {
 
     std::locale::global(std::locale());
     setlocale(LC_NUMERIC,"C");
-    string path = "unspecified";
-    string domain = "Empty";
-    int horizon = 50;
-    double gamma = 0.99;
-    double epsilon = 0;
 
     PRUplus::domainFunction = &funcEmpty;
 
@@ -171,22 +166,73 @@ void create_PNP_from_PRU(const string& prufile, const string& erfile) {
     delete mdp;
 }
 
+void usage(char *filename) {
+  cout << "Usage: "<<filename<<" PRU.xml [horizon [gamma [epsilon]]] [rules_file]\n";
+  cout << " horizon is the maximal number (>0) of steps to compute the policy over. (default=50)\n";
+  cout << " gamma is the actuation factor (>0, <=1, default=0.99)\n";
+  cout << " epsilon is the stop criterion (>0) if expected value is stable enough. (default=0)\n";
+  cout << " rules_file is the name of the file containing execution rules to apply. (default none)\n" << endl;
+}
 
 int main(int argc, char** argv) {
+    string pruFile = "unspecified";
+    string erFile="";
+    int horizon = 50;
+    double gamma = 0.99;
+    double epsilon = 0;
 
-
-    if (argc<2) {
-        cout << "    Use: " << argv[0] << " <PRU file> [<erfile>]" << endl;
-        cout << "Example: " << argv[0] << " demo1.pru DIAG_printer.er" << endl;
-        return -1;
+    if (argc>1)
+      pruFile = string(argv[1]);
+    else {
+      usage(argv[0]);
+      return 1;
     }
+    int next = 2;
+    if (argc>next) {
+      char * end = NULL;
+      int tmp = strtol(argv[next], &end, 10);
+      if (end != argv[next]) {
+        horizon = tmp;
+        if ((horizon <= 0) || (end == NULL) || (*end != 0)) {
+          cout << "*** Horizon "<<argv[next]<<" is invalid. Must be positive integer!\n";
+          usage(argv[0]);
+          return 1;
+        }
+        ++next;
+      } // if starts like a number
+    } // if horizon
+    if (argc>next) {
+      char * end = NULL;
+      double tmp = strtod(argv[next], &end);
+      if (end != argv[next]) {
+        gamma = tmp;
+        if ((gamma <= 0) || (gamma > 1) || (end == NULL) || (*end != 0)) {
+          cout << "*** Gamma "<<argv[next]<<" is invalid. Must be >0 and <=1!\n";
+          usage(argv[0]);
+          return 1;
+        }
+        ++next;
+      } // if starts like a number
+    } // if gamma
+    if (argc>next) {
+      char * end = NULL;
+      double tmp = strtod(argv[next], &end);
+      if (end != argv[next]) {
+        epsilon = tmp;
+        if ((epsilon < 0) || (end == NULL) || (*end != 0)) {
+          cout << "*** Epsilon "<<argv[next]<<" is invalid. Must be >=0!\n";
+          usage(argv[0]);
+          return 1;
+        }
+        ++next;
+      } // if starts like a number
+    } // if epsilon
+    if (argc>next) {
+      erFile = string(argv[next]);
+      ++next;
+    } // if last argument not read yet
 
-    string prufile = string(argv[1]);
 
-    string erfile="";
-    if (argc==3)
-        erfile = string(argv[2]);
-
-    create_PNP_from_PRU(prufile,erfile);
+  create_PNP_from_PRU(pruFile,erFile,horizon,gamma,epsilon);
     
 }
