@@ -30,6 +30,7 @@ namespace pnpros
 	{
 
         // cout <<  "    evaluateAtomicExternalCondition: " << atom << " begin ... " << endl;
+
         // This is necessary because multiple calls to the same condition can happen
         if (ConditionCache.find(atom) != ConditionCache.end()) {
             return ConditionCache[atom];
@@ -48,7 +49,7 @@ namespace pnpros
 
             srv.request.cond = atom;
 
-            // LI DEBUG::: It takes really TOO MUCH TIME!!! Use only if really needed!!!
+            // LI DEBUG::: It takes time. Use only if needed!
             bool r = client.call(srv);
 
             if (r)

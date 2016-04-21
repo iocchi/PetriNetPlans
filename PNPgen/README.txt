@@ -39,11 +39,14 @@ Run:
   $ cd test
   $ ../bin/pnpgen_pru icaps16_ex1.xml
 
-  optional parameters include horizon, discount-factor, stop-criterion, and execution rules :
+  General command:
+    pnpgen_pru <PRU_file> [horizon] [discount_factor] [stop_criterion] [execution_rules_file]
+    
+  optional parameters:
   - horizon is the maximum number of steps to compute the policy over (default = 50)
   - discout-factor (usually denoted \gamma) is the loss of value with time (default = 0.99 - if reaching a goal in one step is rewarded 100, the same goal in two steps will be rewarded 99 only...)
-  - stop-criterion (usuallu denoted \epsilon) is the minimal change of expected value alowed between two decision steps (default = 0 - stop if expected value does not change)
-  - execution rules (default = none) is a file containing execution rules to apply to the generated plan.
+  - stop_criterion (usually denoted \epsilon) is the minimal change of expected value alowed between two decision steps (default = 0 - stop if expected value does not change)
+  - execution_rules_file (default = none) is a file containing execution rules to apply to the generated plan.
 
 Test: 
     Load output pnml files with Jarp.

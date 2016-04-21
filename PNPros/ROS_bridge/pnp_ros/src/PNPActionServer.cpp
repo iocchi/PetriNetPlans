@@ -93,6 +93,10 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
     {
         { boost::mutex::scoped_lock lock(run_mutex);
           run[goal.robotname+goal.name+goal.params]=true;
+          starttime[goal.robotname+goal.name]=ros::Time::now().toSec();
+          string atom="timeout_"+goal.name;
+          ConditionCache[atom]=0;
+          cout << "Action " << goal.name << " " << goal.params << " started at time: " << starttime[goal.robotname+goal.name] << endl;
         }
 
         actionExecutionThread(goal.robotname,goal.name,goal.params,
@@ -100,6 +104,7 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
 
         { boost::mutex::scoped_lock lock(run_mutex);
           run[goal.robotname+goal.name+goal.params]=false;
+          starttime[goal.robotname+goal.name]=-1;
         }
         // cout << "### Thread " << goal.name << " completed" << endl;
     }
@@ -107,28 +112,57 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
     {
         // cout << "### Thread " << goal.name << " interrupted" << endl;
         run[goal.robotname+goal.name+goal.params]=false;
+        starttime[goal.robotname+goal.name]=-1;
     }
     
     // notify action termination
     gh.setSucceeded();
 
     // wait for actual delivery...
-    boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+    for (int k=0; k<5; k++) { ros::spinOnce(); }
+    //boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 }
 
 void PNPActionServer::CancelAction(string robotname, string action_name, string action_params) {   
     boost::mutex::scoped_lock lock(run_mutex);
     run[robotname+action_name+action_params]=false;
+    starttime[goal.robotname+goal.name]=-1;
 }
 
 bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,
          pnp_msgs::PNPCondition::Response &res)  {
 
-    //cout << "EvalConditionWrapper started " << endl;
 
-	int r0 = -1;
+    // cout << "EvalConditionWrapper started with cond: " << req.cond << endl;
+
+    int r0 = -1; // partial result
+
+
+    size_t pt = req.cond.find("timeout");
+    if (pt!=string::npos) {
+        size_t pt2 = req.cond.find_last_of("_");
+        string act = goal.robotname+req.cond.substr(pt+8,pt2-(pt+8));
+        double val_timeout = atof(req.cond.substr(pt2+1).c_str());
+        // cout << "Evaluating timeout condition for action [" << act << "]" << endl;
+        double d=-1;
+        if (starttime.find(act)!=starttime.end())
+            d = starttime[act];
+        if (d<0) {
+            // cout << "  !!!action not running!!!" << endl;
+        }
+        else {
+            // cout << "           start time = ... " << starttime[act] << " now = " << ros::Time::now().toSec() << endl;
+            double dt = ros::Time::now().toSec() - starttime[act];
+            if (dt>val_timeout) {
+                r0=1;
+                cout << "TIMEOUT CONDITION " << req.cond << " TRUE " << endl;
+            }
+        }
+    }
+
+
 	// This is necessary because multiple calls to the same condition can happen
-	if (ConditionCache.find(req.cond) != ConditionCache.end()) {
+    if (r0==-1 && (ConditionCache.find(req.cond) != ConditionCache.end())) {
 		r0 = ConditionCache[req.cond];
 	}
 
@@ -147,7 +181,7 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
 
 	//cout << " RESULT = " << result << endl;
 	
-	ConditionCache[req.cond] = result;
+    ConditionCache[req.cond] = result;
     res.truth_value = result;
 
     return true;

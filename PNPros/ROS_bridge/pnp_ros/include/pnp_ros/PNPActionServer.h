@@ -68,6 +68,7 @@ protected:
     vector<Event> eventBuffer; 
     
     map<string,bool> run;
+    map<string,double> starttime; // ROS Time in seconds
     map<string,boost_action_fn_t> global_PNPROS_action_fns;
     map<string,boost_MRaction_fn_t> global_PNPROS_MRaction_fns;
     map<string,string> global_PNPROS_variables;
