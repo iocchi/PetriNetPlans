@@ -256,7 +256,7 @@ Place* PNP::addAction(string name, Node *p0) {
     return pf;
 }
 
-Place* PNP::addTimedAction(string name, Place *p0, int timevalue) {
+Place* PNP::addTimedAction(string name, Place *p0, int timevalue, Place **p0action) {
 
     // fork transition
     Transition *tf = addTransition("[]"); tf->setX(p0->getX()+1); tf->setY(p0->getY());
@@ -287,6 +287,7 @@ Place* PNP::addTimedAction(string name, Place *p0, int timevalue) {
     connect(tj,po); connect(ti,po);
 
     nactions+=2;
+    *p0action = pi1; // initial place of action
     return po;
 }
 
@@ -408,11 +409,16 @@ Place *PNPGenerator::genLinearPlan(Place *pi, string plan, bool allinstack)
                 addstack = true;
                 a = a.substr(0,a.size()-1);
             }
-            if (allinstack || addstack) addActionToStacks(a,p);
-            if (timevalue>0)
-                p = pnp.addTimedAction(a,p,timevalue);
-            else
+
+            if (timevalue>0) {
+                Place *poa;
+                p = pnp.addTimedAction(a,p,timevalue,&poa);
+                if (allinstack || addstack) addActionToStacks(a,poa);
+            }
+            else {
                 p = pnp.addAction(a,p);
+                if (allinstack || addstack) addActionToStacks(a,p);
+            }
         }
     }
 

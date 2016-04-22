@@ -156,7 +156,7 @@ public:
     void addConditionBack(string name, Place* pfrom, Place *pto, int dy=0);
     Place* addAction(string name, Place* p0);
     Place* addAction(string name, Node* p0);
-    Place* addTimedAction(string name, Place *p0, int timevalue);
+    Place* addTimedAction(string name, Place *p0, int timevalue, Place **p0action);
     void addInterrupt(Place *pi, string condition, Place *po);
     void connectActionToPlace(Place *pi, Place *po); // connect the action and the place with an empty transition
     void connectPlaces(Place *pi, Place *po); // connect the two places with an empty transition
