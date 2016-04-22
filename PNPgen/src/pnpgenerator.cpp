@@ -256,6 +256,40 @@ Place* PNP::addAction(string name, Node *p0) {
     return pf;
 }
 
+Place* PNP::addTimedAction(string name, Place *p0, int timevalue) {
+
+    // fork transition
+    Transition *tf = addTransition("[]"); tf->setX(p0->getX()+1); tf->setY(p0->getY());
+    connect(p0,tf);
+
+    // initial places of actions
+    Place *pi1 = addPlace("X",-1); pi1->setX(tf->getX()+1); pi1->setY(tf->getY()-1);
+    connect(tf,pi1);
+    Place *pf1 = addAction(name,pi1);
+
+    // actions
+    Place *pi2 = addPlace("X",-1); pi2->setX(tf->getX()+1); pi2->setY(tf->getY()+1);
+    connect(tf,pi2);
+    stringstream ss; ss << "wait_" << timevalue;
+    Place *pf2 = addAction(ss.str(),pi2);
+
+    // join transition
+    Transition *tj = addTransition("[]"); tj->setX(pf1->getX()+1); tj->setY(pf1->getY()+1);
+    connect(pf1,tj); connect(pf2,tj);
+
+    // interrupt
+    Transition *ti = addTransition(name+".interrupt []"); ti->setX(tj->getX()); ti->setY(tj->getY()+1);
+    connect(next(next(pi1)),ti); connect(pf2,ti);
+
+
+    // final place
+    Place *po = addPlace("X",-1); po->setX(tj->getX()+1); po->setY(tj->getY());
+    connect(tj,po); connect(ti,po);
+
+    nactions+=2;
+    return po;
+}
+
 void PNP::connectActionToPlace(Place *pi, Place *po) { // add po after end place of action starting in pi
     Node *pe = next(next(next(next(pi)))); // end place of action
     Transition *ts = addTransition("");
@@ -361,13 +395,24 @@ Place *PNPGenerator::genLinearPlan(Place *pi, string plan, bool allinstack)
     while (i!=v.end()) {
         string a = *i++;
         if (a!="") {
+            // check time values "<name>|<time>"
+            int timevalue=-1; // value for timed actions
+            size_t ps = a.find("|");
+            if (ps!=string::npos) {
+                timevalue = atoi(a.substr(ps+1).c_str());
+                a=a.substr(0,ps);
+            }
+
             bool addstack = false;
             if (a[a.size()-1]=='*') {
                 addstack = true;
                 a = a.substr(0,a.size()-1);
             }
             if (allinstack || addstack) addActionToStacks(a,p);
-            p = pnp.addAction(a,p);
+            if (timevalue>0)
+                p = pnp.addTimedAction(a,p,timevalue);
+            else
+                p = pnp.addAction(a,p);
         }
     }
 
