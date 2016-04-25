@@ -1,0 +1,10 @@
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Changelog for package rp_action_msgs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Forthcoming
+-----------
+* made Marc Hanheide maintainer
+* deleted gedit's auto save files
+* added porting of rp_action to hydro/indigo
+* Contributors: Julia Nitsch, Marc Hanheide
