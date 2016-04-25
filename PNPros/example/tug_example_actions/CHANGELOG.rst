@@ -2,8 +2,8 @@
 Changelog for package tug_example_actions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.2 (2016-04-25)
+------------------
 * cleaned changelogs
 * Contributors: Marc Hanheide
 
