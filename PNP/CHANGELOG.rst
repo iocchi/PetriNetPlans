@@ -2,6 +2,9 @@
 Changelog for package pnp
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.1 (2016-04-25)
 ------------------
 * made Marc Hanheide maintainer
