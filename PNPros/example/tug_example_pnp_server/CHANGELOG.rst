@@ -2,8 +2,8 @@
 Changelog for package tug_example_pnp_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2016-04-25)
+------------------
 * add flag in launch file if gui is used or not
 * added edges in transissions through double mouse click
 * expanded tug example

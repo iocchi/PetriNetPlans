@@ -2,8 +2,8 @@
 Changelog for package pnp_ros
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2016-04-25)
+------------------
 * made Marc Hanheide maintainer
 * launch file added and plans installed
 * pnp_ros added automatic timeout conditions 'timeout_actionname_value', becomes true value seconds after the start of the action

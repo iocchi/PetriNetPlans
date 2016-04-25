@@ -2,8 +2,8 @@
 Changelog for package pnpgen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2016-04-25)
+------------------
 * made Marc Hanheide maintainer
 * added catkin build for generator and install targets
 * first fix of ER for timed actions

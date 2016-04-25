@@ -2,8 +2,8 @@
 Changelog for package pnp_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2016-04-25)
+------------------
 * made Marc Hanheide maintainer
 * fixed some porting bugs
 * realligned PNPros with the groovy version

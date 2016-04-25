@@ -2,8 +2,8 @@
 Changelog for package pnp
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.1 (2016-04-25)
+------------------
 * made Marc Hanheide maintainer
 * Revert "libpnp.so must be installed locally"
   This reverts commit 69d382924c8d2634647383f514fb1fa6e61fa508.
