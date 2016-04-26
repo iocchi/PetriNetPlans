@@ -2,6 +2,9 @@
 Changelog for package pnp
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.2 (2016-04-25)
 ------------------
 * cleaned changelogs
