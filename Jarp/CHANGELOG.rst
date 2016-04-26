@@ -2,8 +2,8 @@
 Changelog for package jarp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.7 (2016-04-26)
+------------------
 * removed jarp.properties
 * Contributors: Marc Hanheide
 
