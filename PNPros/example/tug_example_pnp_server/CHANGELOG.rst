@@ -2,6 +2,9 @@
 Changelog for package tug_example_pnp_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.5 (2016-04-26)
 ------------------
 * Merge branch 'catkinised' of https://github.com/marc-hanheide/PetriNetPlans into catkinised
