@@ -2,6 +2,9 @@
 Changelog for package pnp
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.5 (2016-04-26)
+------------------
+
 0.0.4 (2016-04-26)
 ------------------
 * removed in source lib installation as it kills the whole debian release process
