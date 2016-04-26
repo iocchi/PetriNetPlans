@@ -2,6 +2,12 @@
 Changelog for package tug_example_actions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.4 (2016-04-26)
+------------------
+* Merge branch 'catkinised' of https://github.com/marc-hanheide/PetriNetPlans into catkinised
+* added missing tf
+* Contributors: Marc Hanheide
+
 0.0.3 (2016-04-26)
 ------------------
 
