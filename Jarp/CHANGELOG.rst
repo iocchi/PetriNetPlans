@@ -2,8 +2,8 @@
 Changelog for package jarp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.0.6 (2016-04-26)
+------------------
 * all versions to 0.0.5
 * made Jarp installable and callable
 * Contributors: Marc Hanheide
