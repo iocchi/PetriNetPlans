@@ -7,5 +7,5 @@ install(PROGRAMS
 )
 
 install(DIRECTORY lib DESTINATION lib/jarp)
-install(FILES PNPjarp.jar jarp.properties DESTINATION lib/jarp)
+install(FILES PNPjarp.jar DESTINATION lib/jarp)
 
