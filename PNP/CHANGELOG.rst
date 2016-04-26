@@ -2,6 +2,11 @@
 Changelog for package pnp
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* removed in source lib installation as it kills the whole debian release process
+* Contributors: Marc Hanheide
+
 0.0.3 (2016-04-26)
 ------------------
 
