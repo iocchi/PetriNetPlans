@@ -13,4 +13,4 @@ else
 	jarfile="$jarfile2/PNPjarp.jar"
 fi
 
-java -jar "$jarfile"
+java -jar "$jarfile" "$@"
