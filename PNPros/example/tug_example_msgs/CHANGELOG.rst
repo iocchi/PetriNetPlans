@@ -2,6 +2,9 @@
 Changelog for package tug_example_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.4 (2016-04-26)
 ------------------
 
