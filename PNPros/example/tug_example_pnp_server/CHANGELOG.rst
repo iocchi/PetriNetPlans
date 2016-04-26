@@ -2,6 +2,9 @@
 Changelog for package tug_example_pnp_server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.0.6 (2016-04-26)
 ------------------
 
