@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   pnp_ros
   tug_example_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
