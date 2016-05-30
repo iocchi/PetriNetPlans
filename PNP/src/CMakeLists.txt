@@ -75,6 +75,6 @@ endif(CPPUNIT_FOUND)
 #MESSAGE("Project dir: ${PROJECT_SOURCE_DIR}")
 install(TARGETS pnp DESTINATION ${PROJECT_SOURCE_DIR}/lib)
 
-# Maybe TODO but it should be optional
-#install(TARGETS pnp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
-#install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+# Install pnp in CMAKE_INSTALL_PREFIX (usually: /usr/local)
+install(TARGETS pnp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
