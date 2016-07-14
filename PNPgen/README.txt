@@ -52,3 +52,10 @@ Test:
     Load output pnml files with Jarp.
     Unfortunately, they may not be readable, unless you move some places, transitions, labels...
 
+
+6) Generation of a PNP from a conditional plan (given in the source code)
+
+  $ cd test
+  $ ../bin/pnpgen_condplan [execution_rules_file]
+
+
