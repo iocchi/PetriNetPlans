@@ -7,6 +7,7 @@
 #include <stack>
 #include <map>
 #include "policy.h"
+#include "conditionalplan.h"
 
 using std::string;
 using std::stringstream;
@@ -156,6 +157,10 @@ public:
     void addConditionBack(string name, Place* pfrom, Place *pto, int dy=0);
     Place* addAction(string name, Place* p0);
     Place* addAction(string name, Node* p0);
+
+    // sensing action with multiple outcomes
+    std::vector<Place*> addSensingAction(string name, Place* p0, vector<string> outcomes);
+
     Place* addTimedAction(string name, Place *p0, int timevalue, Place **p0action);
     void addInterrupt(Place *pi, string condition, Place *po);
     void connectActionToPlace(Place *pi, Place *po); // connect the action and the place with an empty transition
@@ -213,7 +218,11 @@ public:
                                                                         // allinstack = true -> all actions are added in the stack for further processing
                                                                         // allinstack = false -> only actions trerminating with '*' are added in the stack for further processing
 
+    // Generation of PNP
     bool genFromPolicy(Policy &p);
+    bool genFromConditionalPlan(ConditionalPlan &plan);
+    bool genFromConditionalPlan_r(ConditionalPlan *plan, Place *place);
+
 
     void setMainLinearPlan(string plan); // set this plan as main plan for this generation
     void readPlanFile(const char*filename, string &plan);
@@ -234,6 +243,11 @@ public:
     Place* addAction(string action, Place *place) {
         addActionToStacks(action,place);
         return pnp.addAction(action,place);
+    }
+
+    vector<Place*> addSensingAction(string action, Place *place, vector<string> outcomes) {
+        addActionToStacks(action,place);
+        return pnp.addSensingAction(action,place,outcomes);
     }
 
     void save(const char* filename=NULL); // if NULL it uses the name of the plan as file name
