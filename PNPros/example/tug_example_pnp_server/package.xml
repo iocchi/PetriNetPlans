@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>tug_example_pnp_server</name>
-  <version>0.0.7</version>
+  <version>0.0.11</version>
   <description>The tug_example_pnp_server package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 

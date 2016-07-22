@@ -73,7 +73,7 @@ endif(CPPUNIT_FOUND)
 
 # Install libpnp locally
 #MESSAGE("Project dir: ${PROJECT_SOURCE_DIR}")
-install(TARGETS pnp DESTINATION ${PROJECT_SOURCE_DIR}/lib)
+#install(TARGETS pnp DESTINATION ${PROJECT_SOURCE_DIR}/lib)
 
 # Install pnp in CMAKE_INSTALL_PREFIX (usually: /usr/local)
 install(TARGETS pnp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
