@@ -11,7 +11,6 @@ namespace pnpros
 	ros::Publisher ActionProxy::publisher;
 	set<string> ActionProxy::activeActions;
 	unsigned long long ActionProxy::maxID;
-    bool active;
 	
 	ActionProxy::ActionProxy(const string& nm)
 	{
