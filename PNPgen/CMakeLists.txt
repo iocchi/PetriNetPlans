@@ -40,3 +40,8 @@ target_link_libraries(pnpgen_condplan pnpgen boost_regex)
 target_link_libraries(pnpgen_pru pnpgen prumdp boost_regex ${LibXML++_LIBRARIES} ${PCRE_LIBRARIES})
 
 
+install(TARGETS pnpgen prumdp pnpgen_linear pnpgen_policy pnpgen_pru
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)

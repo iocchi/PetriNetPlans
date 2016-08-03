@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>pnp_msgs</name>
+  <name>pnpgen</name>
   <version>0.0.11</version>
-  <description>The pnp_msgs package</description>
+  <description>The PNPgen package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -19,7 +19,6 @@
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
   <!-- Authors do not have to be maintianers, but could be -->
   <!-- Example: -->
-   <author email="julia.nitsch@student.tugraz.at">Julia Nitsch</author><!-- ported to Indigo -->
 
 
   <!-- The *_depend tags are used to specify dependencies -->
@@ -34,15 +33,19 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>actionlib</build_depend>
-  <build_depend>actionlib_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  <run_depend>actionlib</run_depend>
-  <run_depend>actionlib_msgs</run_depend>
-  <run_depend>message_runtime</run_depend>
-  <run_depend>geometry_msgs</run_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>flex</build_depend>
+  <build_depend>libxml2</build_depend>
+  <build_depend>libxml++-2.6</build_depend>
+  <build_depend>boost</build_depend>
+  <build_depend>pnp</build_depend>
 
+  <run_depend>roscpp</run_depend>
+  <run_depend>flex</run_depend>
+  <run_depend>libxml2</run_depend>
+  <run_depend>libxml++-2.6</run_depend>
+  <run_depend>boost</run_depend>
+  <run_depend>pnp</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
@@ -50,6 +53,7 @@
     <!-- <metapackage/> -->
 
     <!-- Other tools can request additional information be placed here -->
+    <build_type>cmake</build_type>
 
   </export>
 </package>

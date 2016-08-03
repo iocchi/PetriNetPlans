@@ -1,1 +1,1 @@
-java -jar "PNPjarp.jar"
+scripts/jarp.sh

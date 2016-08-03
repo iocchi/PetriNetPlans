@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 <package>
   <name>pnp_ros</name>
-  <version>0.0.0</version>
+  <version>0.0.11</version>
   <description>The PNP ros package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="iocchi@dis.uniroma1.it">Luca Iocchi</maintainer>
+  <maintainer email="marc@hanheide.net">Marc Hanheide</maintainer>
+  <author email="iocchi@dis.uniroma1.it">Luca Iocchi</author>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->

@@ -161,10 +161,19 @@ target_link_libraries(pnp_node
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# install(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(PROGRAMS
+  scripts/PNPActionServer.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
+
+install(DIRECTORY plans/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/plans
+)
+
 
 ## Mark executables and/or libraries for installation
 install(TARGETS PNPAS pnp_node pnpros
