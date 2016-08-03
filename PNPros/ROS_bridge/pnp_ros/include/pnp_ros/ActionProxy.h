@@ -30,6 +30,7 @@ namespace pnpros
 			
             actionlib::ClientGoalHandle<pnp_msgs::PNPAction> goalhandler;
 			std::string robotname, name, params, id;
+            unsigned long long iid;
 			
             void feedbackCb(actionlib::ClientGoalHandle<pnp_msgs::PNPAction> gh,const pnp_msgs::PNPFeedbackConstPtr& feedback);
             void transitionCb(actionlib::ClientGoalHandle<pnp_msgs::PNPAction> gh);

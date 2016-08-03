@@ -16,11 +16,11 @@ namespace pnpros
 	ActionProxy::ActionProxy(const string& nm)
 	{
 		maxID++;
-		
+        iid = maxID;
 		stringstream ss; ss << maxID;
 		id = ss.str();
 		robotname = "";
-    string nms = nm;
+        string nms = nm;
 
 		// cerr << "Parsing: " << nm << " " << nm.find('_') << endl;
 
@@ -116,7 +116,7 @@ namespace pnpros
 		
         pnp_msgs::PNPGoal goal;
         ROS_DEBUG_STREAM("ActionProxy Robotname "<<robotname);
-		goal.id = maxID;
+        goal.id = iid;
 		goal.robotname = robotname;
 		goal.name = name;
 		goal.params = params;
@@ -169,7 +169,7 @@ namespace pnpros
 
         pnp_msgs::PNPGoal goal;
 
-		goal.id = maxID;
+        goal.id = iid;
         goal.robotname = robotname;
 		goal.name = name;
 		goal.params = params;
@@ -222,8 +222,8 @@ namespace pnpros
 
         pnp_msgs::PNPGoal goal;
 
-		goal.id = maxID;
-    goal.robotname = robotname;
+        goal.id = iid;
+        goal.robotname = robotname;
 		goal.name = name;
 		goal.params = params;
 		goal.function = "interrupt";
