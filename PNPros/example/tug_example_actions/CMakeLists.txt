@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   actionlib
   roscpp
   tug_example_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
