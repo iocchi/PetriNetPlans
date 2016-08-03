@@ -7,39 +7,38 @@ using namespace std;
 namespace pnpros
 {
     static actionlib::ActionClient<pnp_msgs::PNPAction>* pnpac = NULL;
-	
-	ros::Publisher ActionProxy::publisher;
-	set<string> ActionProxy::activeActions;
-	unsigned long long ActionProxy::maxID;
-	
-	ActionProxy::ActionProxy(const string& nm)
-	{
-		maxID++;
+
+    ros::Publisher ActionProxy::publisher;
+    set<string> ActionProxy::activeActions;
+    unsigned long long ActionProxy::maxID;
+
+    ActionProxy::ActionProxy(const string& nm)
+    {
+        maxID++;
         iid = maxID;
-		stringstream ss; ss << maxID;
-		id = ss.str();
-		robotname = "";
+        stringstream ss; ss << maxID;
+        id = ss.str();
+        robotname = "";
         string nms = nm;
 
-		// cerr << "Parsing: " << nm << " " << nm.find('_') << endl;
+        // cerr << "Parsing: " << nm << " " << nm.find('_') << endl;
 
-		size_t k = nm.find('#');
-    if (k != string::npos) {
-		  robotname = nm.substr(0,k);
-      nms = nm.substr(k+1);
-    }
+        size_t k = nm.find('#');
+        if (k != string::npos) {
+            robotname = nm.substr(0,k);
+            nms = nm.substr(k+1);
+        }
 
-		k = nms.find('_');		
-		if (k == string::npos) 
-      name = nms;
-		else
-		{
-			name = nms.substr(0,k);
-			params = nms.substr(k+1);
-		}
-		
+        k = nms.find('_');
+        if (k == string::npos)
+            name = nms;
+        else {
+            name = nms.substr(0,k);
+            params = nms.substr(k+1);
+        }
+
         //I think robot's name should be in plan name but is NOT!!
-          if (robotname == "") {
+        if (robotname == "") {
             ros::NodeHandle nh;
             if(nh.hasParam("robot_name")) {
               nh.getParam("robot_name", robotname);
@@ -52,12 +51,11 @@ namespace pnpros
 
         if (pnpac == NULL) pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
 
-        while (!pnpac->waitForActionServerToStart(ros::Duration(5.0)))
-		{
-			ROS_INFO("Waiting for the PNP action server to come up.");
-		}
-	}
-	
+        while (!pnpac->waitForActionServerToStart(ros::Duration(5.0))) {
+            ROS_INFO("Waiting for the PNP action server to come up.");
+        }
+    }
+
 	ActionProxy::~ActionProxy() {
 	    ROS_DEBUG_STREAM("ActionProxy: terminating action " << name);
 	    // terminate this action
@@ -139,64 +137,62 @@ namespace pnpros
 
         active=true;
 
-	}
-	
-	void ActionProxy::end()
-	{
+    }
+
+    void ActionProxy::end()
+    {
         if (!active) return;
         active=false;
 #if USE_MESSAGES
-		Action action;
-		
+        Action action;
+
         action.id = id;
         action.robotname = robotname;
-		action.name = name;
-		action.params = params;
-		action.function = "end";
-		
-		publisher.publish(action);
+        action.name = name;
+        action.params = params;
+        action.function = "end";
+
+        publisher.publish(action);
 #endif
-		
+
 #if USE_ACTIONLIB
 
-		if (!pnpac->waitForActionServerToStart(ros::Duration(0.1)))
-		{
+        if (!pnpac->waitForActionServerToStart(ros::Duration(0.1))) {
             cout << "PNP: cannote terminate action " << name << endl;
-
-			return;
-		}
+            return;
+        }
 
         pnp_msgs::PNPGoal goal;
 
         goal.id = iid;
         goal.robotname = robotname;
-		goal.name = name;
-		goal.params = params;
-		goal.function = "end";
+        goal.name = name;
+        goal.params = params;
+        goal.function = "end";
 
-		goalhandler = pnpac->sendGoal(goal,boost::bind(&ActionProxy::transitionCb, this,  _1),boost::bind(&ActionProxy::feedbackCb, this, _1, _2));
-		
-		while ((goalhandler.getCommState() == actionlib::CommState::WAITING_FOR_GOAL_ACK) ||
-			   (goalhandler.getCommState() == actionlib::CommState::PENDING) //||
-			   //(goalhandler.getCommState() == actionlib::CommState::ACTIVE)
+        goalhandler = pnpac->sendGoal(goal,boost::bind(&ActionProxy::transitionCb, this,  _1),boost::bind(&ActionProxy::feedbackCb, this, _1, _2));
+
+        while ((goalhandler.getCommState() == actionlib::CommState::WAITING_FOR_GOAL_ACK) ||
+                (goalhandler.getCommState() == actionlib::CommState::PENDING) //||
+                //(goalhandler.getCommState() == actionlib::CommState::ACTIVE)
               )
-		{
+        {
             //cout << "### In end function: gh state = " << goalhandler.getCommState().toString() << endl;
-			usleep(100e3);
-		}
+            usleep(100e3);
+        }
         //cout << "### In end function: gh state = " << goalhandler.getCommState().toString() << endl;
 #endif
 
         ROS_INFO_STREAM("End: "+robotname+" "+ name + " " + params + " - ID: " + id);
-	}
+    }
 
-	void ActionProxy::interrupt()
-	{
+    void ActionProxy::interrupt()
+    {
 #if USE_MESSAGES
-		Action action;
+        Action action;
 
-		action.id = id;
-    action.robotname = robotname;
+        action.id = id;
+        action.robotname = robotname;
 		action.name = name;
 		action.params = params;
 		action.function = "interrupt";
