@@ -69,12 +69,6 @@ if(CPPUNIT_FOUND)
 	target_link_libraries(test_pnp ${LIBS} ${CPPUNIT_LIBRARY} libpnp.so)
 endif(CPPUNIT_FOUND)
 
-#add the target to copy the library in lib
-
-# Install libpnp locally
-#MESSAGE("Project dir: ${PROJECT_SOURCE_DIR}")
-#install(TARGETS pnp DESTINATION ${PROJECT_SOURCE_DIR}/lib)
-
 # Install pnp in CMAKE_INSTALL_PREFIX (usually: /usr/local)
 install(TARGETS pnp DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 install(DIRECTORY ../include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
