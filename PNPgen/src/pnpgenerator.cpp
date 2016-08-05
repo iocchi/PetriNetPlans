@@ -342,6 +342,17 @@ Transition* PNP::addInterrupt(Place *pi, string condition, Place *po) {
     return ts;
 }
 
+Transition* PNP::addFail(Place *pi, Place *po) {
+    Node *pe = next(next(pi)); // exec place
+    string ae=pe->getName();
+    std::size_t pos = ae.find(".");      // position of "." in str
+    std::string a = ae.substr(0,pos);
+    Transition *ts = addTransition(a+".fail");
+    ts->setY(pe->getY()-1); ts->setX(pe->getX()); // upper line wrt pe
+    connect(pe,ts); connect(ts,po);
+    return ts;
+}
+
 Place* PNP::addAction(string name, Place *p0) {
     Transition *ts = addTransition(name+".start");
     Place *pe = addPlace(name+".exec");
@@ -691,8 +702,11 @@ void PNPGenerator::applyExecutionRules() {
                     po = pi;
                 }
 
-                
-                Transition *tsi = pnp.addInterrupt(current_place,eit->condition,pi);
+                Transition *tsi;
+                if(eit->condition=="action_failed")
+                    tsi = pnp.addFail(current_place,pi);
+                else
+                    tsi = pnp.addInterrupt(current_place,eit->condition,pi);
                 
                 //cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
                 if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {

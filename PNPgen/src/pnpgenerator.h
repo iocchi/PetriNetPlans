@@ -165,6 +165,7 @@ public:
 
     Place* addTimedAction(string name, Place *p0, int timevalue, Place **p0action);
     Transition* addInterrupt(Place *pi, string condition, Place *po);
+    Transition* addFail(Place *pi, Place *po);
     void connectActionToPlace(Place *pi, Place *po); // connect the action and the place with an empty transition
     void connectPlaces(Place *pi, Place *po); // connect the two places with an empty transition
 
