@@ -135,11 +135,12 @@ protected:
     vector<Transition*> T;
     vector<Edge*> E;
     int nactions;
-    // ??? map<string, vector<Place *> > initPlace; // initial place for each instance of an action
+    // ??? map<string, vector<Place *> > initPlace; // initial place for each instance of an action    
 
 public:
 
     Place *pinit; // init place of the plan
+    map<string, Place*> timed_action_wait_map; // action name, place of corresponding wait action for timed actions
 
     PNP(string _name);
     string getName() { return name; }
@@ -162,7 +163,7 @@ public:
     std::vector<Place*> addSensingAction(string name, Place* p0, vector<string> outcomes);
 
     Place* addTimedAction(string name, Place *p0, int timevalue, Place **p0action);
-    void addInterrupt(Place *pi, string condition, Place *po);
+    Transition* addInterrupt(Place *pi, string condition, Place *po);
     void connectActionToPlace(Place *pi, Place *po); // connect the action and the place with an empty transition
     void connectPlaces(Place *pi, Place *po); // connect the two places with an empty transition
 

@@ -12,19 +12,26 @@ Compilation and Installation
     $ mkdir build
     $ cd build
     $ cmake ..
-    $ make install
+    $ make
 
-If everything goes fine you, should find a directory lib/ containing the newly created shared object, named libpnp.so. Use the directory include/ to compile your sources that depend on PNP and lib/ to link them.
+* Local install (<path_to_PNP>/lib)
 
-* Set up environment variables in the file .bashrc in your home directory
+    $ cd PNP/lib
+    $ ln -s ../build/src/libpnp.so .
+
+Set up environment variables in the file .bashrc in your home directory
 
     export PNP_INCLUDE=<path_to_PNP>/include
     export PNP_LIB=<path_to_PNP>/lib
 
-In order to have these variables set up for next steps using PNP,
-do not forget to actually set these variables.
-For example, open a new shell or set these variables in your current shell as well.
+(open a new shell or set these variables in your current shell to use it in the current terminal session).
     
+
+* Global install (/usr/local/lib)
+
+    $ sudo make install
+
+
 * Doxygen 
 
 You can generate the reference documentation using doxygen:

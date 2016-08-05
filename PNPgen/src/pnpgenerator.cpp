@@ -304,13 +304,17 @@ Place* PNP::addTimedAction(string name, Place *p0, int timevalue, Place **p0acti
     Transition *ti = addTransition(name+".interrupt []"); ti->setX(tj->getX()); ti->setY(tj->getY()+1);
     connect(next(next(pi1)),ti); connect(pf2,ti);
 
-
     // final place
     Place *po = addPlace("X",-1); po->setX(tj->getX()+1); po->setY(tj->getY());
     connect(tj,po); connect(ti,po);
 
     nactions+=2;
     *p0action = pi1; // initial place of action
+
+    // store timed action for joint interrupts
+    timed_action_wait_map[name]=(Place *)(next(next(pi2)));
+    cout << "DEBUG: Added timed action info for action " << name << endl;
+
     return po;
 }
 
@@ -327,7 +331,7 @@ void PNP::connectPlaces(Place *pi, Place *po) { // add po after pi
     connect(pi,ts); connect(ts,po);
 }
 
-void PNP::addInterrupt(Place *pi, string condition, Place *po) {
+Transition* PNP::addInterrupt(Place *pi, string condition, Place *po) {
     Node *pe = next(next(pi)); // exec place
     string ae=pe->getName();
     std::size_t pos = ae.find(".");      // position of "." in str
@@ -335,6 +339,7 @@ void PNP::addInterrupt(Place *pi, string condition, Place *po) {
     Transition *ts = addTransition(a+".interrupt ["+condition+"]");
     ts->setY(pe->getY()-1); ts->setX(pe->getX()); // upper line wrt pe
     connect(pe,ts); connect(ts,po);
+    return ts;
 }
 
 Place* PNP::addAction(string name, Place *p0) {
@@ -374,7 +379,7 @@ std::string PNP::stats()
 
 PNPGenerator::PNPGenerator(string name) : pnp(name) {
     cout << endl << "Generation of PNP '" << name << "'" << endl;
-    pnp.pinit = pnp.addPlace("init"); pnp.pinit->setInitialMarking();
+    pnp.pinit = pnp.addPlace("init"); pnp.pinit->setInitialMarking(); pnp.pinit->setY(3);
 }
 
 
@@ -610,6 +615,10 @@ bool PNPGenerator::parseERline(const string line, string &action, string &cond, 
 {
     bool r=false;
     //printf("### Parsing: %s\n",line.c_str());   
+
+    if (line[0]=='#') // comment
+        return false;
+
     vector<string> strs;
     boost::algorithm::split_regex( strs, line, boost::regex( "\\*[^ ]*\\*" ) ) ;
     
@@ -682,9 +691,16 @@ void PNPGenerator::applyExecutionRules() {
                 }
 
                 
-                pnp.addInterrupt(current_place,eit->condition,pi);
+                Transition *tsi = pnp.addInterrupt(current_place,eit->condition,pi);
                 
-                
+                cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
+                if (pnp.timed_action_wait_map.find(current_action_param)!=pnp.timed_action_wait_map.end()) {
+                    cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
+                    Place *wait_exec_place = pnp.timed_action_wait_map[current_action_param];
+                    pnp.connect(wait_exec_place,tsi);
+                }
+
+
                 if (R=="fail_plan") {
                     po->setName("fail");
                 }
