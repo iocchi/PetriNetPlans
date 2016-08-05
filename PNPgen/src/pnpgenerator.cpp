@@ -309,7 +309,7 @@ Place* PNP::addTimedAction(string name, Place *p0, int timevalue, Place **p0acti
     connect(tj,po); connect(ti,po);
 
     nactions+=2;
-    *p0action = pi1; // initial place of action
+    *p0action = pi1; // initial place of main action returned for the table of actions to be considered for ER
 
     // store timed action for joint interrupts
     timed_action_wait_map[name]=(Place *)(next(next(pi2)));
@@ -439,13 +439,14 @@ Place *PNPGenerator::genLinearPlan(Place *pi, string plan, bool allinstack)
             }
 
             if (timevalue>0) {
-                Place *poa;
+                Place *poa; // plave to save in the stack
                 p = pnp.addTimedAction(a,p,timevalue,&poa);
                 if (allinstack || addstack) addActionToStacks(a,poa);
             }
             else {
+                Place *poa=p; // plave to save in the stack
                 p = pnp.addAction(a,p);
-                if (allinstack || addstack) addActionToStacks(a,p);
+                if (allinstack || addstack) addActionToStacks(a,poa);
             }
         }
     }
