@@ -29,14 +29,17 @@ namespace pnpros
 	bool ROSConds::evaluateAtomicExternalCondition(const string& atom)
 	{
 
-        // cout <<  "    evaluateAtomicExternalCondition: " << atom << " begin ... " << endl;
+        int r=-1; bool result=false;
+
+        //cout <<  "    evaluateAtomicExternalCondition: " << atom << " begin ... " << endl;
 
         // This is necessary because multiple calls to the same condition can happen
         if (ConditionCache.find(atom) != ConditionCache.end()) {
-            return ConditionCache[atom];
+            result = ConditionCache[atom];
+            //cout <<  "    evaluateAtomicExternalCondition: " << atom << " CACHED result = " << result << " ... end" << endl;
+            return result;
         }
 
-        int r=-1; bool result=false;
 
         if (atom.find('@') == std::string::npos) {
             // Try to read condition from ROS parameters
@@ -69,7 +72,7 @@ namespace pnpros
 
         ConditionCache[atom]=result;
 
-        // cout <<  "    evaluateAtomicExternalCondition: " << atom << " ... end" << endl;
+        //cout <<  "    evaluateAtomicExternalCondition: " << atom << " result = " << result << " ... end" << endl;
 
         return result;
 	}

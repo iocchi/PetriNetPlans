@@ -26,6 +26,10 @@ PNPActionServer::PNPActionServer() : as(nh, "PNP", false)
     // as.registerCancelCallback(boost::bind(&PNPActionServer::cancelCallback, this, _1) );
     event_topic_sub = nh.subscribe("PNPConditionEvent", 10, 
                 &PNPActionServer::addEvent_callback, this);  
+
+    active_places_sub = nh.subscribe("pnp/currentActivePlaces", 10, 
+                &PNPActionServer::active_places_callback, this);
+
     global_PNPROS_variables.clear();
 }
 
@@ -133,7 +137,7 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
          pnp_msgs::PNPCondition::Response &res)  {
 
 
-    // cout << "EvalConditionWrapper started with cond: " << req.cond << endl;
+    // cout << "-- EvalConditionWrapper started with cond: " << req.cond << endl;
 
     int r0 = -1; // partial result
 
@@ -169,17 +173,17 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
     int r1 = evalCondition(req.cond);
     int r2 = check_for_event(req.cond);
 
-	//cout << "EvalConditionWrapper  " << req.cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
+	// cout << "-- EvalConditionWrapper  " << req.cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
 
     int result=-1;
-    if (r0!=-1) result=r0;
+    if (r0!=-1) result=r0; // cached value has priority
 	else if (r1!=-1) result=r1; 
 	else result=r2;
  
     //TODO implement unknown value of a condition in PNP
     if (result==-1) result=0;
 
-	//cout << " RESULT = " << result << endl;
+	// cout << "-- EvalConditionWrapper RESULT = " << result << endl;
 	
     ConditionCache[req.cond] = result;
     res.truth_value = result;
@@ -339,6 +343,13 @@ bool PNPActionServer::evalCondition(string condition) {
 
 #endif
 
+/* This function is called when a PNP step is over.
+ * Here it is used just to clear the cache of the conditions 
+ */
+void PNPActionServer::active_places_callback(const std_msgs::String::ConstPtr& msg)
+{
+    ConditionCache.clear();
+}
 
 /* The addEvent_callback is called when a string is published to the addEvent topic.
 * When this happens, a new Event is created with the current timestamp and the string received as eventName.

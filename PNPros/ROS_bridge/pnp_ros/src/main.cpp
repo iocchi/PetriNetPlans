@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 				
 				executor.setMainPlan(planName);
 				
-				while (!executor.goalReached() && ros::ok())
+				while (!executor.goalReached() && !executor.failReached() && ros::ok())
 				{
 					String activePlaces;
 					
@@ -249,6 +249,7 @@ int main(int argc, char** argv)
 
                         while (!executor->goalReached() && !executor->failReached() && ros::ok() && planToExec=="")
                         {
+
                             executor->execMainPlanStep();
 
                             String activePlaces;
@@ -262,8 +263,8 @@ int main(int argc, char** argv)
                                 activePlaces.data += *it;
                             }
 
-                            if (activePlaces.data != "")
-                                currentActivePlacesPublisher.publish(activePlaces);
+                            // also used to notify PNPAS that a PNP step is just over
+                            currentActivePlacesPublisher.publish(activePlaces);
 
                             rate.sleep();
                         }

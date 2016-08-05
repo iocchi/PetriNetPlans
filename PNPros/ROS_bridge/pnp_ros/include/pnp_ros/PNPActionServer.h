@@ -59,7 +59,7 @@ protected:
     ros::ServiceServer clearBuffer_service;
     ros::ServiceServer getVarValue_service;
     ros::ServiceServer setVarValue_service;
-    ros::Subscriber event_topic_sub;
+    ros::Subscriber event_topic_sub, active_places_sub;
 
     boost::mutex state_mutex;
     boost::mutex run_mutex;
@@ -184,6 +184,7 @@ protected:
 
     // Condition evaluation
     void addEvent_callback(const std_msgs::String::ConstPtr& msg);
+    void active_places_callback(const std_msgs::String::ConstPtr& msg);
     int check_for_event(string cond);
     void remove_old_elements();
     bool EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,

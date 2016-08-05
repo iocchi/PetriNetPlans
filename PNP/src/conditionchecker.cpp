@@ -30,7 +30,7 @@ bool PetriNetPlans::ConditionChecker::evaluateCondition(const string& condition)
     if (condition.substr(0,2)=="(("  &&  condition.substr(l-2,2)=="))" )
         cnd = condition.substr(1,l-2);
     
-// PNP_OUT("Parsing " << condition << " begin ...");
+    // PNP_OUT("Parsing " << condition << " begin ...");
     theLexer->setString(cnd);
     int r = theParser->parse();
     // PNP_OUT("Parsing " << condition << " ... end");
