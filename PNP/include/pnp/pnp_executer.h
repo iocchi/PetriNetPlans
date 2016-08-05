@@ -70,6 +70,13 @@ public:
 	*/
 	bool goalReached();
 	
+	/** 
+	* \brief Tests whether the main plan is in a fail state
+	* 
+	* \return \c true iff the main plan is in a fail state
+	*/
+	bool failReached();
+
 	/**
 	*\brief Returns the current active places.
 	*

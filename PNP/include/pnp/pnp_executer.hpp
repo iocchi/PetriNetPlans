@@ -40,13 +40,21 @@ std::string PnpExecuter<PnpPlanClass>::getMainPlanName() const {
 }
 
 /** 
-* \todo implement a planFailed() as well, to test whether the main plan is
-* in a fail state.
+* Return whether the main plan is in a goal state.
 */
 template<typename PnpPlanClass>
 bool PnpExecuter<PnpPlanClass>::goalReached() {
 
 	return mainPlan->finished();
+}
+
+/** 
+* Return whether the main plan is in a fail state.
+*/
+template<typename PnpPlanClass>
+bool PnpExecuter<PnpPlanClass>::failReached() {
+
+	return mainPlan->failed();
 }
 
 

@@ -188,14 +188,14 @@ int main(int argc, char** argv)
 	} // if learning
 	else
 	{		
-		while (ros::ok())
+        while (ros::ok())
 		{
 			if (planToExec!="") {
 			  planName = planToExec;
 			  planToExec = "";
 			}			
 
-			if (planName=="stop") {
+            if (planName=="stop") {
 			  cerr << "\033[22;31;1mWaiting for a plan...\033[0m" << endl;
 
 			  while (planToExec=="" && ros::ok()) {
@@ -214,81 +214,90 @@ int main(int argc, char** argv)
         executor.setMainPlan(planName);
         executor.setObserver(new_observer);
 #endif			
-			else {
+            else {
 			  
-			  cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m  autorestart: " << autorestart <<
-			  " use_java_connection: " << use_java_connection << endl;
+                cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m  autorestart: " << autorestart <<
+                " use_java_connection: " << use_java_connection << endl;
 
-			  PnpExecuter<PnpPlan> *executor = NULL;
-			  
-			  // The executor owns the instantiator.
-			  try {
-			    ExecutableInstantiator* i = new ROSInst(conditionChecker,planFolder);
-			    if (i!=NULL)
-			      executor = new PnpExecuter<PnpPlan>(i);
-			  }
-			  catch(int e) {
-			    cerr << "No plan found!!!" << endl;
-			    planToExec="stop"; continue;
-			  }
+                PnpExecuter<PnpPlan> *executor = NULL;
 
-			  if (executor!=NULL) {
-			    
-			      if (use_java_connection)
-                    cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
-			      
-			      ConnectionObserver observer(planName, use_java_connection);
-			      PlanObserver* new_observer = &observer;
+                // The executor owns the instantiator.
+                try {
+                ExecutableInstantiator* i = new ROSInst(conditionChecker,planFolder);
+                if (i!=NULL)
+                  executor = new PnpExecuter<PnpPlan>(i);
+                }
+                catch(int e) {
+                cerr << "No plan found!!!" << endl;
+                planToExec="stop"; continue;
+                }
 
-			      executor->setMainPlan(planName);
-			      executor->setObserver(new_observer);
-			      
-			      if (executor->getMainPlanName()!="") {
-				
-				cout << "Starting " << executor->getMainPlanName() << endl;
-				
-				while (!executor->goalReached() && ros::ok() && planToExec=="")
-				{
-					executor->execMainPlanStep();
-				  
-					String activePlaces;
-					
-					vector<string> nepForTest = executor->getNonEmptyPlaces();
-					
-					activePlaces.data = "";
-					
-					for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
-					{
-						activePlaces.data += *it;
-					}
-					
-					currentActivePlacesPublisher.publish(activePlaces);
-					
-					rate.sleep();
-				}
-				
-				if (executor->goalReached()) {
-				    cout << "GOAL REACHED!!!" << endl;
-				    String activePlaces;
-				    activePlaces.data = "goal";
-                    currentActivePlacesPublisher.publish(activePlaces);
-                    if (!autorestart)
-                      planToExec="stop";
-				}
-				else {
-				    cout << "PLAN STOPPED OR CHANGED!!!" << endl;
-				    String activePlaces;
-				    activePlaces.data = "abort";
-				    currentActivePlacesPublisher.publish(activePlaces);			    
-				}
+                if (executor!=NULL) {
 
-			      } // if executor getMainPlanName ...
-			      
-                  delete executor;
+                    if (use_java_connection)
+                        cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
 
-              } // if executor!=NULL
+                    ConnectionObserver observer(planName, use_java_connection);
+                    PlanObserver* new_observer = &observer;
 
-			} // else
+                    executor->setMainPlan(planName);
+                    executor->setObserver(new_observer);
+
+                    if (executor->getMainPlanName()!="") {
+
+                        cout << "Starting " << executor->getMainPlanName() << endl;
+
+                        while (!executor->goalReached() && !executor->failReached() && ros::ok() && planToExec=="")
+                        {
+                            executor->execMainPlanStep();
+
+                            String activePlaces;
+
+                            vector<string> nepForTest = executor->getNonEmptyPlaces();
+
+                            activePlaces.data = "";
+
+                            for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
+                            {
+                                activePlaces.data += *it;
+                            }
+
+                            if (activePlaces.data != "")
+                                currentActivePlacesPublisher.publish(activePlaces);
+
+                            rate.sleep();
+                        }
+
+                        if (executor->goalReached()) {
+                            cout << "GOAL NODE REACHED!!!" << endl;
+                            String activePlaces;
+                            activePlaces.data = "goal";
+                            currentActivePlacesPublisher.publish(activePlaces);
+                            if (!autorestart)
+                              planToExec="stop";
+                        }
+                        if (executor->failReached()) {
+                            cout << "FAIL NODE REACHED!!!" << endl;
+                            String activePlaces;
+                            activePlaces.data = "fail";
+                            currentActivePlacesPublisher.publish(activePlaces);
+                            if (!autorestart)
+                              planToExec="stop";
+                        }
+                        else {
+                            cout << "PLAN STOPPED OR CHANGED!!!" << endl;
+                            String activePlaces;
+                            activePlaces.data = "abort";
+                            currentActivePlacesPublisher.publish(activePlaces);
+                        }
+
+                    } // if executor getMainPlanName ...
+
+                    delete executor;
+
+                } // if executor!=NULL
+
+            } // else
 		} // while
 	}
 	
