@@ -276,7 +276,7 @@ int main(int argc, char** argv)
                             if (!autorestart)
                               planToExec="stop";
                         }
-                        if (executor->failReached()) {
+                        else if (executor->failReached()) {
                             cout << "FAIL NODE REACHED!!!" << endl;
                             String activePlaces;
                             activePlaces.data = "fail";
