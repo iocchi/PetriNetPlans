@@ -694,9 +694,9 @@ void PNPGenerator::applyExecutionRules() {
                 
                 Transition *tsi = pnp.addInterrupt(current_place,eit->condition,pi);
                 
-                cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
+                //cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
                 if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
-                    cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
+                    //cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
                     Place *wait_exec_place = pnp.timed_action_wait_exec_place[current_action_param];
                     pnp.connect(wait_exec_place,tsi);
                 }
