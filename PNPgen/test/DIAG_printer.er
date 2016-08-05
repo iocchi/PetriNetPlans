@@ -1,7 +1,9 @@
-*if* (and personhere closetotarget) *during* goto *do* skip_action
+#*if* (and personhere closetotarget) *during* goto *do* skip_action
+*if* (and personhere closetotarget) *during* goto *do* restart_action
 #*if* (and personhere (not closetotarget)) *during* goto *do* say_MoveAway; waitfor_freespace; restart_action
 #*if* obstacle *during* goto *do* lookForPerson; say_MoveObstacle; waitfor_freespace; restart_action
 #*if* lowbattery *during* goto *do* goto_rechargeStation; fail_plan
 *if* (not personhere) *during* say *do* lookForPerson*; restart_action
+###*if* (not personhere) *during* say *do* skip_action
 #*if* timeout_lookForPerson *during* lookForPerson *do* goto_home; restart_plan
 

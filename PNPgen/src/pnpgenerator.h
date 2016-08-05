@@ -140,7 +140,8 @@ protected:
 public:
 
     Place *pinit; // init place of the plan
-    map<string, Place*> timed_action_wait_map; // action name, place of corresponding wait action for timed actions
+    map<string, Place*> timed_action_wait_exec_place; // exec place of corresponding wait action for timed actions
+    map<string, Place*> timed_action_fork_place; // fork place of timed actions
 
     PNP(string _name);
     string getName() { return name; }
