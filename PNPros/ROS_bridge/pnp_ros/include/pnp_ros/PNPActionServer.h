@@ -217,12 +217,13 @@ protected:
     void update_variable_with_value(string, string);
     void internal_clear_buffer();
 
+public:
     // Predefined actions
-    void none(string params, bool *run);  // no action
-    void wait(string params, bool *run);  // wait for <params> seconds
-    void waitfor(string params, bool *run); // wait until <params> condition is true, params can be A or not_A
-    void restartcurrentplan(string params, bool *run); // restart the current plan
-    void stopcurrentplan(string params, bool *run); // stop the current plan
+    virtual void none(string params, bool *run);  // no action
+    virtual void wait(string params, bool *run);  // wait for <params> seconds
+    virtual void waitfor(string params, bool *run); // wait until <params> condition is true, params can be A or not_A
+    virtual void restartcurrentplan(string params, bool *run); // restart the current plan
+    virtual void stopcurrentplan(string params, bool *run); // stop the current plan
 
 };
 
