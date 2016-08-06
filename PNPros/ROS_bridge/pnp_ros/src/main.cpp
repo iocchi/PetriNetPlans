@@ -24,15 +24,16 @@ using namespace pnpros;
 using namespace pnpros::LearnPNP;
 using std_msgs::String;
 
+#define TOPIC_PLANTOEXEC "planToExec"
 
-#define TOPIC_PLAN_TO_EXEC "planToExec"
+
 std::string planToExec = "";
 
 // rostopic pub /robot_0/planToExec std_msgs/String "data: 'stop'" --once
 void planToExecuteCallback(const std_msgs::String::ConstPtr& msg)
 {
   planToExec = msg->data;
-  ROS_INFO("Plan received from topic %s. Executing plan %s ... ", TOPIC_PLAN_TO_EXEC, planToExec.c_str());
+  ROS_INFO("Plan received from topic %s. Executing plan %s ... ", TOPIC_PLANTOEXEC, planToExec.c_str());
   
 }
 
@@ -53,16 +54,16 @@ int main(int argc, char** argv)
 	
 	ros::NodeHandle n, np("~");
 	
-	ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLAN_TO_EXEC, 1, planToExecuteCallback);
+    ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLANTOEXEC, 1, planToExecuteCallback);
 	
 	ExternalConditionChecker* conditionChecker;
-	string planName = "test1", planFolder = "plans/";
+    string planName = "stop", currentPlanName="stop", planFolder = "plans/";
 	int episodes, epochs, learningPeriod, samples;
 
 	bool learning = false, logPlaces = false, autorestart = false;
 	bool use_java_connection = false;
 	
-	np.param("current_plan",planName,string("test1"));
+    np.param("current_plan",planName,string("stop"));
 	np.param("plan_folder",planFolder,string("plans/"));
 	np.param("learning",learning,false);
 	np.param("autorestart",autorestart,false);
@@ -191,7 +192,10 @@ int main(int argc, char** argv)
         while (ros::ok())
 		{
 			if (planToExec!="") {
-			  planName = planToExec;
+                if (planToExec=="<currentplan>")
+                    planName = currentPlanName;
+                else
+                    planName = planToExec;
 			  planToExec = "";
 			}			
 
@@ -215,6 +219,8 @@ int main(int argc, char** argv)
         executor.setObserver(new_observer);
 #endif			
             else {
+
+                currentPlanName = planName;
 			  
                 cerr << "\033[22;31;1mExecuting plan: " << planName << "\033[0m  autorestart: " << autorestart <<
                 " use_java_connection: " << use_java_connection << endl;
