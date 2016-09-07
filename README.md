@@ -3,6 +3,8 @@ Petri Net Plans
 ===============
 
 This repository contains Petri Net Plans library, PNP ROS bridge and some sample applications.
+More information on the PNP web site: pnp.dis.uniroma1.it
+
 
 This master branch contains up-to-date development, with hydro/indigo version of PNPros.
 
