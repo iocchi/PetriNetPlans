@@ -311,9 +311,9 @@ Place* PNP::addTimedAction(string name, Place *p0, int timevalue, Place **p0acti
     nactions+=2;
     *p0action = pi1; // initial place of main action returned for the table of actions to be considered for ER
 
-    // store timed action info for joint interrupts
-    timed_action_wait_exec_place[name]=(Place *)(next(next(pi2)));
-    timed_action_fork_place[name]=p0;
+    // store timed action info for joint interrupts using intial place as identifier
+    timed_action_wait_exec_place[pi1]=(Place *)(next(next(pi2)));
+    timed_action_fork_place[pi1]=p0;
 
     return po;
 }
@@ -708,10 +708,8 @@ void PNPGenerator::applyExecutionRules() {
                 else
                     tsi = pnp.addInterrupt(current_place,eit->condition,pi);
                 
-                //cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
-                if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
-                    //cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
-                    Place *wait_exec_place = pnp.timed_action_wait_exec_place[current_action_param];
+                if (pnp.timed_action_wait_exec_place.find(current_place)!=pnp.timed_action_wait_exec_place.end()) {
+                    Place *wait_exec_place = pnp.timed_action_wait_exec_place[current_place];
                     pnp.connect(wait_exec_place,tsi);
                 }
 
@@ -723,16 +721,16 @@ void PNPGenerator::applyExecutionRules() {
                     pnp.connectPlaces(po,pnp.pinit);
                 }
                 else if (R=="restart_action") {
-                    if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
+                    if (pnp.timed_action_wait_exec_place.find(current_place)!=pnp.timed_action_wait_exec_place.end()) {
                         //timed action
-                        Place *pd = pnp.timed_action_fork_place[current_action_param];
+                        Place *pd = pnp.timed_action_fork_place[current_place];
                         pnp.connectPlaces(po,pd);
                     }
                     else
                         pnp.connectPlaces(po,current_place);
                 }
                 else if (R=="skip_action") {
-                    if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
+                    if (pnp.timed_action_wait_exec_place.find(current_place)!=pnp.timed_action_wait_exec_place.end()) {
                         //timed action
                         Place *pd = (Place *)(pnp.next(pnp.next(pnp.endPlaceOf(current_place))));
                         pnp.connectPlaces(po,pd);
