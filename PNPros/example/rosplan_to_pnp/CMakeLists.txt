@@ -134,7 +134,7 @@ link_directories($ENV{PNPGEN_LIB})
 # add_dependencies(rosplan_to_pnp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(rosplan_to_pnp_node src/rosplan_interface.cpp ${PNPTRANSL_SOURCES})
+ add_executable(rosplan_to_pnp_node src/pnp_rosplan_interface.cpp ${PNPTRANSL_SOURCES})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above

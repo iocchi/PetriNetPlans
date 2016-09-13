@@ -129,7 +129,8 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
       this->p[0].print();
 
     f.close();
-    this->create_PNP(this->plan_name,this->p);
+    string pl_name = "AUTOGEN_"+this->plan_name;
+    this->create_PNP(pl_name,this->p);
   }
 
   void DigraphTransl::write_pnml(vector<ConditionalPlan> &v){
