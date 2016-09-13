@@ -70,7 +70,7 @@ public:
     void setName(string _name) {
         name=_name;
     }
-    
+
     string getName() { return name; }
 };
 
@@ -135,7 +135,7 @@ protected:
     vector<Transition*> T;
     vector<Edge*> E;
     int nactions;
-    // ??? map<string, vector<Place *> > initPlace; // initial place for each instance of an action    
+    // ??? map<string, vector<Place *> > initPlace; // initial place for each instance of an action
 
 public:
 
@@ -207,7 +207,7 @@ private:
     void addActionToStacks(string a, Place *p) {
         ASS.push(make_pair(a,p)); ASE.push(make_pair(a,p));
     }
-    
+
     bool parseERline(const string line, string &action, string &cond, string &plan);
 
 public:
@@ -224,6 +224,8 @@ public:
     // Generation of PNP
     bool genFromPolicy(Policy &p);
     bool genFromConditionalPlan(ConditionalPlan &plan);
+    bool genFromConditionalPlan_loop(ConditionalPlan &plan,
+				     ConditionalPlan& final_state, map<string,pair<string,vector<ActionOutcome> > > state_action_out);
     bool genFromConditionalPlan_r(ConditionalPlan *plan, Place *place);
 
 
@@ -236,13 +238,13 @@ public:
     void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);
     void applySocialRules();
     void applyExecutionRules();
-        
+
     void readERFile(const char* filename);
     void readERFile(const string& filename) { readERFile(filename.c_str()); }
 
     Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
     Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);
-    
+
     Place* addAction(string action, Place *place) {
         addActionToStacks(action,place);
         return pnp.addAction(action,place);

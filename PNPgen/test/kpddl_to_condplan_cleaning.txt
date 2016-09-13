@@ -1,0 +1,146 @@
+plan{ 
+
+ n_states=70
+
+ 0[label=69,actions=enter_r14]
+ 1[label=1,actions=enter_r6]
+ 2[label=2,actions=scan_r9]
+ 3[label=3,actions=exit_r10]
+ 4[label=4,actions=scan_r8]
+ 5[label=5,actions=enter_r9]
+ 6[label=6,actions=exit_r6]
+ 7[label=7,actions=enter_r5]
+ 8[label=8,actions=scan_r5]
+ 9[label=9,actions=scan_r14]
+ 10[label=10,actions=scan_r10]
+ 11[label=11,actions=exit_r14]
+ 12[label=12,actions=enter_r13]
+ 13[label=13,actions=scan_r13]
+ 14[label=14,actions=exit_r11]
+ 15[label=15,actions=enter_r10]
+ 16[label=16,actions=scan_r3]
+ 17[label=17,actions=exit_r13]
+ 18[label=18,actions=enter_r12]
+ 19[label=19,actions=scan_r12]
+ 20[label=20,actions=exit_r12]
+ 21[label=21,actions=enter_r11]
+ 22[label=22,actions=exit_r8]
+ 23[label=23,actions=enter_r7]
+ 24[label=24,actions=exit_r5]
+ 25[label=25,actions=enter_r4]
+ 26[label=26,actions=exit_r9]
+ 27[label=27,actions=enter_r8]
+ 28[label=28,actions=scan_r4]
+ 29[label=29,actions=scan_r7]
+ 30[label=30,actions=scan_r6]
+ 31[label=31,actions=scan_r11]
+ 32[label=32,actions=exit_r7]
+ 33[label=33,actions=exit_r4]
+ 34[label=34,actions=enter_r3]
+ 35[label=35,actions=exit_r3]
+ 36[label=36,actions=enter_r2]
+ 37[label=37,actions=scan_r2]
+ 38[label=38,actions=exit_r2]
+ 39[label=39,actions=enter_r1]
+ 40[label=40,actions=scan_r1]
+ 41[label=41,actions=take_out_r1]
+ 42[label=42,actions=enter_r1]
+ 43[label=43,actions=take_out_r2]
+ 44[label=44,actions=enter_r2]
+ 45[label=45,actions=take_out_r3]
+ 46[label=46,actions=enter_r3]
+ 47[label=47,actions=take_out_r4]
+ 48[label=48,actions=enter_r4]
+ 49[label=49,actions=take_out_r5]
+ 50[label=50,actions=enter_r5]
+ 51[label=51,actions=take_out_r6]
+ 52[label=52,actions=enter_r6]
+ 53[label=53,actions=take_out_r7]
+ 54[label=54,actions=enter_r7]
+ 55[label=55,actions=take_out_r8]
+ 56[label=56,actions=enter_r8]
+ 57[label=57,actions=take_out_r9]
+ 58[label=58,actions=enter_r9]
+ 59[label=59,actions=take_out_r10]
+ 60[label=60,actions=enter_r10]
+ 61[label=61,actions=take_out_r11]
+ 62[label=62,actions=enter_r11]
+ 63[label=63,actions=take_out_r12]
+ 64[label=64,actions=enter_r12]
+ 65[label=65,actions=take_out_r13]
+ 66[label=66,actions=enter_r13]
+ 67[label=67,actions=take_out_r14]
+ 68[label=68,actions=enter_r14]
+ 69[label=GOAL,actions=]
+
+ "69" -> "9"
+ "1" -> "30"
+ "2" [f] -> "26" ; "2" [t] -> "57"
+ "3" -> "5"
+ "4" [f] -> "22" ; "4" [t] -> "55"
+ "5" -> "2"
+ "6" -> "7"
+ "7" -> "8"
+ "8" [f] -> "24" ; "8" [t] -> "49"
+ "9" [f] -> "11" ; "9" [t] -> "67"
+ "10" [f] -> "3" ; "10" [t] -> "59"
+ "11" -> "12"
+ "12" -> "13"
+ "13" [f] -> "17" ; "13" [t] -> "65"
+ "14" -> "15"
+ "15" -> "10"
+ "16" [f] -> "35" ; "16" [t] -> "45"
+ "17" -> "18"
+ "18" -> "19"
+ "19" [f] -> "20" ; "19" [t] -> "63"
+ "20" -> "21"
+ "21" -> "31"
+ "22" -> "23"
+ "23" -> "29"
+ "24" -> "25"
+ "25" -> "28"
+ "26" -> "27"
+ "27" -> "4"
+ "28" [f] -> "33" ; "28" [t] -> "47"
+ "29" [f] -> "32" ; "29" [t] -> "53"
+ "30" [f] -> "6" ; "30" [t] -> "51"
+ "31" [f] -> "14" ; "31" [t] -> "61"
+ "32" -> "1"
+ "33" -> "34"
+ "34" -> "16"
+ "35" -> "36"
+ "36" -> "37"
+ "37" [f] -> "38" ; "37" [t] -> "43"
+ "38" -> "39"
+ "39" -> "40"
+ "40" [] -> "GOAL" ; "40" [t] -> "41"
+ "41" -> "42"
+ "42" -> "40"
+ "43" -> "44"
+ "44" -> "37"
+ "45" -> "46"
+ "46" -> "16"
+ "47" -> "48"
+ "48" -> "28"
+ "49" -> "50"
+ "50" -> "8"
+ "51" -> "52"
+ "52" -> "30"
+ "53" -> "54"
+ "54" -> "29"
+ "55" -> "56"
+ "56" -> "4"
+ "57" -> "58"
+ "58" -> "2"
+ "59" -> "60"
+ "60" -> "10"
+ "61" -> "62"
+ "62" -> "31"
+ "63" -> "64"
+ "64" -> "19"
+ "65" -> "66"
+ "66" -> "13"
+ "67" -> "68"
+ "68" -> "9"
+
+}

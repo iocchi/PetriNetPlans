@@ -1,4 +1,5 @@
 #include "pnpgenerator.h"
+#include <ros/package.h>
 #include <fstream>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
@@ -259,16 +260,16 @@ Place* PNP::addAction(string name, Node *p0) {
 vector<Place*> PNP::addSensingAction(string name, Place* p0, vector<string> outcomes) {
     vector<Place *> v;
 
-    Transition *ts = addTransition(name+".start");  
-    Place *pe = addPlace(name+".exec"); 
+    Transition *ts = addTransition(name+".start");
+    Place *pe = addPlace(name+".exec");
     ts->setY(p0->getY()); pe->setY(p0->getY());  // same line as p0
     ts->setX(p0->getX()+1);  pe->setX(p0->getX()+2); // X pos after p0
     connect(p0,ts); connect(ts,pe);
 
     int k=0;
     for (vector<string>::iterator it = outcomes.begin(); it!=outcomes.end(); it++, k++) {
-        Transition *te = addTransition("["+(*it)+"] "+name+".end"); 
-        Place *pf = addPlace("X",-1);  
+        Transition *te = addTransition("["+(*it)+"] "+name+".end");
+        Place *pf = addPlace("X",-1);
         te->setY(p0->getY()+k); pf->setY(p0->getY()+k);
         te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
         connect(pe,te); connect(te,pf);
@@ -395,16 +396,15 @@ PNPGenerator::PNPGenerator(string name) : pnp(name) {
 
 
 void PNPGenerator::save(const char* filename) {
-    
+
     stringstream ss;
-    
     if (filename==NULL) {
         ss << pnp.getName().c_str() << ".pnml";
     }
     else {
         ss << filename;
         if (strcasestr(filename,".pnml")==NULL)
-            ss << ".pnml";        
+            ss << ".pnml";
     }
     std::ofstream of(ss.str().c_str());
     of << pnp;
@@ -472,7 +472,7 @@ void PNPGenerator::genHumanAction(string say_ask, string say_do, string action_d
     Place *p2 = pnp.addAction(say_ask,p1); addActionToStacks(say_ask,p1);
     pair<Transition*,Place*> ptg = pnp.addCondition(" ",p2);
     Place *p = ptg.second;
-    
+
     Transition* t1 = pnp.addTransition("["+condition+"]"); t1->setY(p->getY()-1); t1->setX(p->getX()+1);
     Transition* t2 = pnp.addTransition("[saidYes]"); t2->setY(p->getY()+0); t2->setX(p->getX()+1);
     Transition* t3 = pnp.addTransition("[saidNo]");  t3->setY(p->getY()+1); t3->setX(p->getX()+1);
@@ -492,11 +492,11 @@ void PNPGenerator::genHumanAction(string say_ask, string say_do, string action_d
 
     // say_dont
     Place *pf1 = pnp.addAction(say_dont,pn); addActionToStacks(say_dont,pn);
-    Transition* tf1 = pnp.addTransition("[not humanDetected]"); tf1->setY(pf1->getY()); tf1->setX(pf1->getX()+1); 
+    Transition* tf1 = pnp.addTransition("[not humanDetected]"); tf1->setY(pf1->getY()); tf1->setX(pf1->getX()+1);
     pnp.connect(pf1,tf1); pnp.connect(tf1,pnp.pinit);
 
     pnp.connect(t1,pg); pnp.connect(t4,pnp.pinit);
-    
+
     pnp.addInterrupt(pnp.pinit, condition, pg);
 
 }
@@ -593,7 +593,7 @@ void PNPGenerator::applySocialRules() {
                   if (!found)
                     nn = pnp.next(nn);
                 }
-		
+
                 Node* t1 = pnp.disconnect(nn);
                 Transition* tf = pnp.addTransition(" "); tf->setX(nn->getX()+1); tf->setY(nn->getY());
                 pnp.connect(nn,tf);
@@ -626,33 +626,33 @@ void PNPGenerator::applySocialRules() {
 bool PNPGenerator::parseERline(const string line, string &action, string &cond, string &plan)
 {
     bool r=false;
-    //printf("### Parsing: %s\n",line.c_str());   
+    //printf("### Parsing: %s\n",line.c_str());
 
     if (line[0]=='#') // comment
         return false;
 
     vector<string> strs;
     boost::algorithm::split_regex( strs, line, boost::regex( "\\*[^ ]*\\*" ) ) ;
-    
+
     if (strs.size()>=3) {
         action=strs[2]; boost::algorithm::trim(action);
         cond=strs[1]; boost::algorithm::trim(cond);
         plan=strs[3]; boost::algorithm::trim(plan);
         r = true;
-        
+
         //printf("### action: [%s] ",action.c_str());
         //printf("cond: [%s] ",cond.c_str());
         //printf("plan: [%s]\n",plan.c_str());
-    } 
-    
+    }
+
     return r;
 }
 
 
 void PNPGenerator::readERFile(const char*filename) {
-    
+
     string line,action,cond,recoveryplan;
-    
+
     ifstream f(filename);
     while(getline(f,line)) {
         if (parseERline(line,action,cond,recoveryplan))
@@ -681,7 +681,7 @@ void PNPGenerator::applyExecutionRules() {
 
                 boost::trim(eit->recoveryplan);
                 vector<string> v; boost::split(v,eit->recoveryplan,boost::is_any_of("; "),boost::token_compress_on);
-                
+
                 Place *po = NULL; string R="";
                 Place *pi = pnp.addPlace("I",-1); pi->setY(current_place->getY()-1); pi->setX(current_place->getX()+3);
 
@@ -707,7 +707,7 @@ void PNPGenerator::applyExecutionRules() {
                     tsi = pnp.addFail(current_place,pi);
                 else
                     tsi = pnp.addInterrupt(current_place,eit->condition,pi);
-                
+
                 //cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
                 if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
                     //cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
@@ -756,8 +756,8 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
     std::map<string,Place*> visited;
 
     cout << "Init: " << p.initial_state << endl;
-    
-    
+
+
     string current_state = p.initial_state;
     // add a first fixed transition from the init place to the initial state
     pair<Transition*,Place*> pa = pnp.addCondition("[]",pnp.pinit);
@@ -839,6 +839,82 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
     return !_error;
 }
 
+bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
+					       ConditionalPlan& final_state, map<string,pair<string,vector<ActionOutcome> > > state_action_out){
+
+  bool err = false; //check erros
+
+  map<string,Place*> visited;
+
+  cout << "Initial state " << plan.state << endl;
+  string current_state = plan.state;
+  pair<Transition*,Place*> pa = pnp.addCondition("[]",pnp.pinit);
+  Place* p1 = pa.second;
+  p1->setName(current_state);
+  visited[plan.state] = p1;
+
+  cout << "Final state " << final_state.state << endl;
+
+  stack< pair<string,Place*> > ss; ss.push(make_pair(current_state,p1));
+
+  while(!ss.empty()){
+    current_state = ss.top().first; Place* current_place = ss.top().second;
+    ss.pop();
+
+    cout << "PNPgen::  " << current_state << " : ";
+    string action = state_action_out[current_state].first;
+
+    if (action==""){
+      if (current_state != final_state.state)
+	cerr << "PNPgen Warning: No action found for state " << current_state << endl;
+        continue;
+    }
+    cout << action << " -> ";
+
+    vector<ActionOutcome> vo = state_action_out[current_state].second;
+    if (vo.size()==0){
+      cerr << "PNPgen ERROR: No successor state found for state " << current_state << " and action " << action  << endl;
+      err = true;
+      break;
+    }
+
+    Place *pe = addAction(action,current_place);  // pe: end place of action
+
+    // y coordinate of Petri Net layout
+    int dy=0;
+
+    vector<ActionOutcome>::iterator it;
+
+    for(it = vo.begin(); it != vo.end(); ++it){
+      string succ_state = it->successor->state;
+      string cond = it->observation;
+
+      if (cond[0]!='[') cond = "["+cond+"]";
+      cout << cond << " " << succ_state << "    ";
+
+      Place* ps = visited[succ_state];
+
+      // check if succ_state is already visited
+      if (ps==NULL) { // if not visited
+      	pair<Transition*,Place*> pa = pnp.addCondition(cond,pe,dy); dy++;
+      	Place* pc = pa.second;
+      	ss.push(make_pair(succ_state,pc));
+      	visited[succ_state]=pc;
+      	pc->setName(succ_state);
+      	// if (succ_state== final_state.state) pc->setName("goal");
+      }else { // if already visited
+	       pnp.addConditionBack(cond,pe, ps, dy); dy++;
+      }
+     } // for io
+
+
+     cout << endl;
+  }
+
+  return !err;
+
+}
+
 bool PNPGenerator::genFromConditionalPlan_r(ConditionalPlan *plan, Place *p0) {
     bool ret = true;
     cout << "PNPgen:: current state: " << plan->state << endl;
@@ -867,7 +943,7 @@ bool PNPGenerator::genFromConditionalPlan_r(ConditionalPlan *plan, Place *p0) {
     while (it!=plan->outcomes.end()) {
         Place *pc;
         if (it->observation!="[]") {
-            std::pair<Transition*,Place*> tp = pnp.addCondition(it->observation, p1); 
+            std::pair<Transition*,Place*> tp = pnp.addCondition(it->observation, p1);
             pc = tp.second;
         }
         else {
@@ -878,13 +954,12 @@ bool PNPGenerator::genFromConditionalPlan_r(ConditionalPlan *plan, Place *p0) {
             ret &= genFromConditionalPlan_r(it->successor,pc);
         it++;
     }
-    
+
 */
 
     return ret;
 }
 
 bool PNPGenerator::genFromConditionalPlan(ConditionalPlan &plan) {
-    return genFromConditionalPlan_r(&plan,pnp.pinit);    
+    return genFromConditionalPlan_r(&plan,pnp.pinit);
 }
-

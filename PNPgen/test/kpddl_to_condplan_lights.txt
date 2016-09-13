@@ -1,0 +1,54 @@
+plan{ 
+
+ n_states=24
+
+ 0[label=23,actions=enter_r6]
+ 1[label=1,actions=sense_light_r6]
+ 2[label=2,actions=enter_r2]
+ 3[label=3,actions=exit_r3]
+ 4[label=4,actions=exit_r5]
+ 5[label=5,actions=enter_r4]
+ 6[label=6,actions=sense_light_r4]
+ 7[label=7,actions=exit_r4]
+ 8[label=8,actions=turn_off_r1]
+ 9[label=9,actions=turn_off_r2]
+ 10[label=10,actions=turn_off_r5]
+ 11[label=11,actions=enter_r3]
+ 12[label=12,actions=sense_light_r3]
+ 13[label=13,actions=turn_off_r3]
+ 14[label=14,actions=turn_off_r4]
+ 15[label=15,actions=turn_off_r6]
+ 16[label=16,actions=sense_light_r2]
+ 17[label=17,actions=exit_r6]
+ 18[label=18,actions=enter_r5]
+ 19[label=19,actions=exit_r2]
+ 20[label=20,actions=enter_r1]
+ 21[label=21,actions=sense_light_r1]
+ 22[label=22,actions=sense_light_r5]
+ 23[label=GOAL,actions=]
+
+ "23" -> "1"
+ "1" [f] -> "17" ; "1" [t] -> "15"
+ "2" -> "16"
+ "3" -> "2"
+ "4" -> "5"
+ "5" -> "6"
+ "6" [f] -> "7" ; "6" [t] -> "14"
+ "7" -> "11"
+ "8" -> "GOAL"
+ "9" -> "19"
+ "10" -> "4"
+ "11" -> "12"
+ "12" [f] -> "3" ; "12" [t] -> "13"
+ "13" -> "3"
+ "14" -> "7"
+ "15" -> "17"
+ "16" [f] -> "19" ; "16" [t] -> "9"
+ "17" -> "18"
+ "18" -> "22"
+ "19" -> "20"
+ "20" -> "21"
+ "21" [] -> "GOAL" ; "21" [t] -> "8"
+ "22" [f] -> "4" ; "22" [t] -> "10"
+
+}

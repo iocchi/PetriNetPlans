@@ -18,13 +18,13 @@ include_directories(${PCRE_INCLUDE_DIRS})
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 include_directories(${PROJECT_SOURCE_DIR}/src/PRUMDP)
+include_directories(${PROJECT_SOURCE_DIR}/src/pnp_translator)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 
-ADD_LIBRARY(pnpgen SHARED src/pnpgenerator.cpp)
-
+ADD_LIBRARY(pnpgen SHARED src/pnpgenerator.cpp src/pnp_translator/digraph_transl.cpp)
 ADD_LIBRARY(prumdp SHARED src/PRUMDP/MDP.cpp src/PRUMDP/MDPsolve.cpp src/PRUMDP/PRUplus.cpp src/PRUMDP/PRUprint.cpp
     src/PRUMDP/PRU2MDP.cpp src/PRUMDP/PRU2MDPprogress.cpp src/PRUMDP/PRU2MDPstateStore.cpp src/PRUMDP/PRUconstraint.cpp
 )
