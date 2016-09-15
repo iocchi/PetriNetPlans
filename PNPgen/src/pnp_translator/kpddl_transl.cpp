@@ -1,12 +1,11 @@
-#include "condplan_translator.h"
-#include <stack>
-#include <algorithm>
+#include "kpddl_transl.h"
 
-class KPDDLTransl : public CondPlan_Translator{
-private:
-  vector<string> plan;
 
-  string find_state(int num){
+  KPDDLTransl::KPDDLTransl(string &path_to_file){
+    this->set_file(path_to_file);
+  }
+
+  string KPDDLTransl::find_state(int num){
     string res;
     for(int i = 0; i < this->plan.size(); i++){
       res = this->ltrim(this->plan[i]);
@@ -19,7 +18,7 @@ private:
     return "";
   }
 
-  ConditionalPlan make_state(string &state){
+  ConditionalPlan KPDDLTransl::make_state(string &state){
     
     vector<pair<string,int> > v;
     state = this->to_lowercase(state); //normalize the state
@@ -46,7 +45,7 @@ private:
 	boost::sregex_token_iterator it(temp.begin(), temp.end(), num);
 	string t = *it;
 	int to = atoi(t.c_str());
-	if(to == 0) pl.addOutcome(&this->p[this->p.size()-1]);
+	if(to == 0) pl.addOutcome(ActionOutcome(obs,&this->p[this->p.size()-1]));
 	else pl.addOutcome(ActionOutcome(obs,&this->p[to]));
 
 	temp = temp.substr(temp.find("   ")+1,temp.find("\n")-temp.find("   "));
@@ -65,15 +64,9 @@ private:
     
     return pl;
   }
-  
-  
+ 
 
-public:
-  KPDDLTransl(string &path_to_file){
-    this->set_file(path_to_file);
-  }
-
-  void read_file(){
+  void KPDDLTransl::read_file(){
     string line, init, goal;
     vector<string> plan;
     ifstream solution(this->file.c_str());
@@ -111,4 +104,3 @@ public:
 
   }
 
-};

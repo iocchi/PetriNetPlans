@@ -1,3 +1,6 @@
+#ifndef __CONDITONALPLAN_TRANSLATOR_H_INCLUDED__
+#define __CONDITONALPLAN_TRANSLATOR_H_INCLUDED__
+
 #include "../conditionalplan.h"
 #include <fstream>
 #include <string>
@@ -134,3 +137,6 @@ public:
   void setCondPlan(vector<ConditionalPlan> cp){ this->p = cp; }
   vector<ConditionalPlan> getCondPlan(){ return this->p; }
 };
+
+
+#endif

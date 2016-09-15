@@ -32,11 +32,13 @@ ADD_LIBRARY(prumdp SHARED src/PRUMDP/MDP.cpp src/PRUMDP/MDPsolve.cpp src/PRUMDP/
 add_executable(pnpgen_linear src/pnpgen_linear.cpp)
 add_executable(pnpgen_policy src/pnpgen_policy.cpp)
 add_executable(pnpgen_condplan src/pnpgen_condplan.cpp)
+add_executable(pnpgen_translator src/pnpgen_condplan_translator.cpp)
 add_executable(pnpgen_pru src/pnpgen_pru.cpp)
 
 target_link_libraries(pnpgen_linear pnpgen boost_regex)
 target_link_libraries(pnpgen_policy pnpgen boost_regex)
 target_link_libraries(pnpgen_condplan pnpgen boost_regex)
+target_link_libraries(pnpgen_translator pnpgen boost_regex)
 target_link_libraries(pnpgen_pru pnpgen prumdp boost_regex ${LibXML++_LIBRARIES} ${PCRE_LIBRARIES})
 
 

@@ -1,9 +1,10 @@
-#include "condplan_translator.h"
+#include "pddl_transl.h"
 
-class PDDLTransl : public CondPlan_Translator{
-private:
+  PDDLTransl::PDDLTransl(string &path_to_file){
+    this->set_file(path_to_file);
+  }
 
-  ConditionalPlan make_state(string &state){
+  ConditionalPlan PDDLTransl::make_state(string &state){
     ConditionalPlan cp;
     string state_name = state.substr(0, state.find(" ")-1);
     state_name = this->to_lowercase(state_name);
@@ -34,12 +35,7 @@ private:
     return cp;
   }
 
-public:
-  PDDLTransl(string &path_to_file){
-    this->set_file(path_to_file);
-  }
-
-  void read_file(){
+  void PDDLTransl::read_file(){
     string line, temp;
     vector<string> plan;
 
@@ -82,7 +78,7 @@ public:
 
   }
 
-  void write_plan(string file_to_write){
+  void PDDLTransl::write_plan(string file_to_write){
     ofstream out;
     out.open(file_to_write.c_str());
   
@@ -119,4 +115,3 @@ public:
     out.close();
   
   }
-};

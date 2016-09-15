@@ -3,13 +3,12 @@
 #include <iostream>
 #include <stack>
 
-#include "conditionalplan.h"
+// #include "conditionalplan.h"
 #include "pnpgenerator.h"
 
-// #include "pnp_translator/pddl_transl.cpp"
-// #include "pnp_translator/asp_transl.cpp"
+#include "pnp_translator/pddl_transl.cpp"
 #include "pnp_translator/rddl_transl.cpp"
-// #include "pnp_translator/kpddl_transl.cpp"
+#include "pnp_translator/kpddl_transl.cpp"
 // #include "pnp_translator/digraph_transl.cpp"
 
 #include "pnp_translator/rddl_parser.cpp"
@@ -76,7 +75,7 @@ void create_PNP_from_PDDL(const string& file){
   p[n-1].addOutcome(ActionOutcome("",new ConditionalPlan("GOAL","")));
 //   p[0].print();
 
-  string goal_name="SimpleSerialPlan";
+  string goal_name="AUTOGEN_PDDLPlan";
   cout << "Serial plan name: " << goal_name << endl;
   PNPGenerator pnpgen(goal_name);
 
@@ -150,72 +149,107 @@ void create_PNP_from_conditionalplan(const string& erfile) {
 
 
 int main(int argc, char** argv) {
-
-//     string erfile="";
+  
+  //     string erfile="";
 //     if (argc==2)
 //         erfile = string(argv[1]);
 //     
 //     create_PNP_from_conditionalplan(erfile);
+  
+  
+  if(argc != 3 || string(argv[1]) != "pddl" && string(argv[1]) != "kpddl"){
+    cout << "PNPgen_Translator: wrong usage!" << endl;
+    cout << "                   usage: ./pnpgen_translator <language_type> <path_to_file>" << endl;
+    cout << "                   <language_type>: pddl, kpddl" << endl;
+    cout << "                   <path_to_file>: (pddl) file is the FF planner output" << endl;
+    cout << "                                   (kpddl) file is the kplanner output" << endl;
+    
+    return 0;
+  }
+  
+  string lang = argv[1];
+  
+  string path = argv[2];
+  ifstream f(path.c_str());
+  if(!f.good()){ 
+    cout << "PNPgen_Translator: file doest not exist!" << endl;
+    f.close();
+    return 0;
+  }
+  else{   
+    string ext = path.substr(path.find("."),path.find("\n") - path.find("."));
+    if(ext != ".txt"){ 
+      cout << "PNPgen_Translator: wrong file format (must be .txt)" << endl;
+      f.close();
+      return 0;
+    }
+  }
+  f.close();
 
-
+  if(lang == "pddl"){
     //=============== PDDL TRANSLATION ===============
-//     string path = "/home/valerio/thesis/PDDL/ff_output.txt";
-//     string write_to = "test/pddl_to_condplan.txt";
-//     PDDLTransl pd(path);
-//     
-//     pd.read_file();
-//     cout << "file read" << endl;
-//     pd.write_plan(write_to); //write the translated plan to 'write_to'
-//     cout << "plan write" << endl;
-//     create_PNP_from_PDDL(write_to); //generate the PNP from the file 'write_to'
+//       string path = "/home/valerio/thesis/PDDL/ff_output.txt";
+    string write_to = "test/pddl_to_condplan.txt";
+    PDDLTransl pd(path);
+      
+    pd.read_file();
+    cout << "file read" << endl;
+    pd.write_plan(write_to); //write the translated plan to 'write_to'
+    cout << "plan write" << endl;
+    create_PNP_from_PDDL(write_to); //generate the PNP from the file 'write_to'
+  }
+  //=============== KPDDL TRANSLATION ===============
+  if(lang == "kpddl"){
+    string write_to = "test/kpddl_to_condplan.txt";
+    KPDDLTransl kpd(path);
+    kpd.read_file();
+    kpd.write_plan(write_to); //write the translated plan to 'write_to'
 
-    //=============== KPDDL TRANSLATION ===============
+
+    vector<ConditionalPlan> v = kpd.getCondPlan();
+    string goal_name="AUTOGEN_KPDDLPlan";
+    cout << "KPDDL Conditional Plan name: " << goal_name << endl;
+    create_PNP_from_KPDDL(v,goal_name);
+  }
+
+  return 0;
+
+    //=============== KPDDL FILES ===============
     //COACHES
-//     string path = "/home/valerio/thesis/PDDL/planners/KPlanner/plans/coaches.txt";
+//     string domain = "/home/valerio/thesis/PDDL/planners/KPlanner/plans/coaches.txt";
 //     string write_to = "test/kpddl_to_condplan";
 
     
   //LIGHTS
-//     string path = "/home/valerio/thesis/PDDL/planners/KPlanner/plans/lights.txt";
+//     string domain = "/home/valerio/thesis/PDDL/planners/KPlanner/plans/lights.txt";
 //     string write_to = "test/kpddl_to_condplan_lights.txt";
   
     //CLEANING
-//     string path = "/home/valerio/thesis/PDDL/planners/KPlanner/plans/cleaning.txt";
+//     string domain = "/home/valerio/thesis/PDDL/planners/KPlanner/plans/cleaning.txt";
 //     string write_to = "test/kpddl_to_condplan_cleaning.txt";
-
-//     KPDDLTransl kpd(path);
-//     kpd.read_file();
-//     kpd.write_plan(write_to); //write the translated plan to 'write_to'
-// 
-// 
-//     vector<ConditionalPlan> v = kpd.getCondPlan();
-//     string goal_name="SimpleKPDDLCondPlan_coaches";
-// //     string goal_name="SimpleKPDDLCondPlan_cleaning";
-//     cout << "KPDDL Conditional Plan name: " << goal_name << endl;
-//     create_PNP_from_KPDDL(v,goal_name);
+  
+    //DIAGO
+//     string domain = "";
+//     string write_to = "test/diago_followme.txt";
 
 
-    //=============== ASP TRANSLATION ===============
-    // string path2 = "/home/valerio/thesis/ASP/coaches/generated/clothes_4step.txt";
-    // ASPTransl asp(path2);
-    // asp.read_file();
     
     //=============== RDDL TRANSLATION ===============
 //     string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/rddl/test/dbn_prop.rddl";
 //     string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/rddl/test/pizza.rddl";
 //   string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/rddl/test/game_of_life_stoch.rddl";
   
-    string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/final_comp/rddl/elevators_mdp.rddl";
-    RDDLParser parser(rddl_file);
-    bool res;
-    res = parser.parse_actions();
-    if(res) res = parser.parse_states();
-    if(res) res = parser.find_conditionals();
-    else return -1;
-    
-    vector<Conditional> v = parser.get_conditionals();
-    for(vector<Conditional>::iterator it = v.begin(); it != v.end(); ++it)
-      cout << "node: " << (*it).node << " [t] " << (*it).true_case << " [f] " << (*it).false_case << endl;
+//     string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/final_comp/rddl/elevators_mdp.rddl";
+//     RDDLParser parser(rddl_file);
+//     bool res;
+//     res = parser.parse_actions();
+//     if(res) res = parser.parse_states();
+//     if(res) res = parser.find_conditionals();
+//     else return -1;
+//     
+//     vector<Conditional> v = parser.get_conditionals();
+//     for(vector<Conditional>::iterator it = v.begin(); it != v.end(); ++it)
+//       cout << "node: " << (*it).node << " [t] " << (*it).true_case << " [f] " << (*it).false_case << endl;
   
   //=============== DIGRAPH TRANSLATION ===============
 //   string path = "/home/valerio/thesis/ROSPlan/plan_graph_lights.dot";
