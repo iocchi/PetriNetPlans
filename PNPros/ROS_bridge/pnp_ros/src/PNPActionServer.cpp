@@ -660,8 +660,9 @@ std::string PNPActionServer::replace_vars_with_values(std::string params){
         splitted_parameters[i] = global_PNPROS_variables[key];
       else
       {
-        cerr << "\033[22;31;1m??? Variable " << key << " not initialized ???\033[0m" << endl;
-        throw new runtime_error("\033[22;31;1m??? Wrongly formatted transition name ???\033[0m");
+        ROS_WARN("Variable %s not initialized, passing it to the action", key.c_str());
+        // cerr << "\033[22;31;1m??? Variable " << key << " not initialized ???\033[0m" << endl;
+        // throw new runtime_error("\033[22;31;1m??? Wrongly formatted transition name ???\033[0m");
       }
         
     }
