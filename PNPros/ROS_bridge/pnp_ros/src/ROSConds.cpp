@@ -22,7 +22,7 @@ namespace pnpros
 		}
 		else
 		{
-			ROS_ERROR("Failed to call service conds.");
+			ROS_ERROR("Failed to call service conditions: %s.",srv.request.cond.c_str());
 		}
 	}
 	
@@ -31,6 +31,7 @@ namespace pnpros
 
         int r=-1; bool result=false;
 
+        //ROS_INFO("Eval atomic conditio: %s",atom.c_str());
         //cout <<  "    evaluateAtomicExternalCondition: " << atom << " begin ... " << endl;
 
         // This is necessary because multiple calls to the same condition can happen
@@ -48,31 +49,36 @@ namespace pnpros
         }
 
         if (r==-1) {
+            // Call the service
             pnp_msgs::PNPCondition srv;
 
             srv.request.cond = atom;
 
             // LI DEBUG::: It takes time. Use only if needed!
-            bool r = client.call(srv);
+            bool sr = client.call(srv);
 
-            if (r)
+            if (sr)
             {
                 // ROS_INFO("Cond: %s value: %d ", atom.c_str(), srv.response.truth_value);
-                result = srv.response.truth_value;
+                r = srv.response.truth_value;
+                // result = srv.response.truth_value;
             }
             else
             {
-                ROS_ERROR("Failed to call service conds.");
-                return false;
+                ROS_ERROR("Failed to call service conditions: %s.",srv.request.cond.c_str());
+                result = false;
             }
         }
-        else {
+
+        if (r!=-1) {
             result = (r==1);
+            ConditionCache[atom]=result;
         }
+        else
+            result = false;
 
-        ConditionCache[atom]=result;
 
-        //cout <<  "    evaluateAtomicExternalCondition: " << atom << " result = " << result << " ... end" << endl;
+        //cout <<  "    evaluateAtomicExternalCondition: " << atom << " r = " << r << " - result = " << result << " ... end" << endl;
 
         return result;
 	}

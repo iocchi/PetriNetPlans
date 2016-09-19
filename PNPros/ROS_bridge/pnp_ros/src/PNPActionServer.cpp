@@ -151,11 +151,13 @@ int PNPActionServer::doEvalCondition(string cond) {
         r0 = ConditionCache[cond];
     }
 
+    //cout << "-- EvalCondition " << cond << " ... " << endl;
+
     r1 = evalCondition(cond); // overwritten by subclass
     r2 = check_for_event(cond);
     r3 = evalConditionBuffer(cond); // check condition param buffer
 
-    // cout << "-- EvalCondition " << req.cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
+    //cout << "-- EvalCondition " << cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
 
     int result=-1;
     if (r0!=-1) result=r0; // cached value has priority
@@ -166,7 +168,7 @@ int PNPActionServer::doEvalCondition(string cond) {
     //TODO implement unknown value of a condition in PNP
     if (result==-1) result=0;
 
-    // cout << "-- EvalConditionWrapper RESULT = " << result << endl;
+    //cout << "-- EvalConditionWrapper RESULT = " << result << endl;
     return result;
 }
 
@@ -225,6 +227,8 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
 	
     ConditionCache[req.cond] = result;
     res.truth_value = result;
+
+    // cout << "-- EvalConditionWrapper ended with result: " << result << endl;
 
     return true;
 }
@@ -347,8 +351,18 @@ int PNPActionServer::evalConditionBuffer(string cond){
     int r=-1,v;
 
     string rospar = PARAM_PNPCONDITIONBUFFER + cond;
+
+    // cout << "-- EvalConditionBuffer " << cond << " param " << rospar << endl;
+    
+
+    if (cond.find('@') != std::string::npos) {
+        return -1;
+    }
+
     if (ros::param::get(rospar,v))
         r=v;
+
+    // cout << "-- EvalConditionBuffer " << cond << " param " << rospar << " " << r << endl;
 
     return r;
 }
@@ -430,7 +444,7 @@ void PNPActionServer::addEvent_callback(const std_msgs::String::ConstPtr& msg){
 */
 int PNPActionServer::check_for_event(string cond){
 
-//  cout << "   ++ Check for event:  cond = [" << cond << "] " << endl;
+  // cout << "   ++ Check for event:  cond = [" << cond << "] " << endl;
 
 
   int result=-1;
@@ -457,7 +471,7 @@ int PNPActionServer::check_for_event(string cond){
   eventBuffer_mutex.lock();
 
 
-//  cout << "   -- Checking cond = [" << cond << "] ... " << endl;
+  // cout << "   -- Checking cond = [" << cond << "] ... " << endl;
 
   // ORIG
   //  for(vector<Event>::iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i) {
@@ -508,6 +522,8 @@ int PNPActionServer::check_for_event(string cond){
   
   remove_old_elements();
   
+  // cout << "   ** END check_for_event" << endl;
+
   return result;
 }
 
