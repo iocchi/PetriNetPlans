@@ -1,0 +1,2 @@
+display_init; waitfor_personhere; display_text_welcome; ask_whichcontinent; waitfor_continent_@C; ask_whichcountry_@C; waitfor_country_@N; display_text_@N; display_text_takephoto; waitfor_facedetected; takephoto_@N; display_image_photo; display_text_goodbye; display_init
+
