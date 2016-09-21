@@ -412,6 +412,10 @@ bool PNPActionServer::evalCondition(string condition) {
 void PNPActionServer::active_places_callback(const std_msgs::String::ConstPtr& msg)
 {
     ConditionCache.clear();
+    if (msg->data=="init;") {
+        clear_global_PNPROS_variables();
+        ROS_INFO("Init place -> clear PNP global variables.");
+    }
 }
 
 /* The addEvent_callback is called when a string is published to the addEvent topic.
