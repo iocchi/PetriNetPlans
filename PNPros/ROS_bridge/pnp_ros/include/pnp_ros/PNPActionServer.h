@@ -216,6 +216,7 @@ protected:
     bool well_formatted_with_variables(string);
     void update_variable_with_value(string, string);
     void internal_clear_buffer();
+    void clear_global_PNPROS_variables() { global_PNPROS_variables.clear(); }
 
 public:
     // Predefined actions
@@ -224,7 +225,7 @@ public:
     virtual void waitfor(string params, bool *run); // wait until <params> condition is true, params can be A or not_A
     virtual void restartcurrentplan(string params, bool *run); // restart the current plan
     virtual void stopcurrentplan(string params, bool *run); // stop the current plan
-
+    virtual void init() { clear_global_PNPROS_variables(); }
 };
 
 #endif

@@ -412,6 +412,10 @@ bool PNPActionServer::evalCondition(string condition) {
 void PNPActionServer::active_places_callback(const std_msgs::String::ConstPtr& msg)
 {
     ConditionCache.clear();
+    if (msg->data=="init;") {
+        clear_global_PNPROS_variables();
+        ROS_INFO("Init place -> clear PNP global variables.");
+    }
 }
 
 /* The addEvent_callback is called when a string is published to the addEvent topic.
@@ -660,8 +664,9 @@ std::string PNPActionServer::replace_vars_with_values(std::string params){
         splitted_parameters[i] = global_PNPROS_variables[key];
       else
       {
-        cerr << "\033[22;31;1m??? Variable " << key << " not initialized ???\033[0m" << endl;
-        throw new runtime_error("\033[22;31;1m??? Wrongly formatted transition name ???\033[0m");
+        ROS_WARN("Variable %s not initialized, passing it to the action", key.c_str());
+        // cerr << "\033[22;31;1m??? Variable " << key << " not initialized ???\033[0m" << endl;
+        // throw new runtime_error("\033[22;31;1m??? Wrongly formatted transition name ???\033[0m");
       }
         
     }
