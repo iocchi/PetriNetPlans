@@ -1,5 +1,5 @@
 #include "pnpgenerator.h"
-#include <ros/package.h>
+// #include <ros/package.h>
 #include <fstream>
 #include <iostream>
 #include <boost/algorithm/string.hpp>
@@ -842,7 +842,7 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
 bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
 					       ConditionalPlan& final_state, map<string,pair<string,vector<ActionOutcome> > > state_action_out){
 
-  bool err = false; //check erros
+  bool ok = true; //check erros
 
   map<string,Place*> visited;
 
@@ -866,16 +866,21 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
 
     if (action==""){
       if (current_state != final_state.state)
-	cerr << "PNPgen Warning: No action found for state " << current_state << endl;
+	cout << "PNPgen Warning: No action found for state " << current_state << endl;
         continue;
     }
     cout << action << " -> ";
 
     vector<ActionOutcome> vo = state_action_out[current_state].second;
     if (vo.size()==0){
-      cerr << "PNPgen ERROR: No successor state found for state " << current_state << " and action " << action  << endl;
-      err = true;
-      break;
+      cout << "goal" << endl;
+      cout << "PNPgen Warning: No successor state found for state " << current_state << " and action \"" << action  << "\"" << endl;
+      cout << "		       ...adding a final state..." << endl;
+//       ok = false;
+//       break;
+      Place *final = addAction(action,current_place);
+      final->setName("goal");
+      continue;
     }
 
     Place *pe = addAction(action,current_place);  // pe: end place of action
@@ -911,7 +916,7 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
      cout << endl;
   }
 
-  return !err;
+  return ok;
 
 }
 

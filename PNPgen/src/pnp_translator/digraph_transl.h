@@ -5,7 +5,7 @@
 class DigraphTransl : public CondPlan_Translator{
 private:
   string plan_name; //plan_#N of the digraph
-  map<string,string> state_action;
+//   map<string,string> state_action;
 
 public:
   DigraphTransl(string &path_to_file);

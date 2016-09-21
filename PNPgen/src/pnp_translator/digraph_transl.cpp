@@ -60,7 +60,7 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
   void DigraphTransl::read_file(){
     string line;
     ifstream f(this->file.c_str());
-    cout << this->file.c_str() << endl;
+//     cout << this->file.c_str() << endl;
     if(!f.good()){
       cout << "DIGRAPH_TRANSL: file does not exist!" << endl;
       return;
@@ -71,22 +71,52 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
     this->plan_name = this->trim(this->plan_name);
 
       //reads all the states
-     boost::regex exp("\"([A-Za-z_-])+\"");
+//      boost::regex exp("\"([A-Za-z0-9_-])+\"");
+    boost::regex exp("\"([^\"]*)\"");
      getline(f,line);
+     vector<pair<string,string> > vect;
      while(line.substr(0,1) != "\""){
        string state = line.substr(0,line.find("["));
-       boost::sregex_token_iterator it(line.begin(), line.end(), exp, 0);
-       string action = *it;
-       action = action.substr(1,action.size()-2);
+       string action;
+       
+       string app = line.substr(line.find("\"")+1,line.find("\n")-line.find("\""));
+       string act;
+       int i = 0;
+       while(app.at(i) != '\"'){
+	 act += app.at(i); 
+	 ++i;
+       }
+
+// 	cout << "action " << act << endl;
+//        boost::sregex_token_iterator it(line.begin(), line.end(), exp, 0);
+//        action = *it;
+//        action = action.substr(1,action.size()-2);
+       action = act;
        pair<string,string> sa = make_pair(state,action);
-       state_action.insert(sa);
+//        state_action.insert(sa);
+       vect.push_back(sa);
+//        cout << "state_action " << state << " - " << action << endl;
        getline(f,line);
      }
 
-     ConditionalPlan plan[state_action.size()];
-     map<string,string>::iterator it;
+//      ConditionalPlan plan[state_action.size()];
+//      map<string,string>::iterator it;
+     ConditionalPlan plan[vect.size()];
+     vector<pair<string,string> >::iterator it;
      int i = 0;
-     for(it = state_action.begin(); it != state_action.end(); ++it, ++i){
+     
+//      for(it = state_action.begin(); it != state_action.end(); ++it, ++i){
+//        ConditionalPlan p;
+//        p.state = it->first;
+//        p.action = it->second;
+//        cout << "p.state " << p.state << endl;
+//        cout << "p.action " << p.action << endl;
+//        cout << endl;
+//        cout << "vect[" <<i<< "] " << vect[i].first << " - " << vect[i].second << endl;
+//        cout << endl;
+//        plan[i] = p;
+//      }
+     for(it = vect.begin(); it != vect.end(); ++it, ++i){
        ConditionalPlan p;
        p.state = it->first;
        p.action = it->second;
@@ -98,37 +128,56 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
       boost::regex exp3("\"\\((.*?)\\)\""); // "\((.*?)\)"
 //       getline(f,line);
       while(line != "}"){
-      	boost::sregex_token_iterator it(line.begin(), line.end(), exp2, 0);
-      	string source = *it;
-      	source = source.substr(1,source.size()-2);
+	string source, destination;
+	boost::sregex_token_iterator it(line.begin(), line.end(), exp2, 0);
+	source = *it;
+	source = source.substr(1,source.size()-2);
+// 	cout << "source " << source << endl;
 
-      	++it;
-      	string destination = *it;
-      	destination = destination.substr(1,destination.size()-2);
+	++it;
+	destination = *it;
+	destination = destination.substr(1,destination.size()-2);
+// 	cout << "destination " << destination << endl;
 
       	string obs;
       	if(line.find("[") != string::npos){
-      	  boost::sregex_token_iterator it2(line.begin(), line.end(), exp3, 0);
-      	  obs = *it2;
-      	  obs = obs.substr(1,obs.size()-2);
+	  
+// 	  boost::sregex_token_iterator it2(line.begin(), line.end(), exp3, 0);
+// 	  obs = *it2;
+//       	  obs = obs.substr(1,obs.size()-2);
+	  string app = line.substr(line.find("=")+2,line.find("\n")-line.find("\""));
+	  string act;
+	  int i = 0;
+	  while(app.at(i) != '\"'){
+	    act += app.at(i); 
+	    ++i;
+	  }
+	  obs = act;
+	  
+	  
       	}
       	else obs = "";
+// 	cout << "with observation " << obs << endl;
+// 	cout << endl;
 
       	int so = atoi(source.c_str());
       	int dest = atoi(destination.c_str());
-      	plan[so].addOutcome(ActionOutcome(obs,&plan[dest]));
+      	if(obs != "") plan[so].addOutcome(ActionOutcome(obs,&plan[dest]));
+	else plan[so].addOutcome(&plan[dest]);
 
       	getline(f,line);
       }
 
       ConditionalPlan ps("goal","");
-      plan[state_action.size()-1].addOutcome(&ps);
-
-      vector<ConditionalPlan> v(plan,plan+state_action.size());
+//       plan[state_action.size()-1].addOutcome(&ps);
+      plan[vect.size()-1].addOutcome(&ps);
+//       vector<ConditionalPlan> v(plan,plan+state_action.size());
+      vector<ConditionalPlan> v(plan,plan+vect.size());
       this->p=v;
-      this->p[0].print();
-
+//       this->p[0].print();
     f.close();
+    
+//     this->write_plan("condplan.txt");
     string pl_name = "AUTOGEN_"+this->plan_name;
     this->create_PNP(pl_name,this->p);
   }
