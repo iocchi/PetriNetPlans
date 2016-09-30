@@ -505,7 +505,7 @@ int PNPActionServer::check_for_event(string cond){
         result=1;
         break;
       }
-      else if (i->eventName == "!"+cond)
+      else if ( (i->eventName == "!"+cond) || (i->eventName == "not_"+cond) )
       {
         i->eventName = string("***") + i->eventName;
 
