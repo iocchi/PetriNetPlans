@@ -1,1 +1,0 @@
-display_init; goto_entrance; waitfor_personhere; display_text_welcome; display_text_welcome2; ask_likepaper; waitfor_yes; display_text_goodbye; display_image_goodbye
