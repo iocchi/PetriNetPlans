@@ -178,7 +178,7 @@ int main(int argc, char** argv) {
   }
   else{   
     string ext = path.substr(path.find("."),path.find("\n") - path.find("."));
-    if(!ext.find(".txt")){ 
+    if(!ext.find("txt")){ 
       cout << "PNPgen_Translator: wrong file format (must be .txt)" << endl;
       f.close();
       return 0;
