@@ -1,26 +1,30 @@
 plan{ 
 
- n_states=10
+ n_states=12
 
- 0[label=9,actions=move_shop4_shop2_r]
+ 0[label=11,actions=move_shop4_shop2_r]
  1[label=1,actions=approach-person_h2_shop2]
- 2[label=2,actions=load-bags_h2_r]
- 3[label=3,actions=carry-bags_h2_r_entr2]
- 4[label=4,actions=ask_food_h2]
- 5[label=5,actions=bye_h2]
- 6[label=6,actions=bringto_h2_shop2_shop6]
- 7[label=7,actions=advertise-italian_h2_shop6]
- 8[label=8,actions=bye_h2]
- 9[label=GOAL,actions=]
+ 2[label=2,actions=ask_object_h2]
+ 3[label=3,actions=ask_food_h2]
+ 4[label=4,actions=bye_h2]
+ 5[label=5,actions=bringto_h2_shop2_shop6]
+ 6[label=6,actions=advertise-italian_h2_shop6]
+ 7[label=7,actions=bye_h2]
+ 8[label=8,actions=bringto_h2_shop2_shop1]
+ 9[label=9,actions=advertise-objects_shop1_h2]
+ 10[label=10,actions=bringto_h2_shop1_shop2]
+ 11[label=GOAL,actions=]
 
- "9" -> "1"
+ "11" -> "1"
  "1" -> "2"
- "2" -> "3"
- "3" -> "4"
- "4" [f] -> "5" ; "4" [t] -> "6"
- "5" -> "GOAL"
+ "2" [f] -> "3" ; "2" [t] -> "8"
+ "3" [f] -> "4" ; "3" [t] -> "5"
+ "4" -> "GOAL"
+ "5" -> "6"
  "6" -> "7"
- "7" -> "8"
- "8" -> "GOAL"
+ "7" -> "GOAL"
+ "8" -> "9"
+ "9" -> "10"
+ "10" -> "3"
 
 }

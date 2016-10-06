@@ -1,0 +1,5 @@
+/usr/local/lib/libpnpgen.so
+/usr/local/lib/libprumdp.so
+/usr/local/bin/pnpgen_linear
+/usr/local/bin/pnpgen_policy
+/usr/local/bin/pnpgen_pru
