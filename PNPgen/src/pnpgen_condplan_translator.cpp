@@ -3,17 +3,12 @@
 #include <iostream>
 #include <stack>
 
-// #include "conditionalplan.h"
 #include "pnpgenerator.h"
 
 #include "pnp_translator/pddl_transl.cpp"
-#include "pnp_translator/rddl_transl.cpp"
 #include "pnp_translator/kpddl_transl.cpp"
 // #include "pnp_translator/digraph_transl.cpp"
-
-#include "pnp_translator/rddl_parser.cpp"
-
-
+#include "pnp_translator/InLineCP_translator.h"
 
 using namespace std;
 
@@ -157,12 +152,13 @@ int main(int argc, char** argv) {
 //     create_PNP_from_conditionalplan(erfile);
   
   
-  if(argc != 3 || string(argv[1]) != "pddl" && string(argv[1]) != "kpddl"){
+  if(argc != 3 || string(argv[1]) != "pddl" && string(argv[1]) != "kpddl" && string(argv[1]) != "inline"){
     cout << "PNPgen_Translator: wrong usage!" << endl;
     cout << "                   usage: ./pnpgen_translator <language_type> <path_to_file>" << endl;
-    cout << "                   <language_type>: pddl, kpddl" << endl;
+    cout << "                   <language_type>: pddl, kpddl, inline" << endl;
     cout << "                   <path_to_file>: (pddl) file is the FF planner output" << endl;
     cout << "                                   (kpddl) file is the kplanner output" << endl;
+    cout << "                                   (inline) file is the inline description of the plan" << endl;
     
     return 0;
   }
@@ -211,9 +207,23 @@ int main(int argc, char** argv) {
     cout << "KPDDL Conditional Plan name: " << goal_name << endl;
     create_PNP_from_KPDDL(v,goal_name);
   }
+  
+  //=============== INLINE TRANSLATION ===============
+  if(lang == "inline"){
+    string write_to = "test/inline_condplan.txt";
+    InLineTranslator ilt(path);
+    ilt.read_file();
+//     ilt.write_plan(write_to); //write the translated plan to 'write_to'
 
-  return 0;
 
+//     vector<ConditionalPlan> v = kpd.getCondPlan();
+//     string goal_name="AUTOGEN_KPDDLPlan";
+//     cout << "KPDDL Conditional Plan name: " << goal_name << endl;
+//     create_PNP_from_KPDDL(v,goal_name);
+  }
+  
+  
+    return 0;
     //=============== KPDDL FILES ===============
     //COACHES
 //     string domain = "/home/valerio/thesis/PDDL/planners/KPlanner/plans/coaches.txt";
