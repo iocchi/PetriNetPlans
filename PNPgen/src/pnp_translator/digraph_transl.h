@@ -14,5 +14,11 @@ public:
   void create_PNP(string& goal_name, vector<ConditionalPlan>& p);
   void read_file();
   void write_pnml(vector<ConditionalPlan>& v);
-  vector<ConditionalPlan> get_plan(){ return this->p; }
+  vector<ConditionalPlan> get_plan(){ 
+    if(p.size() == 0 || p.size() == 1) return this->p; 
+    else {
+      cout << "Plan NOT defined" << endl;
+      exit;
+    }
+  }
 };
