@@ -280,6 +280,27 @@ vector<Place*> PNP::addSensingAction(string name, Place* p0, vector<string> outc
     return v;
 }
 
+vector<Place*> PNP::addSensingBranches(Place* p0, vector<string> outcomes) {
+    vector<Place *> v;
+
+    Place *pe = addPlace("",-1);
+    connectPlaces(p0,pe);
+    pe->setX(p0->getX()+2);
+    pe->setY(p0->getY());
+
+    int k=0;
+    for (vector<string>::iterator it = outcomes.begin(); it!=outcomes.end(); it++, k++) {
+        Transition *te = addTransition("["+(*it)+"]");
+        Place *pf = addPlace("",-1);
+        te->setY(p0->getY()+k); pf->setY(p0->getY()+k);
+        te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
+        connect(pe,te); connect(te,pf);
+        v.push_back(pf);
+    }
+
+    return v;
+}
+
 Place* PNP::addTimedAction(string name, Place *p0, int timevalue, Place **p0action) {
 
     // fork transition
@@ -968,3 +989,164 @@ bool PNPGenerator::genFromConditionalPlan_r(ConditionalPlan *plan, Place *p0) {
 bool PNPGenerator::genFromConditionalPlan(ConditionalPlan &plan) {
     return genFromConditionalPlan_r(&plan,pnp.pinit);
 }
+
+string getNext(string& line){
+  string res;
+  
+  //we must return an action ..a;
+  if(line.find(';') < line.find('<')){
+    res = line.substr(0,line.find(';'));
+    line.erase(0,line.find(';')+1);
+    if(res == "" || res == " ") return getNext(line);
+  }else // we must return a conditioning <..>
+    if(line.find('<') < line.find(';')){
+    res = line.substr(line.find('<'),line.find_last_of('>')-line.find('<')+1);
+    line.erase(1,line.find('>')+1);
+  }else // we must return the last action ;..a
+    if(line.find(';') == string::npos && line.find('<') == string::npos){
+      res = line;
+      line = "";
+   }
+  boost::trim(res);
+  return res;
+}
+
+void find_branches(string& to_branch, vector<string>& observations,vector<string>& branches){
+  
+  string app;
+  to_branch.erase(to_branch.begin()); //remove the first '<'
+  
+  for(int i = 0; i < to_branch.size(); i++){
+    
+    //observation < ... ?
+    if(to_branch[i] == '?'){
+//       cout << "found obs: " << app << endl;
+      observations.push_back(app);
+      app = string();
+      ++i;
+    }
+    
+    //jump over conditional in main branch
+    if(to_branch[i] == '<'){
+      int j = to_branch.find_first_of('>',i);
+      app += to_branch.substr(i,j-i+1);
+      i = j;
+      ++i;
+    }
+    
+    //branch of type ? ... :
+    if(to_branch[i] == ':'){
+//       cout << "found branch: " << app << endl;
+      branches.push_back(app);
+      app = string();
+      ++i;
+    }
+    
+    //end of a conditonal sub.branch: ; ... >
+    if(to_branch[i] == '>' && app.find('<') == string::npos ){ 
+//       app.erase(remove(app.begin(), app.end(), '>'), app.end());
+      break;
+    }
+    
+    app += to_branch[i];
+//     cout << app << endl;
+  }
+//   cout << "last branch found: " << app << endl;
+//   if(app.find('>') && app.find('<') == string::npos ) app.erase(remove(app.begin(), app.end(), '>'), app.end());
+  if(app[app.length()]=='>') app.erase(app.end()-1); //remove the last '>'
+  branches.push_back(app);
+  to_branch.erase(to_branch.end()-1); //remove the last '>'
+  
+}
+
+Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
+{
+  cout << "current plan: " << plan << endl;
+  Place* p = pi;
+
+  if(plan.empty() || plan == "" || plan == " "){ //base case
+    cout << "end" << endl << endl;
+    
+    /******better visualization************/
+    int x, y;
+    pnp.getLastPlaceCoord(x,y);
+    pi->setX(x+2);
+    pi->setY(y);
+    /************************************/
+    
+    return pi;
+  }else{
+    
+    //get [ai || <..>]
+    string next = getNext(plan);    
+    
+    //conditioning: go deep
+    if(next.find('<') != string::npos){
+      cout << "to branch... " << next << endl;
+      vector<string> observations;
+      vector<string> branches;
+      find_branches(next,observations,branches);
+
+      cout << "-------------" << endl;
+      for(int i = 0; i < branches.size(); i++){
+	cout << "observation: " << observations[i] << endl;
+	cout << "with branch: " << branches[i] << endl;
+	cout << "-------------" << endl;
+      }
+      cout << endl;
+    
+      vector<Place*> s = pnp.addSensingBranches(pi,observations);
+      vector<Place*> to_merge;
+      for(int i = 0; i < s.size(); ++i){
+	cout << "...continue in the branch: " << branches[i] << endl;
+	Place* p = genFromLine_r(s[i],branches[i]);      //return genFromLine_r(s[i],branches[i]);
+	to_merge.push_back(p);
+      }
+
+      Place* m = pnp.addPlace("",-1);
+      
+      /******better visualization************/
+      int x, y;
+      pnp.getLastPlaceCoord(x,y);
+      m->setX(x+2);
+      m->setY(y);
+      /************************************/
+      
+      for(int i = 0; i < to_merge.size();++i){
+	pnp.connectPlaces(to_merge[i],m);
+	cout << "merged " << to_merge[i]->getName() << " with " << m->getName() << endl;
+      }
+	
+      return genFromLine_r(m,plan);     
+   } 
+    
+   //no conditioning: add serial action 
+   
+   //remove garbage from previous step (to fix)
+   if(next.find('>') != string::npos && next.find('<') == string::npos)
+     next.erase(remove(next.begin(), next.end(), '>'), next.end());
+   if(next == "" || next == " ")
+     return pi;
+     
+   cout << "..adding action: " << next << endl;
+   Place* n = pnp.addAction(next,p);
+//    cout << "next Place: " << n->getName() << endl;
+   cout << endl;
+   return genFromLine_r(n,plan);
+  }
+}
+
+
+bool PNPGenerator::genFromLine(string path)
+{
+  string plan;
+  //read plan from file
+  readPlanFile(path.c_str(),plan);
+  
+  //recursively create the pnp
+  Place *p = genFromLine_r(pnp.pinit,plan); 
+  p->setName("goal");
+  save();
+  return true;
+}
+

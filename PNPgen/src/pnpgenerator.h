@@ -145,6 +145,7 @@ public:
 
     PNP(string _name);
     string getName() { return name; }
+    void getLastPlaceCoord(int& x, int& y){ x = P.at(P.size()-2)->getX(); y = P.at(P.size()-2)->getY();}
 
     Node *next(Node *n);
     void connect(Node* n1, Node* n2);
@@ -162,6 +163,7 @@ public:
 
     // sensing action with multiple outcomes
     std::vector<Place*> addSensingAction(string name, Place* p0, vector<string> outcomes);
+    std::vector<Place*> addSensingBranches(Place *place, vector<string> outcomes);
 
     Place* addTimedAction(string name, Place *p0, int timevalue, Place **p0action);
     Transition* addInterrupt(Place *pi, string condition, Place *po);
@@ -227,6 +229,9 @@ public:
     bool genFromConditionalPlan_loop(ConditionalPlan &plan,
 				     ConditionalPlan& final_state, map<string,pair<string,vector<ActionOutcome> > > state_action_out);
     bool genFromConditionalPlan_r(ConditionalPlan *plan, Place *place);
+    
+    Place* genFromLine_r(Place* pi, string plan);
+    bool genFromLine(string path);
 
 
     void setMainLinearPlan(string plan); // set this plan as main plan for this generation

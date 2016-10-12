@@ -8,7 +8,6 @@
 #include "pnp_translator/pddl_transl.cpp"
 #include "pnp_translator/kpddl_transl.cpp"
 // #include "pnp_translator/digraph_transl.cpp"
-#include "pnp_translator/InLineCP_translator.h"
 
 using namespace std;
 
@@ -210,16 +209,10 @@ int main(int argc, char** argv) {
   
   //=============== INLINE TRANSLATION ===============
   if(lang == "inline"){
-    string write_to = "test/inline_condplan.txt";
-    InLineTranslator ilt(path);
-    ilt.read_file();
-//     ilt.write_plan(write_to); //write the translated plan to 'write_to'
+    string goal_name = "AUTOGEN_inline";
+    PNPGenerator pnpgen(goal_name);
+    pnpgen.genFromLine(path);
 
-
-//     vector<ConditionalPlan> v = kpd.getCondPlan();
-//     string goal_name="AUTOGEN_KPDDLPlan";
-//     cout << "KPDDL Conditional Plan name: " << goal_name << endl;
-//     create_PNP_from_KPDDL(v,goal_name);
   }
   
   
@@ -241,25 +234,6 @@ int main(int argc, char** argv) {
     //DIAGO
 //     string domain = "";
 //     string write_to = "test/diago_followme.txt";
-
-
-    
-    //=============== RDDL TRANSLATION ===============
-//     string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/rddl/test/dbn_prop.rddl";
-//     string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/rddl/test/pizza.rddl";
-//   string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/rddl/test/game_of_life_stoch.rddl";
-  
-//     string rddl_file = "/home/valerio/thesis/MDP/SPUDD/rddlsimSPUDD/files/final_comp/rddl/elevators_mdp.rddl";
-//     RDDLParser parser(rddl_file);
-//     bool res;
-//     res = parser.parse_actions();
-//     if(res) res = parser.parse_states();
-//     if(res) res = parser.find_conditionals();
-//     else return -1;
-//     
-//     vector<Conditional> v = parser.get_conditionals();
-//     for(vector<Conditional>::iterator it = v.begin(); it != v.end(); ++it)
-//       cout << "node: " << (*it).node << " [t] " << (*it).true_case << " [f] " << (*it).false_case << endl;
   
   //=============== DIGRAPH TRANSLATION ===============
 //   string path = "/home/valerio/thesis/ROSPlan/plan_graph_lights.dot";
