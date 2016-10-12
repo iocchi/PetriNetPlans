@@ -57,5 +57,25 @@ Test:
 
   $ cd test
   $ ../bin/pnpgen_condplan [execution_rules_file]
+  
+7) Generation of a PNP from a conditional plan description file
+
+  $ cd test
+  $ ../bin/pnpgen_translator inline [conditional_plan_file]
+
+A conditional plan has the form:
+    plan = t1 ; ... ; tn
+    t = action | < condition_1 : ... : conditon_n >
+    condition = condition ? plan
+    
+Some examples of valid plans:
+  1) a1; a2; < q ? b1 : (not q) ? b2>
+  2) a1; a2; < q ? b1; b3 : (not q) ? b2; b4 >; a3; a4
+  3) a1; a2; < c1 ? b1; b2; b3 : (not c1) ? c1; c2; < h1 ? a : h2 ? b : h3 ? c >; c4 > ; a3 ; a4
+  4) a1; < c1 ? a2; a3; a4; < q ? a : (not q) ? b > ; c ; a5 
+         : c2 ? a6; a7; a8 
+         : c3 ? <k ? a9 : (not k) ? a10 >; a11; <y ? a12 : (not y) ? a13>; a14>; a15; a16
+
+
 
 
