@@ -290,7 +290,8 @@ vector<Place*> PNP::addSensingBranches(Place* p0, vector<string> outcomes) {
 
     int k=0;
     for (vector<string>::iterator it = outcomes.begin(); it!=outcomes.end(); it++, k++) {
-        Transition *te = addTransition("["+(*it)+"]");
+        string obs = *it; boost::trim(obs);
+        Transition *te = addTransition("["+obs+"]");
         Place *pf = addPlace("",-1);
         te->setY(p0->getY()+k); pf->setY(p0->getY()+k);
         te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
@@ -1130,6 +1131,10 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
      
    cout << "..adding action: " << next << endl;
    Place* n = pnp.addAction(next,p);
+   addActionToStacks(next,p); // needed for application of execution rules
+
+
+
 //    cout << "next Place: " << n->getName() << endl;
    cout << endl;
    return genFromLine_r(n,plan);

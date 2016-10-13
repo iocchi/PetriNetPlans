@@ -151,9 +151,9 @@ int main(int argc, char** argv) {
 //     create_PNP_from_conditionalplan(erfile);
   
   
-  if(argc != 3 || string(argv[1]) != "pddl" && string(argv[1]) != "kpddl" && string(argv[1]) != "inline"){
+  if(argc < 3 || string(argv[1]) != "pddl" && string(argv[1]) != "kpddl" && string(argv[1]) != "inline"){
     cout << "PNPgen_Translator: wrong usage!" << endl;
-    cout << "                   usage: ./pnpgen_translator <language_type> <path_to_file>" << endl;
+    cout << "                   usage: ./pnpgen_translator <language_type> <path_to_file> [ER file]" << endl;
     cout << "                   <language_type>: pddl, kpddl, inline" << endl;
     cout << "                   <path_to_file>: (pddl) file is the FF planner output" << endl;
     cout << "                                   (kpddl) file is the kplanner output" << endl;
@@ -165,6 +165,12 @@ int main(int argc, char** argv) {
   string lang = argv[1];
   
   string path = argv[2];
+
+  string erfile = ""; // file with execution rules
+  if (argc>3) {
+    erfile = argv[3];
+  }
+
   ifstream f(path.c_str());
   if(!f.good()){ 
     cout << "PNPgen_Translator: file doest not exist!" << endl;
@@ -212,6 +218,14 @@ int main(int argc, char** argv) {
     string goal_name = "AUTOGEN_inline";
     PNPGenerator pnpgen(goal_name);
     pnpgen.genFromLine(path);
+
+    if (erfile!="") {
+        // apply the execution rules
+        cout << "Applying Execution Rules..." << endl;
+        pnpgen.readERFile(erfile);
+        pnpgen.applyExecutionRules();
+        pnpgen.save();
+    }
 
   }
   
