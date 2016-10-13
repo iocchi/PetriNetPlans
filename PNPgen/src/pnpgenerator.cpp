@@ -1158,7 +1158,6 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    
    //remove garbage from previous step (to fix)
    if(next.find('>') != string::npos && next.find('<') == string::npos){
-     cout << "i'm here" << endl;
      next.erase(remove(next.begin(), next.end(), '>'), next.end());
    }
 //      next.erase(next.find('>'),next.size()-next.find(''));
@@ -1168,6 +1167,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
      
    cout << "left plan: " << plan << endl;
    cout << "..adding action: " << next << endl;
+   boost::trim(next);
    Place* n = pnp.addAction(next,p);
    addActionToStacks(next,p); // needed for application of execution rules
 
