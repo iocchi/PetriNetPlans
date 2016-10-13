@@ -210,6 +210,18 @@ int main(int argc, char** argv) {
   //=============== INLINE TRANSLATION ===============
   if(lang == "inline"){
     string goal_name = "AUTOGEN_inline";
+    
+    char sep='/';
+    size_t i = path.rfind(sep, path.length());
+    size_t j = path.find_last_of('.');
+    
+    //is a full path
+    if (i != string::npos) {
+      goal_name = path.substr(i+1, path.find_last_of('.') - i - 1);
+    }else if(j != string::npos){ //same level of file
+      goal_name = path.substr(0, j);
+    }
+    
     PNPGenerator pnpgen(goal_name);
     pnpgen.genFromLine(path);
 
