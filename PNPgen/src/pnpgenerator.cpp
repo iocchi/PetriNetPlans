@@ -991,23 +991,50 @@ bool PNPGenerator::genFromConditionalPlan(ConditionalPlan &plan) {
     return genFromConditionalPlan_r(&plan,pnp.pinit);
 }
 
+int found_end(string line){
+  
+  int brackets = 0;
+  int i;
+  for(i = 0; i < line.size(); ++i){
+    if(line[i] == '<') brackets++;
+    if(line[i] == '>'){ 
+      brackets--;
+      if(brackets == 0) break;
+    }
+//     cout << "bracket " << brackets << endl;
+//     cout << "::: " << line[i] << endl;
+  }
+  
+  return i;
+}
+
 string getNext(string& line){
   string res;
   
+//   cout << "test2: " << line << endl;
   //we must return an action ..a;
   if(line.find(';') < line.find('<')){
+    cout << "case 1 " << line << endl;
     res = line.substr(0,line.find(';'));
     line.erase(0,line.find(';')+1);
-    if(res == "" || res == " ") return getNext(line);
+//     if(res == "" || res == " ") return getNext(line);
   }else // we must return a conditioning <..>
     if(line.find('<') < line.find(';')){
-    res = line.substr(line.find('<'),line.find_last_of('>')-line.find('<')+1);
-    line.erase(1,line.find('>')+1);
+            cout << "case 2 " << line << endl;
+      int second = found_end(line);
+      res = line.substr(line.find('<'),second-line.find('<')+1);
+//       cout << "res!! " << res << endl;
+      line.erase(1,second+1);
+//     res = line.substr(line.find('<'),line.find_last_of('>')-line.find('<')+1); //***
+//     line.erase(1,line.find_last_of('>')+1);
   }else // we must return the last action ;..a
     if(line.find(';') == string::npos && line.find('<') == string::npos){
+      cout << "case 3 " << line << endl;
       res = line;
       line = "";
    }
+     if(line.find(';') != string::npos && line.find('>') != string::npos)
+//       cout << "HEREEE" << endl;
   boost::trim(res);
   return res;
 }
@@ -1062,6 +1089,7 @@ void find_branches(string& to_branch, vector<string>& observations,vector<string
 
 Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
 {
+  
   cout << "current plan: " << plan << endl;
   Place* p = pi;
 
@@ -1083,6 +1111,11 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
     
     //conditioning: go deep
     if(next.find('<') != string::npos){
+      boost::trim(next);
+      int i = found_end(next);
+      next = next.substr(1,i-1);
+//       next.erase(next.begin());
+//       next.erase(next.end());
       cout << "to branch... " << next << endl;
       vector<string> observations;
       vector<string> branches;
@@ -1124,11 +1157,16 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    //no conditioning: add serial action 
    
    //remove garbage from previous step (to fix)
-   if(next.find('>') != string::npos && next.find('<') == string::npos)
+   if(next.find('>') != string::npos && next.find('<') == string::npos){
+     cout << "i'm here" << endl;
      next.erase(remove(next.begin(), next.end(), '>'), next.end());
-   if(next == "" || next == " ")
-     return pi;
+   }
+//      next.erase(next.find('>'),next.size()-next.find(''));
+//      next.erase(remove(next.begin(), next.end(), '>'), next.end());
+   if(next == "" || next == " " || next == "  " || next.empty())
+      return pi;
      
+   cout << "left plan: " << plan << endl;
    cout << "..adding action: " << next << endl;
    Place* n = pnp.addAction(next,p);
    addActionToStacks(next,p); // needed for application of execution rules
@@ -1147,7 +1185,6 @@ bool PNPGenerator::genFromLine(string path)
   string plan;
   //read plan from file
   readPlanFile(path.c_str(),plan);
-  
   //recursively create the pnp
   Place *p = genFromLine_r(pnp.pinit,plan); 
   p->setName("goal");
