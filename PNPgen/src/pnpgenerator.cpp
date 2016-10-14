@@ -1011,30 +1011,23 @@ int found_end(string line){
 string getNext(string& line){
   string res;
   
-//   cout << "test2: " << line << endl;
   //we must return an action ..a;
   if(line.find(';') < line.find('<')){
-    cout << "case 1 " << line << endl;
+//     cout << "case 1 " << line << endl;
     res = line.substr(0,line.find(';'));
     line.erase(0,line.find(';')+1);
-//     if(res == "" || res == " ") return getNext(line);
   }else // we must return a conditioning <..>
     if(line.find('<') < line.find(';')){
-            cout << "case 2 " << line << endl;
+//             cout << "case 2 " << line << endl;
       int second = found_end(line);
       res = line.substr(line.find('<'),second-line.find('<')+1);
-//       cout << "res!! " << res << endl;
       line.erase(1,second+1);
-//     res = line.substr(line.find('<'),line.find_last_of('>')-line.find('<')+1); //***
-//     line.erase(1,line.find_last_of('>')+1);
   }else // we must return the last action ;..a
     if(line.find(';') == string::npos && line.find('<') == string::npos){
-      cout << "case 3 " << line << endl;
+//       cout << "case 3 " << line << endl;
       res = line;
       line = "";
    }
-     if(line.find(';') != string::npos && line.find('>') != string::npos)
-//       cout << "HEREEE" << endl;
   boost::trim(res);
   return res;
 }
@@ -1079,8 +1072,7 @@ void find_branches(string& to_branch, vector<string>& observations,vector<string
     app += to_branch[i];
 //     cout << app << endl;
   }
-//   cout << "last branch found: " << app << endl;
-//   if(app.find('>') && app.find('<') == string::npos ) app.erase(remove(app.begin(), app.end(), '>'), app.end());
+
   if(app[app.length()]=='>') app.erase(app.end()-1); //remove the last '>'
   branches.push_back(app);
   to_branch.erase(to_branch.end()-1); //remove the last '>'
@@ -1114,8 +1106,6 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       boost::trim(next);
       int i = found_end(next);
       next = next.substr(1,i-1);
-//       next.erase(next.begin());
-//       next.erase(next.end());
       cout << "to branch... " << next << endl;
       vector<string> observations;
       vector<string> branches;
@@ -1160,12 +1150,11 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    if(next.find('>') != string::npos && next.find('<') == string::npos){
      next.erase(remove(next.begin(), next.end(), '>'), next.end());
    }
-//      next.erase(next.find('>'),next.size()-next.find(''));
-//      next.erase(remove(next.begin(), next.end(), '>'), next.end());
+
    if(next == "" || next == " " || next == "  " || next.empty())
       return pi;
      
-   cout << "left plan: " << plan << endl;
+   cout << "rest of the plan: " << plan << endl;
    cout << "..adding action: " << next << endl;
    boost::trim(next);
    Place* n = pnp.addAction(next,p);
@@ -1179,16 +1168,34 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
   }
 }
 
+void readInlineFile(const char*filename, string &plan)
+{
+    string app;
+    ifstream f(filename);
+    getline(f,app);
+    plan += app;
+    while(!app.empty()){
+      getline(f,app);
+      boost::trim(app);
+      plan+= " " + app;
+    }
+    cout << "plan read: " << plan << endl;
+    f.close();
+}
+
 
 bool PNPGenerator::genFromLine(string path)
 {
   string plan;
+  
   //read plan from file
-  readPlanFile(path.c_str(),plan);
+  readInlineFile(path.c_str(),plan);
+  
   //recursively create the pnp
   Place *p = genFromLine_r(pnp.pinit,plan); 
   p->setName("goal");
   save();
+  
   return true;
 }
 
