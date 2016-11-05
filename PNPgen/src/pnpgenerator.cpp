@@ -900,8 +900,8 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
       cout << "		       ...adding a final state..." << endl;
 //       ok = false;
 //       break;
-      Place *final = addAction(action,current_place);
-      final->setName("goal");
+      Place *pfinal = addAction(action,current_place);
+      pfinal->setName("goal");
       continue;
     }
 
@@ -1083,7 +1083,6 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
 {
   
   cout << "current plan: " << plan << endl;
-  Place* p = pi;
 
   if(plan.empty() || plan == "" || plan == " "){ //base case
     cout << "end" << endl << endl;
@@ -1113,18 +1112,18 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
 
       cout << "-------------" << endl;
       for(int i = 0; i < branches.size(); i++){
-	cout << "observation: " << observations[i] << endl;
-	cout << "with branch: " << branches[i] << endl;
-	cout << "-------------" << endl;
+        cout << "observation: " << observations[i] << endl;
+        cout << "with branch: " << branches[i] << endl;
+        cout << "-------------" << endl;
       }
       cout << endl;
     
       vector<Place*> s = pnp.addSensingBranches(pi,observations);
       vector<Place*> to_merge;
       for(int i = 0; i < s.size(); ++i){
-	cout << "...continue in the branch: " << branches[i] << endl;
-	Place* p = genFromLine_r(s[i],branches[i]);      //return genFromLine_r(s[i],branches[i]);
-	to_merge.push_back(p);
+        cout << "...continue in the branch: " << branches[i] << endl;
+        Place* p = genFromLine_r(s[i],branches[i]);      //return genFromLine_r(s[i],branches[i]);
+        to_merge.push_back(p);
       }
 
       Place* m = pnp.addPlace("",-1);
@@ -1137,8 +1136,10 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       /************************************/
       
       for(int i = 0; i < to_merge.size();++i){
-	pnp.connectPlaces(to_merge[i],m);
-	cout << "merged " << to_merge[i]->getName() << " with " << m->getName() << endl;
+        if (to_merge[i]->getName()!="goto") {
+          pnp.connectPlaces(to_merge[i],m);
+          cout << "merged " << to_merge[i]->getName() << " with " << m->getName() << endl;
+        }
       }
 	
       return genFromLine_r(m,plan);     
@@ -1157,14 +1158,32 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    cout << "rest of the plan: " << plan << endl;
    cout << "..adding action: " << next << endl;
    boost::trim(next);
-   Place* n = pnp.addAction(next,p);
-   addActionToStacks(next,p); // needed for application of execution rules
 
-
-
-//    cout << "next Place: " << n->getName() << endl;
-   cout << endl;
-   return genFromLine_r(n,plan);
+   if (next.substr(0,1)=="#") { // comment
+      return genFromLine_r(pi,plan);
+   }
+   else if (next.substr(0,5)=="LABEL") {
+      cout << "Adding label " << next << endl;
+      pi->setName(next);   LABELS[next]=pi;   
+      return genFromLine_r(pi,plan);
+   }
+   else if (next.substr(0,4)=="GOTO") {
+      string label = next.substr(5);
+      boost::trim(label);
+      cout << "GOTO label " << label << endl;
+      Place *pl = LABELS[label];
+      Transition* t = pnp.addTransition(" "); t->setY(pi->getY()-2); t->setX(pi->getX()-2);
+      pnp.connect(pi,t); pnp.connect(t,pl);
+      pi->setName("goto");
+      return pi;
+   }
+   else {
+      Place* n = pnp.addAction(next,pi);
+      addActionToStacks(next,pi); // needed for application of execution rules
+      //    cout << "next Place: " << n->getName() << endl;
+      cout << endl;
+      return genFromLine_r(n,plan);
+    }
   }
 }
 
@@ -1192,8 +1211,9 @@ bool PNPGenerator::genFromLine(string path)
   readInlineFile(path.c_str(),plan);
   
   //recursively create the pnp
-  Place *p = genFromLine_r(pnp.pinit,plan); 
-  p->setName("goal");
+  Place *p = genFromLine_r(pnp.pinit,plan);
+  if (p->getName()!="goto")
+    p->setName("goal");
   save();
   
   return true;

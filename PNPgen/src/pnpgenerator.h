@@ -205,6 +205,7 @@ private:
 
     stack< pair<string, Place*> > ASS;  // action, Place* map - stack of actions to be analized for applying the social rules
     stack< pair<string, Place*> > ASE;  // action, Place* map - stack of actions to be analized for applying the execution rules
+    map<string, Place*> LABELS;  // label, Place* map 
 
     void addActionToStacks(string a, Place *p) {
         ASS.push(make_pair(a,p)); ASE.push(make_pair(a,p));
