@@ -21,7 +21,7 @@
 #define PARAM_PNPCONDITIONBUFFER "PNPconditionsBuffer/"
 
 // Timing for event buffer
-#define TIME_THRESHOLD 5
+#define TIME_THRESHOLD 2
 #define REMEMBERING_TIME 60
 
 typedef void (*action_fn_t)(std::string, bool *); // action name, run flag
