@@ -27,6 +27,7 @@ string clean(string s) {
   return os.str();
 }
 
+static bool noGraphicGeneration = false;
 
 static string place_color_str =
     "  <toolspecific tool=\"JARP\" version=\"1.2\">\n"
@@ -61,56 +62,65 @@ static string arc_color_str =
 
 
 std::ostream& operator<< (std::ostream& stream, const Place& place) {
-  stream << "<place id=\"" << clean(place.sid) << "\">\n"
-	 << "  <graphics>\n"
-	 << "    <position x=\"" << place.posx << "\" y=\"" << place.posy << "\" />"
-	 << "    <size width=\"32\" height=\"32\" />\n"
-	 << "  </graphics>\n"
-	 << "  <name>\n"
-	 << "    <value>" << clean(place.name) << "</value>\n"
-	 << "    <graphics>\n"
-	 << "      <offset x=\"0\" y=\"40\" />\n"
-	 << "    </graphics>\n"
-	 << "  </name>\n"
-	 << "  <initialMarking>\n"
-	 << "    <value>" << place.marking << "</value>\n"
-	 << "  </initialMarking>\n"
-	 << place_color_str
-	 << "</place>\n";
+  stream << "<place id=\"" << clean(place.sid) << "\">\n";
+  if (!noGraphicGeneration)
+    stream << "  <graphics>\n"
+	   << "    <position x=\"" << place.posx << "\" y=\"" << place.posy << "\" />"
+	   << "    <size width=\"32\" height=\"32\" />\n"
+	   << "  </graphics>\n";
+  stream << "  <name>\n"
+	 << "    <value>" << clean(place.name) << "</value>\n";
+  if (!noGraphicGeneration)
+    stream << "    <graphics>\n"
+	   << "      <offset x=\"0\" y=\"40\" />\n"
+	   << "    </graphics>\n";
+  stream << "  </name>\n";
+  if (place.marking != 0) 
+    stream << "  <initialMarking>\n"
+	   << "    <value>" << place.marking << "</value>\n"
+	   << "  </initialMarking>\n";
+  if (!noGraphicGeneration)
+    stream << place_color_str;
+  stream << "</place>\n";
   return stream;
 }
 
 
 
 std::ostream& operator<< (std::ostream& stream, const Transition& transition) {
-    stream << "<transition id=\"" << transition.sid << "\">\n"
-            << "  <graphics>\n"
-            << "    <position x=\"" << transition.posx << "\" y=\"" << transition.posy << "\" />"
-            << "    <size width=\"8\" height=\"32\" />"
-            << "  </graphics>\n"
-            << "  <name>\n"
-	    << "    <value>" << clean(transition.name) << "</value>\n"
-            << "    <graphics>\n"
-            << "      <offset x=\"0\" y=\"-20\" />\n"
-            << "    </graphics>\n"
-            << "  </name>\n"
-            << transition_color_str
-            << "</transition>\n";
-    return stream;
+  stream << "<transition id=\"" << transition.sid << "\">\n";
+  if (!noGraphicGeneration)
+    stream << "  <graphics>\n"
+	   << "    <position x=\"" << transition.posx << "\" y=\"" << transition.posy << "\" />"
+	   << "    <size width=\"8\" height=\"32\" />"
+	   << "  </graphics>\n";
+  stream << "  <name>\n"
+	 << "    <value>" << clean(transition.name) << "</value>\n";
+  if (!noGraphicGeneration)
+    stream << "    <graphics>\n"
+	   << "      <offset x=\"0\" y=\"-20\" />\n"
+	   << "    </graphics>\n";
+  stream << "  </name>\n";
+  if (!noGraphicGeneration)
+    stream << transition_color_str;
+  stream << "</transition>\n";
+  return stream;
 }
 
 
 std::ostream& operator<< (std::ostream& stream, const Arc& arc) {
-    stream << "<arc id=\"" << arc.sid << "\" source=\"" << arc.source << "\" target=\"" << arc.target << "\" >\n"
-            << "  <inscription>\n"
-            << "    <value>1</value>\n"
-            << "    <graphics>\n"
-            << "      <offset x=\"0\" y=\"40\" />\n"
-            << "    </graphics>\n"
-            << "  </inscription>\n"
-            << arc_color_str
-            << "</arc>\n";
-    return stream;
+  stream << "<arc id=\"" << arc.sid << "\" source=\"" << arc.source << "\" target=\"" << arc.target << "\" >\n";
+//	 << "  <inscription>\n"
+//	 << "    <value>1</value>\n";
+  if (!noGraphicGeneration)
+    stream << "    <graphics>\n"
+	   << "      <offset x=\"0\" y=\"40\" />\n"
+	   << "    </graphics>\n";
+//  stream << "  </inscription>\n";
+  if (!noGraphicGeneration)
+    stream << arc_color_str;
+  stream << "</arc>\n";
+  return stream;
 }
 
 std::ostream& operator<< (std::ostream& stream, const Edge& edge) {
@@ -159,6 +169,15 @@ PNP::PNP(string _name) : name(_name) {
     pinit = NULL; //addPlace("init"); pinit->setInitialMarking(); pinit->setX(3);
 }
 
+PNP::~PNP() {
+  for (vector<Place*>::iterator it = P.begin(); it != P.end(); ++it)
+    delete(*it);
+  for (vector<Edge*>::iterator it = E.begin(); it != E.end(); ++it)
+    delete(*it);
+  for (vector<Transition*>::iterator it = T.begin(); it != T.end(); ++it)
+    delete(*it);
+}
+
 Place* PNP::addPlace(string name) {
     Place* p = new Place(name);
     P.push_back(p);
@@ -194,7 +213,11 @@ void PNP::disconnect(Node* n1, Node* n2) {
         if (ee==*it) break;
         it++;
     }
-    if (it!=E.end()) E.erase(it);
+    if (it!=E.end()) { 
+      delete(*it);
+      E.erase(it);
+    }
+    delete(ee);
 }
 
 Node* PNP::disconnect(Node* n) {
@@ -417,8 +440,8 @@ PNPGenerator::PNPGenerator(string name) : pnp(name) {
 }
 
 
-void PNPGenerator::save(const char* filename) {
-
+void PNPGenerator::save(const char* filename, bool noGraphics) {
+  noGraphicGeneration = noGraphics;
     stringstream ss;
     if (filename==NULL) {
         ss << pnp.getName().c_str() << ".pnml";

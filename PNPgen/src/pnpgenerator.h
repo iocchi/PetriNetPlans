@@ -144,6 +144,7 @@ public:
     map<string, Place*> timed_action_fork_place; // fork place of timed actions
 
     PNP(string _name);
+    ~PNP();
     string getName() { return name; }
     void getLastPlaceCoord(int& x, int& y){ x = P.at(P.size()-2)->getX(); y = P.at(P.size()-2)->getY();}
 
@@ -261,7 +262,7 @@ public:
         return pnp.addSensingAction(action,place,outcomes);
     }
 
-    void save(const char* filename=NULL); // if NULL it uses the name of the plan as file name
+    void save(const char* filename=NULL, bool noGraphics=false); // if NULL it uses the name of the plan as file name
 
 };
 
