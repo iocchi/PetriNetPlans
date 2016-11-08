@@ -6,7 +6,7 @@ extern std::string robotname;
 
 // Action implementation
 
-void init(string params, bool *run);
+void ainit(string params, bool *run);
 void gotopose(string params, bool *run);
 void home(string params, bool *run);
 void wave(string params, bool *run);
