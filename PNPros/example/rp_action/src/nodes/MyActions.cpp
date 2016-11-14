@@ -89,7 +89,7 @@ void start_gotopose(float GX, float GY, float GTh, bool *run) {
 
 // Action implementation
 
-void init(string params, bool *run) {
+void ainit(string params, bool *run) {
   cout << "### Executing Init ... " << params << endl;
   // Set turn topic
 

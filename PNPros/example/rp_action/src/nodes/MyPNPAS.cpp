@@ -40,7 +40,7 @@ public:
 	handle.param("robot_name",robotname,std::string(""));
 	ROS_INFO("ROBOTNAME: %s",robotname.c_str());
 	
-	register_action("init",&init);
+	register_action("init",&ainit);
 	register_action("gotopose",&gotopose);
 	register_action("home",&home);
 	register_action("wave",&wave);

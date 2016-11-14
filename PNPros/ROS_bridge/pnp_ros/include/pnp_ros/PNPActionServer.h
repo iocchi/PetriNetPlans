@@ -225,7 +225,7 @@ public:
     virtual void waitfor(string params, bool *run); // wait until <params> condition is true, params can be A or not_A
     virtual void restartcurrentplan(string params, bool *run); // restart the current plan
     virtual void stopcurrentplan(string params, bool *run); // stop the current plan
-    virtual void init() { clear_global_PNPROS_variables(); }
+    virtual void initGlobalVariables() { clear_global_PNPROS_variables(); }
 };
 
 #endif
