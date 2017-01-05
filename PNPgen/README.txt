@@ -11,7 +11,10 @@ Compile:
   $ cd build
   $ cmake ..
   $ make
-  
+  $ sudo make install
+  $ sudo ldconfig
+
+
 Run:
 
 1) Generation of a PNP from a linear plan
