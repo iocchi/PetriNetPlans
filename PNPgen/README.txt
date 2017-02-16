@@ -4,7 +4,7 @@ PNP Generator
 Luca Iocchi and Laurent Jeanpierre 2015-2016
 --------------------------------------------
 
-Required libraries: boost, libxml++, pcrecpp
+Required libraries: boost, libxml++2.6-dev, pcrecpp
 
 Compile:
   $ mkdir build

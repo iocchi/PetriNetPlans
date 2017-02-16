@@ -3,6 +3,8 @@ project (PNPgen)
 
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+set(CMAKE_CXX_FLAGS "-std=gnu++11")
+
 #search for boost
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
