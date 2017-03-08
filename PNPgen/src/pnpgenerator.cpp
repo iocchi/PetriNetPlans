@@ -249,6 +249,23 @@ Node* PNP::next(Node *n) {
     return nn;
 }
 
+std::vector<Node*> PNP::nextAll(Node *n) {
+    // search for ALL the connected Nodes
+    std::vector<Node*> vnn;
+    Node* nn;
+    vector<Edge*>::iterator it = E.begin();
+    while (it!=E.end()) {
+        Edge *e=*it;
+        if (e->first()==n) {
+            nn = e->second();
+            vnn.push_back(nn);
+            //break;
+        }
+        it++;
+    }
+
+    return vnn;
+}
 
 std::pair<Transition*,Place*> PNP::addCondition(string name, Place* p0, int dy) {
     Transition *t = addTransition(name);

@@ -149,6 +149,8 @@ public:
     void getLastPlaceCoord(int& x, int& y){ x = P.at(P.size()-2)->getX(); y = P.at(P.size()-2)->getY();}
 
     Node *next(Node *n);
+	std::vector<Node*> nextAll(Node *n);
+
     void connect(Node* n1, Node* n2);
     void disconnect(Node* n1, Node* n2);
     Node* disconnect(Node* p);
