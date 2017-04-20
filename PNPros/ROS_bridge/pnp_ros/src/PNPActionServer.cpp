@@ -246,6 +246,7 @@ bool PNPActionServer::GetEventStartingWith(pnp_msgs::PNPLastEvent::Request  &req
       {
         eventNameFound = rit->eventName;
         rit->eventName = string("***") + rit->eventName;
+	//std::cout << "Consumed1 event " << rit->eventName << std::endl;
         break;
       }
     }
@@ -461,10 +462,11 @@ int PNPActionServer::check_for_event(string cond){
 
     if(variable_values.size() + 1 == splitted_condition.size())
     {
-      cond = splitted_condition[0].substr(0,splitted_condition[0].length()-1);
+      cond = splitted_condition[0];//LJ: Why remove _ to add _ later? Was: .substr(0,splitted_condition[0].length()-1);
+// corrected so that a variable is not necessarily preceded by '_'
       for (unsigned int i = 0; i < variable_values.size(); ++i ){
         update_variable_with_value(splitted_condition[i+1], variable_values[i]);
-        cond += "_" + variable_values[i];
+        cond += /*"_" +*/ variable_values[i];
       }
     }
   }
@@ -475,7 +477,7 @@ int PNPActionServer::check_for_event(string cond){
   eventBuffer_mutex.lock();
 
 
-  // cout << "   -- Checking cond = [" << cond << "] ... " << endl;
+  //cout << "   -- Checking cond = [" << cond << "] ... " << endl;
 
   // ORIG
   //  for(vector<Event>::iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i) {
@@ -494,7 +496,7 @@ int PNPActionServer::check_for_event(string cond){
 
       if (i->eventName == cond){
         i->eventName = string("***") + i->eventName;
-        
+	//std::cout << "Consumed2 event " << i->eventName << std::endl;
            //cerr << endl;
            //cout << "### Found event " << cond << " in eventBuffer - True" << endl;
            //for(vector<Event>::const_iterator i = eventBuffer.begin(); i != eventBuffer.end(); ++i)
@@ -508,6 +510,7 @@ int PNPActionServer::check_for_event(string cond){
       else if ( (i->eventName == "!"+cond) || (i->eventName == "not_"+cond) )
       {
         i->eventName = string("***") + i->eventName;
+	//std::cout << "Consumed3 event " << i->eventName << std::endl;
 
            //cerr << endl;
            //cout << "### Found event " << cond << " in eventBuffer - False" << endl;
@@ -604,11 +607,14 @@ vector<std::string> PNPActionServer::get_variables_values(vector<std::string> sp
       if (truncated_event.find("_@") == std::string::npos)
         boost::split(variables_values, truncated_event, boost::is_any_of("_"));
       
+      /* What is the semantic of this ??? if the number of found values is the same as the prefix-length consume and return ?
       if(variables_values.size() + 1 == splitted_condition[0].size())
       {
         rit->eventName = string("***") + rit->eventName;
+	//std::cout << "Consumed4 event " << rit->eventName << std::endl;
         break;
       }
+      */
     }
   }
   eventBuffer_mutex.unlock();
@@ -650,6 +656,7 @@ void PNPActionServer::update_variable_with_value(string var, string value){
   } 
 }
 
+// LJ to test : allow for variables inside the parameters
 std::string PNPActionServer::replace_vars_with_values(std::string params){
   vector<std::string> splitted_parameters;
   boost::split(splitted_parameters, params, boost::is_any_of("_"));
@@ -657,18 +664,21 @@ std::string PNPActionServer::replace_vars_with_values(std::string params){
   
   for (unsigned int i = 0; i < splitted_parameters.size(); ++i)
   {
-    if (splitted_parameters[i][0] == '@')
+    vector<std::string> splitted_parameter;
+    boost::split(splitted_parameter, splitted_parameters[i], boost::is_any_of("@"));
+    splitted_parameters[i] = splitted_parameter[0]; // first element as a basis
+    for (unsigned int j = 1; j < splitted_parameter.size(); ++j)
     {
-      std::string key = splitted_parameters[i].substr(1,splitted_parameters[i].length()-1);
+      std::string key = splitted_parameter[j];
       if(global_PNPROS_variables.find(key) != global_PNPROS_variables.end())
-        splitted_parameters[i] = global_PNPROS_variables[key];
+        splitted_parameter[j] = global_PNPROS_variables[key];
       else
       {
         ROS_WARN("Variable %s not initialized, passing it to the action", key.c_str());
         // cerr << "\033[22;31;1m??? Variable " << key << " not initialized ???\033[0m" << endl;
         // throw new runtime_error("\033[22;31;1m??? Wrongly formatted transition name ???\033[0m");
       }
-        
+      splitted_parameters[i] += splitted_parameter[j];  
     }
     
     new_params += "_" + splitted_parameters[i];
