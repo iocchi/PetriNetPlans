@@ -781,6 +781,9 @@ void PNPGenerator::applyExecutionRules() {
                 if (R=="fail_plan") {
                     po->setName("fail");
                 }
+				else if (R=="goal") {
+                    po->setName("goal");
+                }
                 else if (R=="restart_plan") {
                     pnp.connectPlaces(po,pnp.pinit);
                 }
