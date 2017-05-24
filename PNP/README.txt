@@ -14,6 +14,15 @@ Compilation and Installation
     $ cmake ..
     $ make
 
+* Install
+
+Choose either Global or Local install. Choose Local install if you plan to develop with PNP and you want to keep several versions on the same machine.
+
+* Global install (/usr/local/lib)
+
+    $ sudo make install
+
+
 * Local install (<path_to_PNP>/lib)
 
     $ cd PNP/lib
@@ -27,9 +36,6 @@ Set up environment variables in the file .bashrc in your home directory
 (open a new shell or set these variables in your current shell to use it in the current terminal session).
     
 
-* Global install (/usr/local/lib)
-
-    $ sudo make install
 
 
 * Doxygen 
