@@ -2,15 +2,7 @@
 
 #include "ActionProxy.h"
 
-/*
-* ALDEBARAN includes
-*/
-#include <qi/session.hpp>
-#include <qi/anyobject.hpp>
-
-
 using namespace std;
-
 
 // set<string> ActionProxy::activeActions;
 unsigned long long ActionProxy::maxID;

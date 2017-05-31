@@ -26,9 +26,11 @@ SET(PNP_SRC
 	src/parser/ConditionScanner.cpp 
 )
 
-set(TEST_SRC 
-	src/test_pnp.cpp src/ActionProxy.cpp )
+set(PNP_TEST_SRC 
+	src/pnp_test.cpp src/ActionProxy.cpp )
 
+set(PNP_NAOQI_SRC 
+	src/pnp_naoqi.cpp src/NaoqiActionProxy.cpp )
 
 # Libraries and executables
 
@@ -45,12 +47,17 @@ qi_use_lib( pnp xml2 )
 qi_stage_lib( pnp )
 
 
-qi_create_bin( pnp_test ${TEST_SRC})
+qi_create_bin( pnp_test ${PNP_TEST_SRC} )
 
 qi_use_lib(
   pnp_test
-  pnp ALCOMMON ALPROXIES ALTHREAD )
+  pnp )
 
+qi_create_bin( pnp_naoqi ${PNP_NAOQI_SRC} )
+
+qi_use_lib(
+  pnp_naoqi
+  pnp ALCOMMON ALPROXIES ALTHREAD )
 
 
 
