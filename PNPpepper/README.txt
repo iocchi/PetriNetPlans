@@ -23,7 +23,12 @@
 	On local machine: 
 	edit 'upload.sh' to match your Pepper environment and run it
 
-	On Pepper:
-	run 'test_pnp' for the folder containing the file test.pnml 
-
+	OnPepper:
+	- test 1
+	run 'pnp_test' in the folder containing the file test.pnml
+	(actions not started, CTRL-C stop the plan)
+	- test 2
+	run the 3 action servers (actions/action_{A,B,C}.py)
+	run 'pnp_naoqi' in the folder containing the file test.pnml 
+ 
 
