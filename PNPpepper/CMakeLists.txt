@@ -1,44 +1,17 @@
 cmake_minimum_required(VERSION 2.8)
-project(test_flex)
+project(PNPpepper)
 
 find_package(qibuild)
 
 message("Toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 
-message("current source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
-
-
-# Required libraries
-
-find_package(Boost REQUIRED)
-
-if ( CMAKE_TOOLCHAIN_FILE MATCHES "pepper" )
-	message("Pepper toolchain")
-	find_package(xml2 REQUIRED) # pepper
-	set(LIB_PEPPER "-L${CMAKE_CURRENT_SOURCE_DIR}/build-pepper")
-	set(CTC_NAOQI_DIR "/opt/Aldebaran/naoqi/ctc-linux64-atom-2.5.2.74/")
-	set(LIBXML2_INCLUDE_DIR "${CTC_NAOQI_DIR}/xml2/include/libxml2/")
-	set(LIBXML2_LIBRARIES "-L${CTC_NAOQI_DIR}/xml2/lib -L${CTC_NAOQI_DIR}/zlib/lib -L${CTC_NAOQI_DIR}/xz_utils/lib")
-else()
-	message("Linux toolchain")
-	find_package(LibXml2 REQUIRED) # linux
-endif()
-
-message("Boost: ${Boost_INCLUDE_DIR}")
-message("libxml2: ${LIBXML2_INCLUDE_DIR} ${LIBXML2_LIBRARIES}")
-
-# Setting include and lib directories
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${Boost_INCLUDE_DIR})
-include_directories(${LIBXML2_INCLUDE_DIR})
-
-set(LIBD ${LIBXML2_LIBRARIES} ${LIB_PEPPER})
+message("Current source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 
 # Source files
 
-SET(PNP_SRC src/conditionchecker.cpp
+SET(PNP_SRC 
+	src/conditionchecker.cpp
 	src/petrinet.cpp
 	src/pnp_action.cpp
 	src/pnp_action_loader_txt.cpp
@@ -53,24 +26,31 @@ SET(PNP_SRC src/conditionchecker.cpp
 	src/parser/ConditionScanner.cpp 
 )
 
-set(TEST_SRC src/test_pnp.cpp src/ActionProxy.cpp )
+set(TEST_SRC 
+	src/test_pnp.cpp src/ActionProxy.cpp )
 
 
 # Libraries and executables
 
-# libpnp.so
+include_directories( include )
 
-ADD_LIBRARY(pnp SHARED ${PNP_SRC})
-target_link_libraries(pnp ${LIBD})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
-# test_pnp
+qi_create_lib(
+  pnp
+  SHARED
+  ${PNP_SRC}
+)
+qi_use_lib( pnp xml2 )
+qi_stage_lib( pnp )
 
-add_executable(test_pnp ${TEST_SRC})
-add_dependencies(test_pnp pnp)
 
-target_link_libraries(test_pnp ${LIBD} libpnp.so libxml2.so libz.so liblzma.so)
+qi_create_bin( pnp_test ${TEST_SRC})
+
+qi_use_lib(
+  pnp_test
+  pnp ALCOMMON ALPROXIES ALTHREAD )
 
 
-#qi_create_bin(test "src/test.cpp")
 
 

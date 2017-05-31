@@ -12,8 +12,8 @@
 2. Compiling
 
     $ cd <PATH_TO>/PetriNetPlans/PNPpepper
-	$ qibuild configure --worktree <qi_ws>
-	$ qibuild make --worktree <qi_ws>
+	$ qibuild configure -c linux64 --worktree <qi_ws>
+	$ qibuild make -c linux64 --worktree <qi_ws>
 	$ qibuild configure -c pepper --worktree <qi_ws>
 	$ qibuild make -c pepper --worktree <qi_ws>
 

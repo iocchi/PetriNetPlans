@@ -2,6 +2,13 @@
 
 #include "ActionProxy.h"
 
+/*
+* ALDEBARAN includes
+*/
+#include <qi/session.hpp>
+#include <qi/anyobject.hpp>
+
+
 using namespace std;
 
 
@@ -73,7 +80,16 @@ void ActionProxy::actionTerminationCallback()
 void ActionProxy::start()
 {
 	cout << "ActionProxy: starting action " << name << endl; 
-	// send message to start this action   
+	// send message to start this action 
+
+
+//# create proxy on ALMemory
+//memProxy = ALProxy("ALMemory",getenv("PEPPER_IP"),9559)
+
+//#raise event. Data can be int, float, list, string
+//memProxy.raiseEvent("My event", "data")
+
+  
     active=true;
 }
 

@@ -1,4 +1,7 @@
-<project name="pnp">
+<project name="PNPpepper">
     <maintainer email="iocchi@diag.uniroma1.it">Luca Iocchi</maintainer>
+	<qibuild name="PNPpepper" >
+	    <!-- depends buildtime="true" runtime="true" names="libqicore libqi" / -->
+	</qibuild>
 </project>
 
