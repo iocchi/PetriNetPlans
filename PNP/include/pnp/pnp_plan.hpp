@@ -175,6 +175,11 @@ void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::executeStep()
 		return;
 	}
 	
+	executeAllActiveActions();
+
+	fireAllEnabledTransitions();
+
+
 	std::map<std::string,std::string>::iterator it = activePlaces.find(getPlanName());
 	
 	if (it != activePlaces.end()) activePlaces.erase(it);
@@ -200,9 +205,6 @@ void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::executeStep()
 	}
 	#endif
 
-	executeAllActiveActions();
-
-	fireAllEnabledTransitions();
 
 	if(this->observer != NULL)
 		this->observer->markingChanged(this->currentMarking());

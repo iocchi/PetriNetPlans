@@ -21,5 +21,7 @@ class ActionProxy : public PetriNetPlans::PnpAction
 		virtual void interrupt();
 		virtual void end();
 		virtual bool finished();
+
+		virtual void actionTerminationCallback();
 };
 

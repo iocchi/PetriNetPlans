@@ -47,9 +47,11 @@ SET(PNP_SRC src/conditionchecker.cpp
 	src/pnp_instantiators.cpp
 	src/pnp_plan.cpp
 	src/utils.cpp
+    src/connection_observer.cpp
 	src/basic_plan/xml_plan_instantiator.cpp
 	src/parser/ConditionParser.cpp
-	src/parser/ConditionScanner.cpp )
+	src/parser/ConditionScanner.cpp 
+)
 
 set(TEST_SRC src/test_pnp.cpp src/ActionProxy.cpp )
 
@@ -69,6 +71,6 @@ add_dependencies(test_pnp pnp)
 target_link_libraries(test_pnp ${LIBD} libpnp.so libxml2.so libz.so liblzma.so)
 
 
-qi_create_bin(test_flex "src/test_flex.cpp")
+#qi_create_bin(test "src/test.cpp")
 
 

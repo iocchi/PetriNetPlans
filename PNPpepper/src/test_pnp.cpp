@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
 
 #include <pnp/basic_plan/basic_plan.h>
 #include <pnp/pnp_executer.h>
 #include <pnp/basic_plan/xml_plan_instantiator.h>
+#include <pnp/connection_observer.h>
 
 #include "ActionProxy.h"
 
@@ -43,7 +45,7 @@ PnpExecutable* Inst::createExecutable(const string& name) throw (runtime_error)
 	unsigned long index = name.find('#');
 	
 	actionName = name;
-	
+
 	if (index != string::npos)
 	{
 		// Removing robot information to check if the action is a sub-plan.
@@ -58,8 +60,7 @@ PnpExecutable* Inst::createExecutable(const string& name) throw (runtime_error)
 	if (file.fail())
 	{
 		file.clear(ios::failbit);
-		// cout << "No plan found. Trying with an action ..." << endl;
-		
+		// cout << "  -- No plan found. Trying with an action ..." << endl;
 		return new ActionProxy(name);
 	}
 	
@@ -68,12 +69,12 @@ PnpExecutable* Inst::createExecutable(const string& name) throw (runtime_error)
 	try
 	{
 		XMLPnpPlanInstantiator planLoader;
-		
 		planLoader.loadFromPNML(path,plan);
+		// cout << "  -- Plan found ... " << plan << endl;
 	}
 	catch(const runtime_error&)
 	{
-		string errorString("No action nor plan with name: ");
+		string errorString("  -- No action nor plan with name: ");
 		
 		errorString += actionName;
 		
@@ -153,17 +154,23 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
 
 int main()
 {
-	std::cout << "Hello, world!" << std::endl;
+	std::cout << "Hello, world! This is a test of PNP execution!" << std::endl;
 
 	string planFolder=".", planToExec="test";
+	bool use_java_connection = false, autorestart = false;
 
 	PnpExecuter<PnpPlan> *executor = NULL;
 
 	ExternalConditionChecker *conditionChecker = new Conds();
 
-	cout << "Loading plan " << planToExec << " from folder " << planFolder << endl;
-	try {
-		
+	cout << "\033[0mCurrent plan: \033[0m\033[22;32;1m" << planToExec << "\033[0m" << endl;
+	cout << "\033[0mPlan folder: \033[0m\033[22;32;1m" << planFolder << "\033[0m" << endl;
+
+	// cout << "Loading plan " << planToExec << " from folder " << planFolder << endl;
+
+	cout << "Creating executable for the plan" << endl;
+
+	try {		
 	    ExecutableInstantiator* i = new Inst(conditionChecker,planFolder);
     	if (i!=NULL) {
       		executor = new PnpExecuter<PnpPlan>(i);
@@ -174,12 +181,80 @@ int main()
     	planToExec="stop"; 
     }
 
+	string planName = planToExec;
+
 	if (executor!=NULL) {
-		cout << "Exec plan..." << endl;
 
-		executor->setMainPlan(planToExec);
+        if (use_java_connection)
+            cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
 
-	}
+        //ConnectionObserver observer(planName, use_java_connection);
+        //PlanObserver* new_observer = &observer;
+
+        executor->setMainPlan(planName);
+        //executor->setObserver(new_observer);
+
+        if (executor->getMainPlanName()!="") {
+
+            cout << "Starting plan " << executor->getMainPlanName() << endl;
+            //cout << "   goal: " << executor->goalReached() << endl;
+            //cout << "   fail: " << executor->failReached() << endl;
+
+            while (!executor->goalReached() && !executor->failReached())
+            {
+
+                
+                string str_activePlaces;
+
+                vector<string> nepForTest = executor->getNonEmptyPlaces();
+
+                str_activePlaces = "";
+
+                for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
+                {
+                    str_activePlaces += *it;
+                }
+				if (str_activePlaces == "") 
+					str_activePlaces = "init;";
+
+				cout << "-- active places: " << str_activePlaces << endl;
+                // also used to notify PNPAS that a PNP step is just over
+                // currentActivePlacesPublisher.publish(activePlaces);
+
+				executor->execMainPlanStep();
+
+                usleep(100000);
+            }
+
+            if (executor->goalReached()) {
+                cout << "GOAL NODE REACHED!!!" << endl;
+                string activePlaces;
+                activePlaces = "goal";
+                //currentActivePlacesPublisher.publish(activePlaces);
+                if (!autorestart)
+                  planToExec="stop";
+            }
+            else if (executor->failReached()) {
+                cout << "FAIL NODE REACHED!!!" << endl;
+                string activePlaces;
+                activePlaces = "fail";
+                //currentActivePlacesPublisher.publish(activePlaces);
+                if (!autorestart)
+                  planToExec="stop";
+            }
+            else {
+                cout << "PLAN STOPPED OR CHANGED!!!" << endl;
+                string activePlaces;
+                activePlaces = "abort";
+                //currentActivePlacesPublisher.publish(activePlaces);
+            }
+
+        } // if executor getMainPlanName ...
+
+        delete executor;
+
+    } // if executor!=NULL
+
 
 	cout << "End." << endl;
 

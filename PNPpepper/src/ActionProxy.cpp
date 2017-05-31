@@ -5,7 +5,7 @@
 using namespace std;
 
 
-set<string> ActionProxy::activeActions;
+// set<string> ActionProxy::activeActions;
 unsigned long long ActionProxy::maxID;
 
 ActionProxy::ActionProxy(const string& nm)
@@ -17,7 +17,7 @@ ActionProxy::ActionProxy(const string& nm)
     robotname = "";
     string nms = nm;
 
-    // cerr << "Parsing: " << nm << " " << nm.find('_') << endl;
+    cout << "Creating action " << nm << endl;
 
     size_t k = nm.find('#');
     if (k != string::npos) {
@@ -65,27 +65,38 @@ void ActionProxy::feedbackCb(actionlib::ClientGoalHandle<pnp_msgs::PNPAction> gh
 }
 */
 
+void ActionProxy::actionTerminationCallback()
+{
+	active=false;
+}
 
 void ActionProxy::start()
 {
-
+	cout << "ActionProxy: starting action " << name << endl; 
+	// send message to start this action   
     active=true;
-
 }
 
 void ActionProxy::end()
 {
     if (!active) return;
-    active=false;
 
+	// send message to end this action
+
+    active=false;
 }
 
 void ActionProxy::interrupt()
 {
+    if (!active) return;
+
+	// send message to interrupt this action
+
+    active=false;
 }
 
 bool ActionProxy::finished()
 {
-	return false;
+	return !active;
 }
 

@@ -14,7 +14,9 @@ template<typename PnpPlaceClass, typename PnpTransitionClass>
     PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::PnpPlanTemplate(
                       ExecutableInstantiator* ei, ExternalConditionChecker* cc, const std::string name) :
 	planName(name), executableInstantiator(ei), conditionChecker(cc), observer(NULL)
-{ activePlaces.clear(); }
+{ 
+	activePlaces.clear(); 
+}
 
 template<typename PnpPlaceClass, typename PnpTransitionClass>
 PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::~PnpPlanTemplate()
@@ -175,6 +177,11 @@ void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::executeStep()
 		return;
 	}
 	
+	executeAllActiveActions();
+
+	fireAllEnabledTransitions();
+
+
 	std::map<std::string,std::string>::iterator it = activePlaces.find(getPlanName());
 	
 	if (it != activePlaces.end()) activePlaces.erase(it);
@@ -200,9 +207,6 @@ void PnpPlanTemplate<PnpPlaceClass, PnpTransitionClass>::executeStep()
 	}
 	#endif
 
-	executeAllActiveActions();
-
-	fireAllEnabledTransitions();
 
 	if(this->observer != NULL)
 		this->observer->markingChanged(this->currentMarking());

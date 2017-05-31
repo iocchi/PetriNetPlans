@@ -39,9 +39,8 @@ qtcreator-build
 *.class
 .project
 .cproject
-
 .settings
 *.stlb
-
 /CMakeLists.txt
+PNPpepper/build*
 

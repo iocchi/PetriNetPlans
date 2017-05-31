@@ -4,24 +4,18 @@
       iocchi@dis.uniroma1.it
 ==================================
 
-1. Install naoqi C++ SDK
+1. Install naoqi C++ SDK and create a qi workspace
 
    http://doc.aldebaran.com/2-5/dev/cpp/install_guide.html#cpp-install-guide
 
 
-2. Create a qi package
+2. Compiling
 
-	$ cd <qi_ws>
-	$ cp -a <PATH_TO>/PetriNetPlans/PNPpepper .
-
-
-3. Compiling
-
-    $ cd <qi_ws>/PNPpepper
-	$ qibuild configure
-	$ qibuild make
-	$ qibuild configure -c pepper
-	$ qibuild make -c pepper
+    $ cd <PATH_TO>/PetriNetPlans/PNPpepper
+	$ qibuild configure --worktree <qi_ws>
+	$ qibuild make --worktree <qi_ws>
+	$ qibuild configure -c pepper --worktree <qi_ws>
+	$ qibuild make -c pepper --worktree <qi_ws>
 
 
 4. Uploading and testing on the robot
