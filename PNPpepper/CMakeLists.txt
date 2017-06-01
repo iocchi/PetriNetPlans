@@ -11,30 +11,35 @@ message("Current source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 # Source files
 
 SET(PNP_SRC 
-	src/conditionchecker.cpp
-	src/petrinet.cpp
-	src/pnp_action.cpp
-	src/pnp_action_loader_txt.cpp
-	src/pnp_executable.cpp
-	src/pnp_executer.cpp
-	src/pnp_instantiators.cpp
-	src/pnp_plan.cpp
-	src/utils.cpp
-    src/connection_observer.cpp
-	src/basic_plan/xml_plan_instantiator.cpp
-	src/parser/ConditionParser.cpp
-	src/parser/ConditionScanner.cpp 
+	../PNP/src/conditionchecker.cpp
+	../PNP/src/petrinet.cpp
+	../PNP/src/pnp_action.cpp
+	../PNP/src/pnp_action_loader_txt.cpp
+	../PNP/src/pnp_executable.cpp
+	../PNP/src/pnp_executer.cpp
+	../PNP/src/pnp_instantiators.cpp
+	../PNP/src/pnp_plan.cpp
+	../PNP/src/utils.cpp
+	../PNP/src/basic_plan/xml_plan_instantiator.cpp
+	../PNP/src/parser/ConditionParser.cpp
+	../PNP/src/parser/ConditionScanner.cpp 
 )
 
 set(PNP_TEST_SRC 
-	src/pnp_test.cpp src/ActionProxy.cpp )
+	src/pnp_test.cpp 
+	src/ActionProxy.cpp 
+	src/connection_observer.cpp 
+)
 
 set(PNP_NAOQI_SRC 
-	src/pnp_naoqi.cpp src/NaoqiActionProxy.cpp )
+	src/pnp_naoqi.cpp 
+	src/NaoqiActionProxy.cpp 
+    src/connection_observer.cpp
+)
 
 # Libraries and executables
 
-include_directories( include )
+include_directories( ../PNP/include include )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 

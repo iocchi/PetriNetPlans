@@ -4,12 +4,6 @@
 #include <qi/anyobject.hpp>
 #include <qi/session.hpp>
 
-//#include <boost/shared_ptr.hpp>
-//#include <alcommon/almodule.h>
-//#include <alproxies/almemoryproxy.h>
-
-
-
 #include "NaoqiActionProxy.h"
 
 using namespace std;
