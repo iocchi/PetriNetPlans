@@ -23,7 +23,8 @@ SET( pnp_SRC conditionchecker.cpp
 	utils.cpp
 	basic_plan/xml_plan_instantiator.cpp
 	parser/ConditionParser.cpp
-	parser/ConditionScanner.cpp )
+	parser/ConditionScanner.cpp
+	connection_observer.cpp )
 
 #comment the following lines to have traditional pnp without the learning functionality
 # ----- learnpnp ------

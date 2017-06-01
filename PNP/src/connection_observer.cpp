@@ -10,6 +10,8 @@
 
 #include <pnp/connection_observer.h>
 
+
+
 ConnectionObserver::ConnectionObserver(const std::string& name, bool use_java_connection) :
     newsockfd_(-1),
     plan_name_(name)

@@ -23,18 +23,17 @@ SET(PNP_SRC
 	../PNP/src/basic_plan/xml_plan_instantiator.cpp
 	../PNP/src/parser/ConditionParser.cpp
 	../PNP/src/parser/ConditionScanner.cpp 
+    ../PNP/src/connection_observer.cpp
 )
 
 set(PNP_TEST_SRC 
 	src/pnp_test.cpp 
 	src/ActionProxy.cpp 
-	src/connection_observer.cpp 
 )
 
 set(PNP_NAOQI_SRC 
 	src/pnp_naoqi.cpp 
 	src/NaoqiActionProxy.cpp 
-    src/connection_observer.cpp
 )
 
 # Libraries and executables

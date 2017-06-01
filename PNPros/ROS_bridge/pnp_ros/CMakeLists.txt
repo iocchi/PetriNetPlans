@@ -111,7 +111,6 @@ add_library(pnpros
   src/ActionProxy.cpp include/${PROJECT_NAME}/ActionProxy.h
   src/ROSConds.cpp include/${PROJECT_NAME}/ROSConds.h
   src/ROSInst.cpp include/${PROJECT_NAME}/ROSInst.h
-  src/connection_observer.cpp include/${PROJECT_NAME}/connection_observer.h
   src/LearnPNP/ROSLearnInstantiator.cpp include/${PROJECT_NAME}/LearnPNP/ROSLearnInstantiator.h
   src/LearnPNP/ROSReward.cpp include/${PROJECT_NAME}/LearnPNP/ROSReward.h
   src/LearnPNP/World/World.cpp include/${PROJECT_NAME}/LearnPNP/World/World.h

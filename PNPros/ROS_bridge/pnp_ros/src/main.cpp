@@ -16,7 +16,7 @@
 #include <cstdlib>
 #include <fstream>
 
-#include <pnp_ros/connection_observer.h>
+#include <pnp/connection_observer.h>
 
 using namespace std;
 using namespace PetriNetPlans;
