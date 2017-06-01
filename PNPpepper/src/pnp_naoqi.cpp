@@ -15,6 +15,11 @@
 using namespace PetriNetPlans;
 using namespace std;
 
+// external use in NaoqiActionProxy
+qi::SessionPtr session;
+qi::AnyObject memProxy;
+
+
 class Inst : public PetriNetPlans::ExecutableInstantiator
 {
 	private:
@@ -153,20 +158,37 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
     return result;
 }
 
+string planToExec = "", currentPlanName="stop";
 
-qi::SessionPtr session;
+
+bool naoqi_ok() {
+	string p = memProxy.call<string>("getData","PNP_planToExec");
+	// cout << "     almem read: " << p << endl;
+	if (p!="") {
+		planToExec = p;
+		memProxy.call<void>("insertData","PNP_planToExec","");
+	}
+
+	return true;  // node must still run
+}
+
 
 int main()
 {
-	cout << "Hello, world! This is a test of PNP execution!" << endl;
+	cout << "PNP naoqi" << endl;
 
-	string planFolder=".", planToExec="test";
+    string planName = "stop", planFolder = "plans/";
+	
 	bool use_java_connection = false, autorestart = false;
 
-	cout << "Creating a naoqi session ..." << endl;
+	string ip = getenv("PEPPER_IP"), port="9559";
+	cout << "Connecting to naoqi on " << ip << ":" << port << endl;
 
 	session = qi::makeSession();
-	session->connect("tcp://127.0.0.1:9559");
+	session->connect("tcp://"+ip+":"+port);
+	memProxy = session->service("ALMemory");
+
+	memProxy.call<void>("insertData","PNP_planToExec","");
 
 	PnpExecuter<PnpPlan> *executor = NULL;
 
@@ -177,92 +199,142 @@ int main()
 
 	// cout << "Loading plan " << planToExec << " from folder " << planFolder << endl;
 
-	cout << "Creating executable for the plan" << endl;
 
-	try {		
-	    ExecutableInstantiator* i = new Inst(conditionChecker,planFolder);
-    	if (i!=NULL) {
-      		executor = new PnpExecuter<PnpPlan>(i);
+
+	while (naoqi_ok()) {
+
+		// new plan to exec
+		if (planToExec!="") {
+            if (planToExec=="<currentplan>")
+                planName = currentPlanName;
+            else
+                planName = planToExec;
+		  	planToExec = "";
+		}			
+
+		// wait for a plan different from stop
+        if (planName=="stop") {
+		  cerr << "\033[22;31;1mWaiting for a plan...\033[0m" << endl;
+
+		  while (planToExec=="" && naoqi_ok()) {
+		      usleep(250000);
+		  }
 		}
-   	}
-    catch(int e) {
-    	cout << "ERROR No Instantiator available." << endl;
-    	planToExec="stop"; 
-    }
 
-	string planName = planToExec;
+		else {
+			// planName is a new plan to execute (not stop)
 
-	if (executor!=NULL) {
+			currentPlanName = planName;
+		  
+            cerr << "\033[0mExecuting plan: \033[22;31;1m" << planName << "\033[0m  autorestart: " << autorestart <<
+            " use_java_connection: " << use_java_connection << endl;
 
-        if (use_java_connection)
-            cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
 
-        //ConnectionObserver observer(planName, use_java_connection);
-        //PlanObserver* new_observer = &observer;
+			string path = planFolder + "/" + planName + ".pnml";
+	
+			ifstream fTemp;
+			fTemp.open(path.c_str(),ifstream::in);
+			fTemp.close();
+	
+			if (fTemp.fail()) {
+				cerr << "\033[22;31;1mERROR - plan not found... executing 'stop' \033[0m" << endl;
+				planName = "stop";
+			}
 
-        executor->setMainPlan(planName);
-        //executor->setObserver(new_observer);
 
-        if (executor->getMainPlanName()!="") {
+			// Instantiate executor and condition checker
+			cout << "Creating executable for the plan" << endl;
+			try {		
+				ExecutableInstantiator* i = new Inst(conditionChecker,planFolder);
+				if (i!=NULL) {
+			  		executor = new PnpExecuter<PnpPlan>(i);
+				}
+		   	}
+			catch(int e) {
+				cout << "ERROR No Instantiator available." << endl;
+				planName = "stop";
+			}
 
-            cout << "Starting plan " << executor->getMainPlanName() << endl;
-            //cout << "   goal: " << executor->goalReached() << endl;
-            //cout << "   fail: " << executor->failReached() << endl;
 
-            while (!executor->goalReached() && !executor->failReached())
-            {
-                
-                string str_activePlaces;
+			if (executor!=NULL) {
 
-                vector<string> nepForTest = executor->getNonEmptyPlaces();
+				if (use_java_connection)
+					cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
 
-                str_activePlaces = "";
 
-                for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
-                {
-                    str_activePlaces += *it;
-                }
-				if (str_activePlaces == "") 
-					str_activePlaces = "init;";
+				// FIX - segfault				
+				//PlanObserver* observer = new ConnectionObserver(planName, use_java_connection);
+				//executor->setObserver(observer);
 
-				cout << "-- active places: " << str_activePlaces << endl;
-                // also used to notify PNPAS that a PNP step is just over
-                // currentActivePlacesPublisher.publish(activePlaces);
+		    	executor->setMainPlan(planName);
 
-				executor->execMainPlanStep();
 
-                usleep(250000);
-            }
+		    	if (executor->getMainPlanName()!="") {
 
-            if (executor->goalReached()) {
-                cout << "GOAL NODE REACHED!!!" << endl;
-                string activePlaces;
-                activePlaces = "goal";
-                //currentActivePlacesPublisher.publish(activePlaces);
-                if (!autorestart)
-                  planToExec="stop";
-            }
-            else if (executor->failReached()) {
-                cout << "FAIL NODE REACHED!!!" << endl;
-                string activePlaces;
-                activePlaces = "fail";
-                //currentActivePlacesPublisher.publish(activePlaces);
-                if (!autorestart)
-                  planToExec="stop";
-            }
-            else {
-                cout << "PLAN STOPPED OR CHANGED!!!" << endl;
-                string activePlaces;
-                activePlaces = "abort";
-                //currentActivePlacesPublisher.publish(activePlaces);
-            }
+				    cout << "Starting plan " << executor->getMainPlanName() << endl;
+				    //cout << "   goal: " << executor->goalReached() << endl;
+				    //cout << "   fail: " << executor->failReached() << endl;
 
-        } // if executor getMainPlanName ...
+				    while (!executor->goalReached() && !executor->failReached() && naoqi_ok() && planToExec=="")
+				    {
+				        
+				        string str_activePlaces;
 
-        delete executor;
+				        vector<string> nepForTest = executor->getNonEmptyPlaces();
 
-    } // if executor!=NULL
+				        str_activePlaces = "";
 
+				        for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
+				        {
+				            str_activePlaces += *it;
+				        }
+						if (str_activePlaces == "") 
+							str_activePlaces = "init;";
+
+						cout << "-- active places: " << str_activePlaces << endl;
+				        // also used to notify PNPAS that a PNP step is just over
+				        // currentActivePlacesPublisher.publish(activePlaces);
+
+						executor->execMainPlanStep();
+
+				        usleep(250000);
+				    }
+
+				    if (executor->goalReached()) {
+				        cout << "GOAL NODE REACHED!!!" << endl;
+				        string activePlaces;
+				        activePlaces = "goal";
+				        //currentActivePlacesPublisher.publish(activePlaces);
+				        if (!autorestart)
+				          planToExec="stop";
+				    }
+				    else if (executor->failReached()) {
+				        cout << "FAIL NODE REACHED!!!" << endl;
+				        string activePlaces;
+				        activePlaces = "fail";
+				        //currentActivePlacesPublisher.publish(activePlaces);
+				        if (!autorestart)
+				          planToExec="stop";
+				    }
+				    else {
+				        cout << "PLAN STOPPED OR CHANGED!!!" << endl;
+				        string activePlaces;
+				        activePlaces = "abort";
+				        //currentActivePlacesPublisher.publish(activePlaces);
+				    }
+
+				} // if executor getMainPlanName ...
+
+			} // if executor!=NULL
+
+		} // else
+
+	} // while naoqi_ok()
+
+
+	// Cleanup.
+	delete conditionChecker;
+	delete executor;
 
 	cout << "End." << endl;
 

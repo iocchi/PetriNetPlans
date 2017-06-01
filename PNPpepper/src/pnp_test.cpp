@@ -156,7 +156,7 @@ int main()
 {
 	std::cout << "Hello, world! This is a test of PNP execution!" << std::endl;
 
-	string planFolder=".", planToExec="test";
+	string planFolder="plans/", planToExec="test";
 	bool use_java_connection = false, autorestart = false;
 
 	PnpExecuter<PnpPlan> *executor = NULL;
