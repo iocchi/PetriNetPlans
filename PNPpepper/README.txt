@@ -22,6 +22,19 @@
 	$ qibuild make -c pepper --worktree <qi_ws>
 
 
+3. Local test
+
+	- test 1
+	$ build-linux64/sdk/bin/pnp_test 
+	(actions are not started, so you need to use CTRL-C to stop the execution)
+
+	- test 2
+	$ <PATH_TO>/naoqi-sdk-2.5.5.5-linux64/naoqi
+	$ export PEPPER_IP=localhost
+	run the 3 action servers (actions/action_{A,B,C}.py)
+	run 'pnp_naoqi' in the folder containing the file test.pnml 
+	(actions are started and the plan terminates after execution of A,B,C)
+
 4. Uploading and testing on the robot
 
 	On local machine: 
@@ -31,8 +44,9 @@
 	- test 1
 	run 'pnp_test' in the folder containing the file test.pnml
 	(actions are not started, so you need to use CTRL-C to stop the execution)
+
 	- test 2
 	run the 3 action servers (actions/action_{A,B,C}.py)
 	run 'pnp_naoqi' in the folder containing the file test.pnml 
- 
+	(actions are started and the plan terminates after execution of A,B,C) 
 
