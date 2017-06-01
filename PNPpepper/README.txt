@@ -10,8 +10,12 @@
 
 
 2. Compiling
+	
+	* Follow instructions to compile PNP in PNP folder
 
-    $ cd <PATH_TO>/PetriNetPlans/PNPpepper
+	* Compile PNPpepper stuff:
+
+	$ cd <PATH_TO>/PetriNetPlans/PNPpepper
 	$ qibuild configure -c linux64 --worktree <qi_ws>
 	$ qibuild make -c linux64 --worktree <qi_ws>
 	$ qibuild configure -c pepper --worktree <qi_ws>
@@ -26,7 +30,7 @@
 	OnPepper:
 	- test 1
 	run 'pnp_test' in the folder containing the file test.pnml
-	(actions not started, CTRL-C stop the plan)
+	(actions are not started, so you need to use CTRL-C to stop the execution)
 	- test 2
 	run the 3 action servers (actions/action_{A,B,C}.py)
 	run 'pnp_naoqi' in the folder containing the file test.pnml 
