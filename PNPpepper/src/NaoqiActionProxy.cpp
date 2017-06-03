@@ -63,7 +63,7 @@ ActionProxy::ActionProxy(const string& nm)
 
 ActionProxy::~ActionProxy() {
 	// terminate this action    
-	cout << "ActionProxy: terminating action " << name << endl;  
+	cout << "ActionProxy: terminating action " << name << " " << params << endl;  
     // memProxy.call<void>("unsubscribeToEvent", "actionTerminationCallback", "PNP_ActionProxy");
 
 	acb_signal.disconnect(signalID);
@@ -75,12 +75,12 @@ ActionProxy::~ActionProxy() {
 
 void ActionProxy::start()
 {
-	cout << "ActionProxy: starting action " << name << endl; 
+	cout << "ActionProxy: starting action " << name << " " << params << endl; 
 	// send message to start this action 
 	qi::AnyObject memProxy = session->service("ALMemory");
 
 	string event = "PNP_action_" + name;
-	string value = "start";
+	string value = "start "+params;
 	memProxy.call<void>("raiseEvent",event,value);
 
     active=true;

@@ -10,14 +10,18 @@ G_actionThread_exec = None
 
 def action_cb(value):
 	global G_actionThread_exec, memory_service
+	v = value.split()
 	print "action_cb value ",value
-	if (value=='start'):
-		actionThread = threading.Thread(target = G_actionThread_exec)
+	if (v[0]=='start'):
+		params=""
+		if (len(v)>1):
+			params=v[1]
+		actionThread = threading.Thread(target = G_actionThread_exec, args=(params,))
 		actionThread.mem_serv = memory_service
 		actionThread.start()
-	elif (value=='end'):
+	elif (v[0]=='end'):
 		actionThread.do_run = False
-	elif (value=='interrupt'):
+	elif (v[0]=='interrupt'):
 		actionThread.do_run = False
 
 

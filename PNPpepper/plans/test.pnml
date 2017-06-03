@@ -33,7 +33,7 @@
     <position x="140" y="500" />    <size width="32" height="32" />
   </graphics>
   <name>
-    <value>A.exec</value>
+    <value>A_5.exec</value>
     <graphics>
       <offset x="0" y="40" />
     </graphics>
@@ -71,7 +71,7 @@
     <position x="380" y="500" />    <size width="32" height="32" />
   </graphics>
   <name>
-    <value>B.exec</value>
+    <value>A_10.exec</value>
     <graphics>
       <offset x="0" y="40" />
     </graphics>
@@ -109,7 +109,7 @@
     <position x="620" y="500" />    <size width="32" height="32" />
   </graphics>
   <name>
-    <value>C.exec</value>
+    <value>B.exec</value>
     <graphics>
       <offset x="0" y="40" />
     </graphics>
@@ -126,6 +126,44 @@
 <place id="n12">
   <graphics>
     <position x="740" y="500" />    <size width="32" height="32" />
+  </graphics>
+  <name>
+    <value>X12</value>
+    <graphics>
+      <offset x="0" y="40" />
+    </graphics>
+  </name>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=0,g=0,b=0]</value>
+    </FrameColor>
+    <FillColor>
+      <value>java.awt.Color[r=255,g=255,b=255]</value>
+    </FillColor>
+  </toolspecific>
+</place>
+<place id="n14">
+  <graphics>
+    <position x="860" y="500" />    <size width="32" height="32" />
+  </graphics>
+  <name>
+    <value>C.exec</value>
+    <graphics>
+      <offset x="0" y="40" />
+    </graphics>
+  </name>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=0,g=0,b=0]</value>
+    </FrameColor>
+    <FillColor>
+      <value>java.awt.Color[r=255,g=255,b=255]</value>
+    </FillColor>
+  </toolspecific>
+</place>
+<place id="n16">
+  <graphics>
+    <position x="980" y="500" />    <size width="32" height="32" />
   </graphics>
   <name>
     <value>goal</value>
@@ -146,7 +184,7 @@
   <graphics>
     <position x="80" y="500" />    <size width="8" height="32" />  </graphics>
   <name>
-    <value>A.start</value>
+    <value>A_5.start</value>
     <graphics>
       <offset x="0" y="-20" />
     </graphics>
@@ -164,7 +202,7 @@
   <graphics>
     <position x="200" y="500" />    <size width="8" height="32" />  </graphics>
   <name>
-    <value>A.end</value>
+    <value>A_5.end</value>
     <graphics>
       <offset x="0" y="-20" />
     </graphics>
@@ -182,7 +220,7 @@
   <graphics>
     <position x="320" y="500" />    <size width="8" height="32" />  </graphics>
   <name>
-    <value>B.start</value>
+    <value>A_10.start</value>
     <graphics>
       <offset x="0" y="-20" />
     </graphics>
@@ -200,7 +238,7 @@
   <graphics>
     <position x="440" y="500" />    <size width="8" height="32" />  </graphics>
   <name>
-    <value>B.end</value>
+    <value>A_10.end</value>
     <graphics>
       <offset x="0" y="-20" />
     </graphics>
@@ -218,7 +256,7 @@
   <graphics>
     <position x="560" y="500" />    <size width="8" height="32" />  </graphics>
   <name>
-    <value>C.start</value>
+    <value>B.start</value>
     <graphics>
       <offset x="0" y="-20" />
     </graphics>
@@ -235,6 +273,42 @@
 <transition id="n11">
   <graphics>
     <position x="680" y="500" />    <size width="8" height="32" />  </graphics>
+  <name>
+    <value>B.end</value>
+    <graphics>
+      <offset x="0" y="-20" />
+    </graphics>
+  </name>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=0,g=0,b=0]</value>
+    </FrameColor>
+    <FillColor>
+      <value>java.awt.Color[r=200,g=200,b=220]</value>
+    </FillColor>
+  </toolspecific>
+</transition>
+<transition id="n13">
+  <graphics>
+    <position x="800" y="500" />    <size width="8" height="32" />  </graphics>
+  <name>
+    <value>C.start</value>
+    <graphics>
+      <offset x="0" y="-20" />
+    </graphics>
+  </name>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=0,g=0,b=0]</value>
+    </FrameColor>
+    <FillColor>
+      <value>java.awt.Color[r=200,g=200,b=220]</value>
+    </FillColor>
+  </toolspecific>
+</transition>
+<transition id="n15">
+  <graphics>
+    <position x="920" y="500" />    <size width="8" height="32" />  </graphics>
   <name>
     <value>C.end</value>
     <graphics>
@@ -394,6 +468,58 @@
   </toolspecific>
 </arc>
 <arc id="a11" source="n11" target="n12" >
+    <graphics>
+      <offset x="0" y="40" />
+    </graphics>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=128,g=128,b=128]</value>
+    </FrameColor>
+    <ArrowMode>
+      <value>2</value>
+    </ArrowMode>
+  </toolspecific>
+</arc>
+<arc id="a12" source="n12" target="n13" >
+    <graphics>
+      <offset x="0" y="40" />
+    </graphics>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=128,g=128,b=128]</value>
+    </FrameColor>
+    <ArrowMode>
+      <value>2</value>
+    </ArrowMode>
+  </toolspecific>
+</arc>
+<arc id="a13" source="n13" target="n14" >
+    <graphics>
+      <offset x="0" y="40" />
+    </graphics>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=128,g=128,b=128]</value>
+    </FrameColor>
+    <ArrowMode>
+      <value>2</value>
+    </ArrowMode>
+  </toolspecific>
+</arc>
+<arc id="a14" source="n14" target="n15" >
+    <graphics>
+      <offset x="0" y="40" />
+    </graphics>
+  <toolspecific tool="JARP" version="1.2">
+    <FrameColor>
+      <value>java.awt.Color[r=128,g=128,b=128]</value>
+    </FrameColor>
+    <ArrowMode>
+      <value>2</value>
+    </ArrowMode>
+  </toolspecific>
+</arc>
+<arc id="a15" source="n15" target="n16" >
     <graphics>
       <offset x="0" y="40" />
     </graphics>

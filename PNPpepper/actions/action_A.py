@@ -11,20 +11,20 @@ from action_base import *
 actionName = "A"
 
 
-def actionThread_exec ():
+def actionThread_exec (params):
 	t = threading.currentThread()
 	memory_service = getattr(t, "mem_serv", None)
-	print "Action "+actionName+" started"
+	print "Action "+actionName+" started with params "+params
 	# action init
-	count = 10
+	count = int(params)
 	# action init
 	while (getattr(t, "do_run", True) and count>0): 
-		print "Action "+actionName+" exec..."
+		print "Action "+actionName+" "+params+" exec..."
 		# action exec
 		count = count-1
 		# action exec
 		time.sleep(0.1)
-	print "Action "+actionName+" terminated"
+	print "Action "+actionName+" "+params+" terminated"
 	# action end
 	count = 0
 	# action end

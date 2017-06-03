@@ -29,7 +29,10 @@
 	  $ build-linux64/sdk/bin/pnp_test 
 	  (actions are not started, so you need to use CTRL-C to stop the execution)
 
-	* test 2
+	* test 2 (quick)
+	- run 'run_test.sh' in the PNPpepper folder
+
+	* test 3 (full manual instructions)
 	- launch naoqi
 	  $ <PATH_TO>/naoqi-sdk-2.5.5.5-linux64/naoqi
 	- launch actions

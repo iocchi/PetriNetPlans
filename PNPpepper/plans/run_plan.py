@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import qi
 import argparse
 import sys
