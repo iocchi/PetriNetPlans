@@ -50,7 +50,7 @@ def main():
 	app = init()
 	memory_service  = app.session.service("ALMemory")
 
-	set_condition(memory_service,"phi","false")
+	set_condition(memory_service,"phi","true")
 
 	time.sleep(1)	
 

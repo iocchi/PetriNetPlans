@@ -46,6 +46,11 @@
 	  (actions are started and the plan terminates after execution, plan can be restarted 
       or stopped with 'python run_plan.py --plan stop')
 
+	* test 4
+	- as in test 3, but with conditions:
+	  run actions/conditions.py to set condition phi
+	  run plan test2, execution of B or C depends on the value of phi
+
 
 4. Uploading and testing on the robot
 
@@ -57,6 +62,6 @@
 	  run 'pnp_test' in the folder containing 'plans'
 	  (actions are not started, so you need to use CTRL-C to stop the execution)
 
-	- test 2
-	  (as for Local test 2, without launching naoqi and setting PEPPER_IP)	
+	- other tests
+	  (as for Local tests, without launching naoqi and setting PEPPER_IP)	
 
