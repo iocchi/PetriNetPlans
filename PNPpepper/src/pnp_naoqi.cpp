@@ -1,3 +1,5 @@
+// qibuild make -c linux64 -w ../../Pepper/qi_ws/
+
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
@@ -125,24 +127,18 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
     }
 
     if (atom.find('@') == std::string::npos) {
-        // Try to read condition from parameters
-    }
-
-    if (r==-1) {
-        // Call the service
-
-        // TODO !!!
-        bool sr = false;
-
-        if (sr)
-        {
-            // printf("Cond: %s value: %d ", atom.c_str(), srv.response.truth_value);
-            r = true;
-        }
-        else
-        {
-            result = false;
-        }
+        // Try to read condition from ALmemory
+ 		string key = "PNP_cond_" + atom;
+		string val="";
+		try{
+			val = memProxy.call<string>("getData",key);
+		}
+		catch (const std::exception& e) {
+			cerr << "Cannot find variable " << key << endl;
+		}
+		if (val=="0" || val=="false") r=0;
+		if (val=="1" || val=="true") r=1;
+		// printf("Cond: %s value: %s -> %d\n", atom.c_str(), val, r);
     }
 
     if (r!=-1) {
@@ -153,10 +149,12 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
         result = false;
 
 
-    //cout <<  "    evaluateAtomicExternalCondition: " << atom << " r = " << r << " - result = " << result << " ... end" << endl;
+    cout <<  "Condition: " << atom << " -> r = " << r << " - result = " << result << endl;
 
     return result;
 }
+
+
 
 string planToExec = "", currentPlanName="stop";
 
