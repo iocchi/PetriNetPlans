@@ -348,22 +348,29 @@ Place* PNP::addTimedAction(string name, Place *p0, int timevalue, Place **p0acti
     Transition *tf = addTransition("[]"); tf->setX(p0->getX()+1); tf->setY(p0->getY());
     connect(p0,tf);
 
-    // initial places of actions
+    // action name
     Place *pi1 = addPlace("X",-1); pi1->setX(tf->getX()+1); pi1->setY(tf->getY()-1);
     connect(tf,pi1);
     Place *pf1 = addAction(name,pi1);
 
-    // actions
+    // action wait
     Place *pi2 = addPlace("X",-1); pi2->setX(tf->getX()+1); pi2->setY(tf->getY()+1);
     connect(tf,pi2);
     stringstream ss; ss << "wait_" << timevalue;
     Place *pf2 = addAction(ss.str(),pi2);
 
+/*
     // join transition
     Transition *tj = addTransition("[]"); tj->setX(pf1->getX()+1); tj->setY(pf1->getY()+1);
     connect(pf1,tj); connect(pf2,tj);
+*/
 
-    // interrupt
+    // interrupt wait
+    Transition *tj = addTransition(ss.str()+".interrupt []"); tj->setX(pf1->getX()+1); tj->setY(pf1->getY()+1);
+    connect(next(next(pi2)),tj); connect(pf1,tj);
+
+
+    // interrupt action
     Transition *ti = addTransition(name+".interrupt []"); ti->setX(tj->getX()); ti->setY(tj->getY()+1);
     connect(next(next(pi1)),ti); connect(pf2,ti);
 
@@ -415,6 +422,31 @@ Transition* PNP::addFail(Place *pi, Place *po) {
     connect(pe,ts); connect(ts,po);
     return ts;
 }
+
+
+
+Place* PNP::addGeneralAction(string &name, Place *p0, Place **p0action) {
+
+    // check time values "<name>|<time>"
+	int timevalue=-1; // value for timed actions
+    size_t ps = name.find("|");
+    if (ps!=string::npos) {
+        timevalue = atoi(name.substr(ps+1).c_str());
+        name=name.substr(0,ps);
+		// cout << "... found timed action " << name << " " << timevalue << endl;
+    }
+
+	Place* n = NULL;
+    if (timevalue>0) {
+        n = addTimedAction(name,p0,timevalue,p0action);
+    }
+    else {
+        n = addAction(name,p0);
+		*p0action = p0;
+    }
+	return n;
+}
+
 
 Place* PNP::addAction(string name, Place *p0) {
     Transition *ts = addTransition(name+".start");
@@ -497,13 +529,6 @@ Place *PNPGenerator::genLinearPlan(Place *pi, string plan, bool allinstack)
     while (i!=v.end()) {
         string a = *i++;
         if (a!="") {
-            // check time values "<name>|<time>"
-            int timevalue=-1; // value for timed actions
-            size_t ps = a.find("|");
-            if (ps!=string::npos) {
-                timevalue = atoi(a.substr(ps+1).c_str());
-                a=a.substr(0,ps);
-            }
 
             bool addstack = false;
             if (a[a.size()-1]=='*') {
@@ -511,16 +536,11 @@ Place *PNPGenerator::genLinearPlan(Place *pi, string plan, bool allinstack)
                 a = a.substr(0,a.size()-1);
             }
 
-            if (timevalue>0) {
-                Place *poa; // plave to save in the stack
-                p = pnp.addTimedAction(a,p,timevalue,&poa);
-                if (allinstack || addstack) addActionToStacks(a,poa);
-            }
-            else {
-                Place *poa=p; // plave to save in the stack
-                p = pnp.addAction(a,p);
-                if (allinstack || addstack) addActionToStacks(a,poa);
-            }
+		  	Place *poa; // place to save in the stack
+		  	p = pnp.addGeneralAction(a,p,&poa);
+
+    		if (allinstack || addstack) addActionToStacks(a,poa);
+            
         }
     }
 
@@ -770,9 +790,9 @@ void PNPGenerator::applyExecutionRules() {
                 else
                     tsi = pnp.addInterrupt(current_place,eit->condition,pi);
 
-                //cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
+                cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
                 if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
-                    //cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
+                cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
                     Place *wait_exec_place = pnp.timed_action_wait_exec_place[current_action_param];
                     pnp.connect(wait_exec_place,tsi);
                 }
@@ -863,7 +883,8 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
             break;
         }
 
-        Place *pe = addAction(action,current_place);  // pe: end place of action
+        Place *pe = addGeneralAction(action,current_place);  // pe: end place of action
+
 
         // y coordinate of Petri Net layout
         int dy=0;
@@ -943,12 +964,12 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
       cout << "		       ...adding a final state..." << endl;
 //       ok = false;
 //       break;
-      Place *pfinal = addAction(action,current_place);
+      Place *pfinal = addGeneralAction(action,current_place);
       pfinal->setName("goal");
       continue;
     }
 
-    Place *pe = addAction(action,current_place);  // pe: end place of action
+    Place *pe = addGeneralAction(action,current_place);  // pe: end place of action
 
     // y coordinate of Petri Net layout
     int dy=0;
@@ -991,7 +1012,7 @@ bool PNPGenerator::genFromConditionalPlan_r(ConditionalPlan *plan, Place *p0) {
     p0->setName(plan->state);
     Place *p1;
     if (plan->outcomes.size()==1) {
-        p1 = addAction(plan->action,p0);
+        p1 = addGeneralAction(plan->action,p0);
         vector<ActionOutcome>::iterator it = plan->outcomes.begin();
         ret &= genFromConditionalPlan_r(it->successor,p1);
     }
@@ -1221,10 +1242,11 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       return pi;
    }
    else {
-      Place* n = pnp.addAction(next,pi);
-      addActionToStacks(next,pi); // needed for application of execution rules
-      //    cout << "next Place: " << n->getName() << endl;
-      cout << endl;
+
+	  Place *poa; // place to save in the stack
+      Place *n = pnp.addGeneralAction(next,pi,&poa);
+	  addActionToStacks(next,poa);
+
       return genFromLine_r(n,plan);
     }
   }

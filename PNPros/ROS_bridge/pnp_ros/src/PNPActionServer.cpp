@@ -656,6 +656,35 @@ void PNPActionServer::update_variable_with_value(string var, string value){
   } 
 }
 
+#if 1
+// LI: old version
+std::string PNPActionServer::replace_vars_with_values(std::string params){
+  vector<std::string> splitted_parameters;
+  boost::split(splitted_parameters, params, boost::is_any_of("_"));
+  std::string new_params;
+  
+  for (unsigned int i = 0; i < splitted_parameters.size(); ++i)
+  {
+    if (splitted_parameters[i][0] == '@')
+    {
+      std::string key = splitted_parameters[i].substr(1,splitted_parameters[i].length()-1);
+      if(global_PNPROS_variables.find(key) != global_PNPROS_variables.end())
+        splitted_parameters[i] = global_PNPROS_variables[key];
+      else
+      {
+        ROS_WARN("Variable %s not initialized, passing it to the action", key.c_str());
+        // cerr << "\033[22;31;1m??? Variable " << key << " not initialized ???\033[0m" << endl;
+        // throw new runtime_error("\033[22;31;1m??? Wrongly formatted transition name ???\033[0m");
+      }
+        
+    }
+    
+    new_params += "_" + splitted_parameters[i];
+  }
+
+  return new_params.substr(1, new_params.length()-1);
+}
+#else
 // LJ to test : allow for variables inside the parameters
 std::string PNPActionServer::replace_vars_with_values(std::string params){
   vector<std::string> splitted_parameters;
@@ -686,6 +715,8 @@ std::string PNPActionServer::replace_vars_with_values(std::string params){
 
   return new_params.substr(1, new_params.length()-1);
 }
+#endif
+
 
 #if 0
 void PNPActionServer::cancelCallback(PNPAS::GoalHandle gh)

@@ -164,6 +164,8 @@ public:
     Place* addAction(string name, Place* p0);
     Place* addAction(string name, Node* p0);
 
+    Place* addGeneralAction(string &name, Place* p0, Place **p0action);
+
     // sensing action with multiple outcomes
     std::vector<Place*> addSensingAction(string name, Place* p0, vector<string> outcomes);
     std::vector<Place*> addSensingBranches(Place *place, vector<string> outcomes);
@@ -254,9 +256,11 @@ public:
     Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
     Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);
 
-    Place* addAction(string action, Place *place) {
-        addActionToStacks(action,place);
-        return pnp.addAction(action,place);
+    Place* addGeneralAction(string action, Place *place) {
+		Place *poe;
+		Place *n = pnp.addGeneralAction(action,place,&poe);
+        addActionToStacks(action,poe);
+        return n;
     }
 
     vector<Place*> addSensingAction(string action, Place *place, vector<string> outcomes) {
