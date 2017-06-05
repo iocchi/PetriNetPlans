@@ -1099,7 +1099,7 @@ string getNext(string& line){
 void find_branches(string& to_branch, vector<string>& observations,vector<string>& branches){
   
   string app;
-  to_branch.erase(to_branch.begin()); //remove the first '<'
+  // to_branch.erase(to_branch.begin()); //remove the first '<'
   
   for(int i = 0; i < to_branch.size(); i++){
     
