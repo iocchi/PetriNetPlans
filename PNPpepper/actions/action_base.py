@@ -9,7 +9,7 @@ G_actionThread_exec = None
 
 
 def action_cb(value):
-	global G_actionThread_exec, memory_service
+	global G_actionThread_exec, memory_service, session
 	v = value.split()
 	print "action_cb value ",value
 	if (v[0]=='start'):
@@ -18,6 +18,7 @@ def action_cb(value):
 			params=v[1]
 		actionThread = threading.Thread(target = G_actionThread_exec, args=(params,))
 		actionThread.mem_serv = memory_service
+		actionThread.session = session
 		actionThread.start()
 	elif (v[0]=='end'):
 		actionThread.do_run = False
@@ -51,13 +52,14 @@ def init(actionName):
 
 
 def main(actionName, actionThread_exec):
-	global G_actionThread_exec, memory_service
+	global G_actionThread_exec, memory_service, session
 	G_actionThread_exec = actionThread_exec 
 
 	app = init(actionName)
 
 	#Starting services
-	memory_service  = app.session.service("ALMemory")
+	session = app.session
+	memory_service  = session.service("ALMemory")
 	memory_service.declareEvent("PNP_action_result_"+actionName);
 
 	#subscribe to PNP action event
