@@ -11,6 +11,7 @@
 
 #include <qi/session.hpp>
 #include <qi/anyobject.hpp>
+#include <qi/applicationsession.hpp>
 
 #include "NaoqiActionProxy.h"
 
@@ -171,7 +172,7 @@ bool naoqi_ok() {
 }
 
 
-int main()
+int main(int argc, char** argv)
 {
 	cout << "PNP naoqi" << endl;
 
@@ -182,11 +183,37 @@ int main()
 	string ip = getenv("PEPPER_IP"), port="9559";
 	cout << "Connecting to naoqi on " << ip << ":" << port << endl;
 
+    string connection_url = "tcp://"+ip+":"+port;
+
+#if 0
 	session = qi::makeSession();
-	session->connect("tcp://"+ip+":"+port);
+	session->connect(connection_url);
+#else
+//    string argv0 = "--qi-url=" + connection_url;
+
+//    int argc=0;
+//    char **argv = NULL;
+//    strcpy(argv[0],argv0.c_str());
+
+
+    qi::ApplicationSession app(argc, argv, 0, connection_url);
+
+    cout << "app ok" << endl;
+    app.start();
+
+    cout << "app started" << endl;
+
+    session = app.session();
+
+    cout << "Session ptr = " << session << endl;
+
+#endif
+
+
 	memProxy = session->service("ALMemory");
 
 	memProxy.call<void>("insertData","PNP_planToExec","");
+	memProxy.call<void>("insertData","PNP_naoqi_run","true");
 
 	PnpExecuter<PnpPlan> *executor = NULL;
 
@@ -235,7 +262,7 @@ int main()
 			fTemp.close();
 	
 			if (fTemp.fail()) {
-				cerr << "\033[22;31;1mERROR - plan not found... executing 'stop' \033[0m" << endl;
+				cerr << "\033[22;31;1mERROR - plan " << planName << " not found... executing 'stop' \033[0m" << endl;
 				planName = "stop";
 			}
 
@@ -289,9 +316,8 @@ int main()
 						if (str_activePlaces == "") 
 							str_activePlaces = "init;";
 
-						cout << "-- active places: " << str_activePlaces << endl;
-				        // also used to notify PNPAS that a PNP step is just over
-				        // currentActivePlacesPublisher.publish(activePlaces);
+						// cout << "-- active places: " << str_activePlaces << endl;
+                        memProxy.call<void>("insertData","PNP_active_places", str_activePlaces);
 
 						executor->execMainPlanStep();
 
@@ -334,6 +360,7 @@ int main()
 	delete conditionChecker;
 	delete executor;
 
+    memProxy.call<void>("insertData","PNP_naoqi_run","false");
 	cout << "End." << endl;
 
 	return 0;

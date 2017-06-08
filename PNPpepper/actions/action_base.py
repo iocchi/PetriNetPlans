@@ -40,7 +40,7 @@ def init(actionName):
 	try:
 		connection_url = "tcp://" + pip + ":" + str(pport)
 		print "Connecting to ",	connection_url
-		app = qi.Application(["Action "+actionName, "--qi-url=" + connection_url ])
+		app = qi.Application(["Action_"+actionName, "--qi-url=" + connection_url ])
 	except RuntimeError:
 		print ("Can't connect to Naoqi at ip \"" + pip + "\" on port " + str(pport) +".\n"
                "Please check your script arguments. Run with -h option for help.")
