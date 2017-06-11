@@ -25,9 +25,18 @@ using namespace pnpros::LearnPNP;
 using std_msgs::String;
 
 #define TOPIC_PLANTOEXEC "planToExec"
+#define TOPIC_PNPACTION "pnp_action"
+#define TOPIC_PNPACTIONCMD "PNPActionCmd"
+#define TOPIC_PNPACTIONTERMINATION "pnp_action_termination"
+#define TOPIC_PNPACTIVEPLACES "pnp/currentActivePlaces"
 
 
-std::string planToExec = "";
+// Global variables
+string robot_name = "NONAME";
+string planToExec = "";
+actionlib::ActionClient<pnp_msgs::PNPAction> *pnpac = NULL;
+
+
 
 // rostopic pub /robot_0/planToExec std_msgs/String "data: 'stop'" --once
 void planToExecuteCallback(const std_msgs::String::ConstPtr& msg)
@@ -43,16 +52,72 @@ void spinThread()
 	ros::spin();
 }
 
+
+void action_cmd_callback(const std_msgs::String::ConstPtr& msg)
+{
+	stringstream ss(msg->data);
+	string action, actionname, actionparams, actioncmd;
+	ss >> action;
+	ss >> actioncmd;
+
+	// Split action name from parameters
+	int k = action.find('_');
+    if (k == string::npos) {
+        actionname = action;
+		actionparams = "";
+	}
+    else {
+        actionname = action.substr(0,k);
+        actionparams = action.substr(k+1);
+    }
+    
+    ROS_INFO_STREAM("Action cmd: " << actioncmd << " " << actionname << " " << actionparams);
+
+    
+	if (actioncmd=="start" || actioncmd=="end" || actioncmd=="interrupt") {
+
+		pnp_msgs::PNPGoal goal;
+
+        goal.id = 101;
+		goal.robotname = robot_name;
+		goal.name = actionname;
+		goal.params = actionparams;
+		goal.function = actioncmd;
+
+        if (pnpac == NULL) pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
+
+		int cnt=5;
+        while (!pnpac->waitForActionServerToStart(ros::Duration(5.0)) && (cnt-->0)) {
+            ROS_INFO("pnp_ros actionCmd:: Waiting for the PNP action server to come up.");
+        }
+
+		if (pnpac->waitForActionServerToStart(ros::Duration(1.0)))
+			pnpac->sendGoal(goal);
+		else
+			ROS_INFO("pnp_ros actionCmd:: Cannot connect to PNP action server!!!");
+	}
+	else {
+		ROS_WARN_STREAM("UNKNOWN Action cmd: " << actioncmd << " " << actionname);
+	}
+
+}
+
+
+
+
 int main(int argc, char** argv) 
 {
 	ros::init(argc,argv,"pnp_ros");
 	
 	// Needed by actionclient.
 	boost::thread spin_thread(&spinThread);
-	
-
-	
+		
 	ros::NodeHandle n, np("~");
+
+    robot_name = "NONAME";
+	if (!n.getParam("robot_name",robot_name))
+		n.getParam("tf_prefix", robot_name);
+
 	
     ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLANTOEXEC, 1, planToExecuteCallback);
 	
@@ -95,13 +160,38 @@ int main(int argc, char** argv)
 		}
 	}
 	
-	ActionProxy::publisher = n.advertise<pnp_msgs::Action>("pnp_action",1);
-	ros::Publisher currentActivePlacesPublisher = np.advertise<String>("currentActivePlaces",1);
-	ros::Subscriber sub = n.subscribe("pnp_action_termination",100,&ActionProxy::actionTerminationCallback);
+	ActionProxy::publisher = n.advertise<pnp_msgs::Action>(TOPIC_PNPACTION,1);
+	ros::Publisher currentActivePlacesPublisher = 
+		n.advertise<String>(TOPIC_PNPACTIVEPLACES,1);
+	ros::Subscriber sub = 
+		n.subscribe(TOPIC_PNPACTIONTERMINATION, 10, &ActionProxy::actionTerminationCallback);
 	
 	// Wait for the other modules to subscribe.
-	ros::Duration(1).sleep();
-	
+	ros::Duration(3).sleep();
+
+	// Subscriber for PNP action cmd topic
+	ros::Subscriber	action_cmd_sub = 
+		n.subscribe(TOPIC_PNPACTIONCMD, 10, &action_cmd_callback);
+
+
+	// Testing Connection to PNP action server
+
+	ROS_INFO("pnp_ros connecting to action server...");
+
+	if (pnpac==NULL)
+	    pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
+
+	int cnt=5;
+    while (!pnpac->waitForActionServerToStart(ros::Duration(5.0)) && (cnt-->0)) {
+        ROS_INFO("pnp_ros:: Waiting for the PNP action server to come up.");
+    }
+
+	if (pnpac->waitForActionServerToStart(ros::Duration(1.0)))
+		ROS_INFO("pnp_ros:: OK. Connected to PNP action server");
+	else
+		ROS_INFO("pnp_ros:: Cannot connect to PNP action server!!!");
+
+
 	if (learning) conditionChecker = new ROSReward();
 	else conditionChecker = new ROSConds();
 	
