@@ -79,8 +79,8 @@ void ActionProxy::start()
 	// send message to start this action 
 	qi::AnyObject memProxy = session->service("ALMemory");
 
-	string event = "PNP_action_" + name;
-	string value = "start "+params;
+	string event = "PNP_action" ;
+	string value = "start "+ name+" "+params;
 	memProxy.call<void>("raiseEvent",event,value);
 
     active=true;
@@ -91,8 +91,8 @@ void ActionProxy::end()
     if (!active) return;
 
 	// send message to end this action
-	string event = "PNP_action_" + name;
-	string value = "end";
+	string event = "PNP_action";
+	string value = "end "+name;
 	memProxy.call<void>("raiseEvent",event,value);
 
     active=false;
@@ -103,8 +103,8 @@ void ActionProxy::interrupt()
     if (!active) return;
 
 	// send message to interrupt this action
-	string event = "PNP_action_" + name;
-	string value = "interrupt";
+	string event = "PNP_action";
+	string value = "interrupt " + name;
 	memProxy.call<void>("raiseEvent",event,value);
 
     active=false;

@@ -1259,7 +1259,7 @@ void readInlineFile(const char*filename, string &plan)
     while(f.good()){
       getline(f,app);
       boost::trim(app);
-      if (!app.empty())
+      if (!app.empty() && app[0]!='#')
         plan += " " + app;
     }
     cout << "plan read: " << plan << endl;
