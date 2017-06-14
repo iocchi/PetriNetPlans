@@ -65,3 +65,9 @@
 	- other tests
 	  (as for Local tests, without launching naoqi and setting PEPPER_IP)	
 
+5. Test single actions
+
+    $ cd actions
+    $ ./action_cmd -a <actionname> -p <params> -c <start|end|interrupt>
+
+

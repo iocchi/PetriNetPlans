@@ -9,7 +9,7 @@ G_actionThread_exec = None
 
 
 def action_cb(value):
-	global G_actionThread_exec, memory_service, session
+	global G_actionThread_exec, G_memory_service, G_session
 	v = value.split()
 	print "action_cb value ",value
 	if (v[0]=='start'):
@@ -26,7 +26,7 @@ def action_cb(value):
 		actionThread.do_run = False
 
 
-def init(actionName):
+def initApp(actionName):
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--pip", type=str, default=os.environ['PEPPER_IP'],
                         help="Robot IP address.  On robot or Local Naoqi: use '127.0.0.1'.")
@@ -51,23 +51,36 @@ def init(actionName):
 	return app
 
 
-def main(actionName, actionThread_exec):
-	global G_actionThread_exec, memory_service, session
-	G_actionThread_exec = actionThread_exec 
+def init(session, actionName, actionThread_exec):
+    global G_actionThread_exec, G_memory_service, G_session
+    G_actionThread_exec = actionThread_exec 
+    G_session = session
+    G_memory_service  = session.service("ALMemory")
+    G_memory_service.declareEvent("PNP_action_result_"+actionName);
 
-	app = init(actionName)
+    #subscribe to PNP action event
+    acb = G_memory_service.subscriber("PNP_action_"+actionName)
+    acb.signal.connect(action_cb)
+
+    print "Naoqi Action server "+actionName+" running..."
+
+
+
+#def main(actionName, actionThread_exec):
+#	global G_actionThread_exec, memory_service, session
+#	G_actionThread_exec = actionThread_exec 
+
+#	app = initApp(actionName)
 
 	#Starting services
-	session = app.session
-	memory_service  = session.service("ALMemory")
-	memory_service.declareEvent("PNP_action_result_"+actionName);
+#	session = app.session
 
-	#subscribe to PNP action event
-	acb = memory_service.subscriber("PNP_action_"+actionName)
-	acb.signal.connect(action_cb)
+#    init(session,actionName)
 
-	print "Naoqi Action server "+actionName+" running..."
 	#Program stays at this point until we stop it
-	app.run()
-	print "Naoqi Action server "+actionName+" quit"
+#	app.run()
+
+#    quit(session,actionName)
+
+
 

@@ -21,11 +21,14 @@ def init():
                         help="action name")
 	parser.add_argument("-p", type=str, default="",
                         help="params")
+	parser.add_argument("-c", type=str, default="",
+                        help="command")
 	args = parser.parse_args()
 	pip = args.pip
 	pport = args.pport
 	action = args.a
 	params = args.p
+	cmd = args.c
 
 	#Starting application
 	try:
@@ -39,7 +42,7 @@ def init():
 
 	app.start()
 
-	return [app, action, params]
+	return [app, action, params, cmd]
 
 
 
@@ -48,21 +51,30 @@ def start_action(memory_service, actionName, params):
 	memory_service.raiseEvent(key,"start "+params);
 
 
-def end_action(memory_service, actionName, params):
+def end_action(memory_service, actionName):
 	key = "PNP_action_"+actionName
 	memory_service.raiseEvent(key,"end");
+
+def interrupt_action(memory_service, actionName):
+	key = "PNP_action_"+actionName
+	memory_service.raiseEvent(key,"interrupt");
 
 
 def main():
 
-	[app, action, params] = init()
-	memory_service  = app.session.service("ALMemory")
+    [app, action, params, cmd] = init()
+    memory_service  = app.session.service("ALMemory")
 
-	print "Exec: ",action,params
+    print "Exec: ",action,params
 
-	start_action(memory_service,action,params)
+    if (cmd=='start'):
+        start_action(memory_service,action,params)
+    elif (cmd=='end'):
+        end_action(memory_service,action)
+    elif (cmd=='interrupt'):
+        interrupt_action(memory_service,action)
 
-	time.sleep(1)	
+    time.sleep(1)	
 
 
 if __name__ == "__main__":
