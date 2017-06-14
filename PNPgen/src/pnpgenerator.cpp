@@ -1256,12 +1256,11 @@ void readInlineFile(const char*filename, string &plan)
 {
     string app;
     ifstream f(filename);
-    getline(f,app);
-    plan += app;
-    while(!app.empty()){
+    while(f.good()){
       getline(f,app);
       boost::trim(app);
-      plan+= " " + app;
+      if (!app.empty())
+        plan += " " + app;
     }
     cout << "plan read: " << plan << endl;
     f.close();
