@@ -47,17 +47,18 @@ def init():
 
 
 def start_action(memory_service, actionName, params):
-	key = "PNP_action_"+actionName
-	memory_service.raiseEvent(key,"start "+params);
+	key = "PNP_action"
+	memory_service.raiseEvent(key,"start "+actionName+" "+params);
 
 
 def end_action(memory_service, actionName):
 	key = "PNP_action_"+actionName
-	memory_service.raiseEvent(key,"end");
+	memory_service.raiseEvent(key,"end "+actionName);
+
 
 def interrupt_action(memory_service, actionName):
 	key = "PNP_action_"+actionName
-	memory_service.raiseEvent(key,"interrupt");
+	memory_service.raiseEvent(key,"interrupt "+actionName);
 
 
 def main():
@@ -65,7 +66,7 @@ def main():
     [app, action, params, cmd] = init()
     memory_service  = app.session.service("ALMemory")
 
-    print "Exec: ",action,params
+    print "Exec: ",action,params," - ",cmd
 
     if (cmd=='start'):
         start_action(memory_service,action,params)

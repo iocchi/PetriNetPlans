@@ -16,10 +16,10 @@
 	* Compile PNPpepper stuff:
 
 	$ cd <PATH_TO>/PetriNetPlans/PNPpepper
-	$ qibuild configure -c linux64 --worktree <qi_ws>
-	$ qibuild make -c linux64 --worktree <qi_ws>
-	$ qibuild configure -c pepper --worktree <qi_ws>
-	$ qibuild make -c pepper --worktree <qi_ws>
+	$ qibuild configure -c linux64 -w <qi_ws>
+	$ qibuild make -c linux64 -w <qi_ws>
+	$ qibuild configure -c pepper -w <qi_ws>
+	$ qibuild make -c pepper -w <qi_ws>
 
 
 3. Local test
