@@ -103,6 +103,23 @@ void action_cmd_callback(const std_msgs::String::ConstPtr& msg)
 }
 
 
+void publish_activePlaces(PnpExecuter<PnpPlan> *executor, ros::Publisher &currentActivePlacesPublisher) {
+
+    String activePlaces;
+
+    vector<string> nepForTest = executor->getNonEmptyPlaces();
+
+    activePlaces.data = "";
+
+    for (vector<string>::const_iterator it = nepForTest.begin(); it != nepForTest.end(); ++it)
+    {
+        activePlaces.data += *it;
+    }
+
+    // also used to notify PNPAS that a PNP step is just over
+    currentActivePlacesPublisher.publish(activePlaces);
+
+}
 
 
 int main(int argc, char** argv) 
@@ -249,6 +266,7 @@ int main(int argc, char** argv)
 				
 				while (!executor.goalReached() && !executor.failReached() && ros::ok())
 				{
+
 					String activePlaces;
 					
 					vector<string> nepForTest = executor.getNonEmptyPlaces();
@@ -260,8 +278,9 @@ int main(int argc, char** argv)
 						activePlaces.data += *it;
 					}
 					
-					currentActivePlacesPublisher.publish(activePlaces);
-					
+					currentActivePlacesPublisher.publish(activePlaces);	
+
+
 					executor.execMainPlanStep();
 					
 					rate.sleep();
@@ -343,11 +362,19 @@ int main(int argc, char** argv)
 
                         cout << "Starting " << executor->getMainPlanName() << endl;
 
+                        String activePlaces;
+                        activePlaces.data = "init";
+                        currentActivePlacesPublisher.publish(activePlaces);
+
                         while (!executor->goalReached() && !executor->failReached() && ros::ok() && planToExec=="")
                         {
 
                             executor->execMainPlanStep();
 
+
+                            publish_activePlaces(executor, currentActivePlacesPublisher);
+
+/*
                             String activePlaces;
 
                             vector<string> nepForTest = executor->getNonEmptyPlaces();
@@ -361,6 +388,7 @@ int main(int argc, char** argv)
 
                             // also used to notify PNPAS that a PNP step is just over
                             currentActivePlacesPublisher.publish(activePlaces);
+*/
 
                             rate.sleep();
                         }

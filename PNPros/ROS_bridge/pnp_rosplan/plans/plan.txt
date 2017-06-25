@@ -1,0 +1,11 @@
+digraph plan_0 {
+0[ label="enter_maindoor " style="fill: #fff; "];
+1[ label="goto entrance livingroom " style="fill: #fff; "];
+2[ label="goto livingroom technicalroom " style="fill: #fff; "];
+3[ label="goto technicalroom bedroom " style="fill: #fff; "];
+4[ label="goto bedroom kitchen " style="fill: #fff; "];
+"0" -> "1"
+"1" -> "2"
+"2" -> "3"
+"3" -> "4"
+}

@@ -413,7 +413,7 @@ bool PNPActionServer::evalCondition(string condition) {
 void PNPActionServer::active_places_callback(const std_msgs::String::ConstPtr& msg)
 {
     ConditionCache.clear();
-    if (msg->data=="init;") {
+    if (msg->data.find("init")!=string::npos) {
         clear_global_PNPROS_variables();
         ROS_INFO("Init place -> clear PNP global variables.");
     }
@@ -780,7 +780,7 @@ void PNPActionServer::restartcurrentplan(string params, bool *run)
 
 void PNPActionServer::stopcurrentplan(string params, bool *run)
 {
-    ROS_INFO_STREAM("### Executing Restart current plan " << params << " ... ");
+    ROS_INFO_STREAM("### Executing Stop current plan " << params << " ... ");
 
     // publish planToExec to start the plan
     string planname = "stop";
@@ -788,5 +788,5 @@ void PNPActionServer::stopcurrentplan(string params, bool *run)
     s.data = planname;
     plantoexec_pub.publish(s); // restart the plan
 
-    cout << "### Restart " << params << ((*run)?" Completed":" Aborted") << endl;
+    cout << "### Stop " << params << ((*run)?" Completed":" Aborted") << endl;
 }

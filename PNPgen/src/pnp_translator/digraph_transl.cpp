@@ -1,4 +1,5 @@
 #include "digraph_transl.h"
+#include <boost/algorithm/string.hpp> 
 
   DigraphTransl::DigraphTransl(string& path_to_file, string& pnml_out)
   {
@@ -49,6 +50,17 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
 //     bool r=pnpgen.genFromConditionalPlan(p[0]);
 
   if(r){
+
+    string erfile = "/home/viki/src/robocupathome_pnp/plans/default.er";
+
+    if (erfile!="") {
+        // apply the execution rules
+        cout << "Applying Execution Rules..." << endl;
+        pnpgen.readERFile(erfile);
+        pnpgen.applyExecutionRules();
+    }
+
+
     string pnpoutfilename = this->pnml + plan_name+".pnml";
     pnpgen.save(pnpoutfilename.c_str());
     cout << "Saved PNP file " << pnpoutfilename << endl;
@@ -57,7 +69,28 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
   }
 }
 
-  void DigraphTransl::read_file(){
+
+string extract_action(string &app) {
+    string act = "";
+    int i = 0;
+    char ci = app.at(i);
+    while(ci != '\"'){
+      if (ci!=' ')
+        act += app.at(i); 
+      else
+        act += '_';
+      ++i;
+      ci = app.at(i);
+    }
+    if (act.at(i-1)=='_') act = act.substr(0,i-1); // remove last space
+
+    boost::replace_all(act, "__var__", "@");
+
+    return act;
+}
+
+
+void DigraphTransl::create_PNP(){
     string line;
     ifstream f(this->file.c_str());
 //     cout << this->file.c_str() << endl;
@@ -72,26 +105,15 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
 
       //reads all the states
 //      boost::regex exp("\"([A-Za-z0-9_-])+\"");
-    boost::regex exp("\"([^\"]*)\"");
+     boost::regex exp("\"([^\"]*)\"");
      getline(f,line);
      vector<pair<string,string> > vect;
      while(line.substr(0,1) != "\""){
        string state = line.substr(0,line.find("["));
-       string action;
-       
        string app = line.substr(line.find("\"")+1,line.find("\n")-line.find("\""));
-       string act;
-       int i = 0;
-       while(app.at(i) != '\"'){
-	 act += app.at(i); 
-	 ++i;
-       }
+       string action = extract_action(app);
 
-// 	cout << "action " << act << endl;
-//        boost::sregex_token_iterator it(line.begin(), line.end(), exp, 0);
-//        action = *it;
-//        action = action.substr(1,action.size()-2);
-       action = act;
+
        pair<string,string> sa = make_pair(state,action);
 //        state_action.insert(sa);
        vect.push_back(sa);
@@ -153,7 +175,7 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
 	    ++i;
 	  }
 	  obs = act;
-	  
+	  boost::algorithm::trim(obs);
 	  
       	}
       	else obs = "";
@@ -163,7 +185,7 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
       	int so = atoi(source.c_str());
       	int dest = atoi(destination.c_str());
       	if(obs != "") plan[so].addOutcome(ActionOutcome(obs,&plan[dest]));
-	else plan[so].addOutcome(&plan[dest]);
+	    else plan[so].addOutcome(&plan[dest]);
 
       	getline(f,line);
       }
@@ -181,6 +203,8 @@ void DigraphTransl::create_PNP(string& plan_name, vector<ConditionalPlan>& v){
     string pl_name = "AUTOGEN_"+this->plan_name;
     this->create_PNP(pl_name,this->p);
   }
+
+
 
   void DigraphTransl::write_pnml(vector<ConditionalPlan> &v){
     this->create_PNP(this->plan_name,v);
