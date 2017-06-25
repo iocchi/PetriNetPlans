@@ -199,7 +199,7 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
 
     int result = -1; // partial result
 
-    // check special condition timeout_<value>
+    // check special condition timeout_<actionname>_<value>
     size_t pt = req.cond.find("timeout");
     if (pt!=string::npos) {
         size_t pt2 = req.cond.find_last_of("_");
@@ -210,14 +210,14 @@ bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req
         if (starttime.find(act)!=starttime.end())
             d = starttime[act];
         if (d<0) {
-            // cout << "  !!!action not running!!!" << endl;
+            ROS_WARN_STREAM("Timeout condition:: action " << act << " not running!!!");
         }
         else {
             // cout << "           start time = ... " << starttime[act] << " now = " << ros::Time::now().toSec() << endl;
             double dt = ros::Time::now().toSec() - starttime[act];
             if (dt>val_timeout) {
                 result=1;
-                ROS_INFO_STREAM("TIMEOUT CONDITION " << req.cond << " TRUE ");
+                ROS_INFO_STREAM("Timeout condition:: " << req.cond << " TRUE ");
             }
         }
     }
