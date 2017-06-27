@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(PNPpepper)
+project(PNPnaoqi)
 
 find_package(qibuild)
 

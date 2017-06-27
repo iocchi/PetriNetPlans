@@ -1,6 +1,6 @@
 <project name="PNPpepper">
     <maintainer email="iocchi@diag.uniroma1.it">Luca Iocchi</maintainer>
-	<qibuild name="PNPpepper" >
+	<qibuild name="PNPnaoqi" >
 	</qibuild>
 </project>
 

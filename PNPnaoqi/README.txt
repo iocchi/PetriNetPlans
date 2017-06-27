@@ -13,9 +13,9 @@
 	
 	* Follow instructions to compile PNP in PNP folder
 
-	* Compile PNPpepper stuff:
+	* Compile PNPnaoqi stuff:
 
-	$ cd <PATH_TO>/PetriNetPlans/PNPpepper
+	$ cd <PATH_TO>/PetriNetPlans/PNPnaoqi
 	$ qibuild configure -c linux64 -w <qi_ws>
 	$ qibuild make -c linux64 -w <qi_ws>
 	$ qibuild configure -c pepper -w <qi_ws>
@@ -30,7 +30,7 @@
 	  (actions are not started, so you need to use CTRL-C to stop the execution)
 
 	* test 2 (quick)
-	- run 'run_test.sh' in the PNPpepper folder
+	- run 'run_test.sh' in the PNPnaoqi folder
 
 	* test 3 (full manual instructions)
 	- launch naoqi
