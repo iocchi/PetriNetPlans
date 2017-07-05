@@ -42,7 +42,7 @@ qtcreator-build
 .settings
 *.stlb
 /CMakeLists.txt
-PNPpepper/build*
+PNPnaoqi/build*
 AUTOGEN*
 
 
