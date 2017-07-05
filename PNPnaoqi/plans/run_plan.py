@@ -25,7 +25,7 @@ def main():
     try:
         connection_url = "tcp://" + pip + ":" + str(pport)
         print "Connecting to ",    connection_url
-        app = qi.Application(["Memory Write", "--qi-url=" + connection_url ])
+        app = qi.Application(["Run plan", "--qi-url=" + connection_url ])
     except RuntimeError:
         print ("Can't connect to Naoqi at ip \"" + pip + "\" on port " + str(pport) +".\n"
                "Please check your script arguments. Run with -h option for help.")
@@ -41,7 +41,6 @@ def main():
 
     key = "PNP_planToExec"
     memory_service.insertData(key,plan)
-
 
 
 

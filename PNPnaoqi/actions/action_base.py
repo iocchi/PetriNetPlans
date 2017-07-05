@@ -9,7 +9,7 @@ G_actionThread_exec = {}
 acb = None # action callback
 
 def action_cb(value):
-    global G_actionThread_exec, G_memory_service, G_session
+    global  G_actionThread, G_actionThread_exec, G_memory_service, G_session
     v = value.split()
     print "action_cb value ",value
     if (v[0]=='start'):
@@ -18,16 +18,16 @@ def action_cb(value):
             params=v[2]
 
         if (v[1] in G_actionThread_exec):
-            actionThread = threading.Thread(target = G_actionThread_exec[v[1]], args=(params,))
-            actionThread.mem_serv = G_memory_service
-            actionThread.session = G_session
-            actionThread.start()
+            G_actionThread = threading.Thread(target = G_actionThread_exec[v[1]], args=(params,))
+            G_actionThread.mem_serv = G_memory_service
+            G_actionThread.session = G_session
+            G_actionThread.start()
         else:
             print "ERROR: Action ",v[1]," not found !!!"
-    elif (v[0]=='end'):
-        actionThread.do_run = False
+    elif (v[0]=='end' or v[0]=='stop'):
+        G_actionThread.do_run = False
     elif (v[0]=='interrupt'):
-        actionThread.do_run = False
+        G_actionThread.do_run = False
 
 
 def initApp(actionName):
