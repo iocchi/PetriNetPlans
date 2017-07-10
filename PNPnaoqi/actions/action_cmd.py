@@ -52,12 +52,12 @@ def start_action(memory_service, actionName, params):
 
 
 def end_action(memory_service, actionName):
-	key = "PNP_action_"+actionName
+	key = "PNP_action"
 	memory_service.raiseEvent(key,"end "+actionName);
 
 
 def interrupt_action(memory_service, actionName):
-	key = "PNP_action_"+actionName
+	key = "PNP_action"
 	memory_service.raiseEvent(key,"interrupt "+actionName);
 
 
