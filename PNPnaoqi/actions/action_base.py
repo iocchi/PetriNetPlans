@@ -25,9 +25,15 @@ def action_cb(value):
         else:
             print "ERROR: Action ",v[1]," not found !!!"
     elif (v[0]=='end' or v[0]=='stop'):
-        G_actionThread.do_run = False
+        if (G_actionThread==None):
+            print "ERROR: Action ",v[1]," not started !!!"
+        else:
+            G_actionThread.do_run = False
     elif (v[0]=='interrupt'):
-        G_actionThread.do_run = False
+        if (G_actionThread==None):
+            print "ERROR: Action ",v[1]," not started !!!"
+        else:
+            G_actionThread.do_run = False
 
 
 def initApp(actionName):
