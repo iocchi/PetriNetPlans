@@ -26,6 +26,13 @@ SET(PNP_SRC
     ../PNP/src/connection_observer.cpp
 )
 
+SET(PNPGEN_SRC 
+	../PNPgen/src/pnpgen_condplan_translator.cpp
+	../PNPgen/src/pnpgenerator.cpp 
+    ../PNPgen/src/pnp_translator/digraph_transl.cpp
+)
+
+
 set(PNP_TEST_SRC 
 	src/pnp_test.cpp 
 	src/ActionProxy.cpp 
@@ -38,7 +45,7 @@ set(PNP_NAOQI_SRC
 
 # Libraries and executables
 
-include_directories( ../PNP/include include )
+include_directories( ../PNP/include ../PNPgen/src include )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
@@ -59,9 +66,13 @@ qi_use_lib(
 
 qi_create_bin( pnp_naoqi ${PNP_NAOQI_SRC} )
 
-qi_use_lib(
-  pnp_naoqi
-  pnp ALCOMMON ALPROXIES ALTHREAD )
+qi_use_lib( pnp_naoqi
+  pnp 
+  ALCOMMON ALPROXIES ALTHREAD 
+)
 
+qi_create_bin( pnpgen_translator ${PNPGEN_SRC} )
 
-
+qi_use_lib( pnpgen_translator
+  boost_regex
+)
