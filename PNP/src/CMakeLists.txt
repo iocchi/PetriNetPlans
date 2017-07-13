@@ -1,14 +1,20 @@
 
 #call flex to generate the parser
-execute_process(	
- 		COMMAND flex
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
- 		INPUT_FILE  ConditionScanner.yy
- 		)
- 
-IF(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
-  MESSAGE(FATAL_ERROR "Could not generate the parser, please verify that flex is installed")
-ENDIF( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
+#execute_process(	
+# 		COMMAND flex
+#		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
+# 		INPUT_FILE  ConditionScanner.yy
+# 		)
+
+add_custom_target(parser_flex
+                  COMMAND flex ConditionScanner.yy
+		  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
+		  SOURCES  parser/ConditionScanner.yy
+		 )
+
+#IF(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
+#  MESSAGE(FATAL_ERROR "Could not generate the parser, please verify that flex is installed")
+#ENDIF( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
 
 #source file list, add new files here
 
@@ -43,6 +49,7 @@ include_directories(${Boost_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 ADD_LIBRARY(pnp SHARED ${pnp_SRC})
+add_dependencies(pnp parser_flex)
 
 #search for libxml2
 find_package(LibXml2 REQUIRED)
