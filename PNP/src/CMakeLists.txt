@@ -1,10 +1,10 @@
 
 #call flex to generate the parser
-#execute_process(	
-# 		COMMAND flex
-#		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
-# 		INPUT_FILE  ConditionScanner.yy
-# 		)
+execute_process(	
+ 		COMMAND flex
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/parser
+ 		INPUT_FILE  ConditionScanner.yy
+ 		)
 
 add_custom_target(parser_flex
                   COMMAND flex ConditionScanner.yy
@@ -12,9 +12,9 @@ add_custom_target(parser_flex
 		  SOURCES  parser/ConditionScanner.yy
 		 )
 
-#IF(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
-#  MESSAGE(FATAL_ERROR "Could not generate the parser, please verify that flex is installed")
-#ENDIF( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
+IF(NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
+  MESSAGE(FATAL_ERROR "Could not generate the parser, please verify that flex is installed")
+ENDIF( NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/parser/ConditionScanner.cpp )
 
 #source file list, add new files here
 
