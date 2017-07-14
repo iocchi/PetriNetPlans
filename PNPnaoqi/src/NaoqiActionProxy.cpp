@@ -8,7 +8,7 @@
 
 using namespace std;
 
-// set<string> ActionProxy::activeActions;
+// set<string> ActionProxy::;
 unsigned long long ActionProxy::maxID;
 
 extern qi::SessionPtr session;
@@ -72,6 +72,8 @@ ActionProxy::~ActionProxy() {
 	acb_signal.disconnect(signalID);
 
     end();
+
+    activeActions.erase(this);
 }
 
 
@@ -92,6 +94,8 @@ void ActionProxy::start()
 	memProxy.call<void>("insertData",action_timestart_key,timeValue);
 
     cout << "ActionProxy:: Action " << name << " started at time " << timeValue << endl;
+
+    activeActions.insert(this);
 
     active=true;
 }
@@ -134,4 +138,17 @@ void ActionProxy::actionTerminationCallback()
     cout << "ActionProxy:: Action " << name << " completed at time " << getCurrentTime() << endl;
 	active=false;
 }
+
+
+void ActionProxy_endAllActions() 
+{
+    std::set<ActionProxy *>::iterator it = activeActions.begin();
+    while (it != activeActions.end()) {
+        ActionProxy *a_ptr = *it;
+        a_ptr->end();
+        it++;
+    }
+    
+}
+
 

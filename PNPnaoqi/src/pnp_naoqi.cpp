@@ -352,6 +352,8 @@ int main(int argc, char** argv)
 				        usleep(250000);
 				    }
 
+                    ActionProxy_endAllActions(); // send 'end' signal to all the active actions
+
 				    if (executor->goalReached()) {
 				        cout << "GOAL NODE REACHED!!!" << endl;
 				        string activePlaces;

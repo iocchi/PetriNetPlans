@@ -6,10 +6,15 @@
 
 double getCurrentTime();
 
+class ActionProxy;
+
+static std::set<ActionProxy *> activeActions;
+void ActionProxy_endAllActions();
+
 class ActionProxy : public PetriNetPlans::PnpAction
 {
 	private:
-		static std::set<std::string> activeActions;
+		
 		static unsigned long long maxID;
 		
 		std::string robotname, name, params, id;
@@ -31,5 +36,6 @@ class ActionProxy : public PetriNetPlans::PnpAction
 		virtual bool finished();
 
 		virtual void actionTerminationCallback();
+  
 };
 
