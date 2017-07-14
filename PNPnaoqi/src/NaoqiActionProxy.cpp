@@ -13,7 +13,17 @@ unsigned long long ActionProxy::maxID;
 
 extern qi::SessionPtr session;
 
+static double global_time0 = -1;
 
+double getCurrentTime() {
+    struct timeval tv;
+    gettimeofday(&tv, 0);
+    double v = (static_cast<double>(tv.tv_sec)+1e-6*static_cast<double>(tv.tv_usec));
+    if (global_time0<0) {
+        global_time0=v;
+    }
+    return (v-global_time0);
+}
 
 
 ActionProxy::ActionProxy(const string& nm)
@@ -25,7 +35,7 @@ ActionProxy::ActionProxy(const string& nm)
     robotname = "";
     string nms = nm;
 
-    cout << "Creating action " << nm << endl;
+    // cout << "Creating action " << nm << endl;
 
     size_t k = nm.find('#');
     if (k != string::npos) {
@@ -50,20 +60,13 @@ ActionProxy::ActionProxy(const string& nm)
 
 	acb_signal = memProxy.call<qi::AnyObject>("subscriber","PNP_action_result_"+name);
 
-	// memProxy.call<void>("subscribeToEvent", "PNP_action_result_"+name, serviceName, "actionTerminationCallback");
-
-	//acb = memory_service.subscriber("PNP_action_"+actionName)
-	//idacb = 
-	//acb.connect("PNP_action_result_"+name, actionTerminationCallback);
-
-
 	signalID = acb_signal.connect("signal", (boost::function<void(qi::AnyValue)>(boost::bind(&ActionProxy::actionTerminationCallback, this))));
 
 }
 
 ActionProxy::~ActionProxy() {
 	// terminate this action    
-	cout << "ActionProxy: terminating action " << name << " " << params << endl;  
+	// cout << "ActionProxy: terminating action " << name << " " << params << endl;  
     // memProxy.call<void>("unsubscribeToEvent", "actionTerminationCallback", "PNP_ActionProxy");
 
 	acb_signal.disconnect(signalID);
@@ -73,15 +76,22 @@ ActionProxy::~ActionProxy() {
 
 
 
+
 void ActionProxy::start()
 {
-	cout << "ActionProxy: starting action " << name << " " << params << endl; 
+	// cout << "ActionProxy:: starting action " << name << " " << params << endl; 
 	// send message to start this action 
 	qi::AnyObject memProxy = session->service("ALMemory");
 
 	string event = "PNP_action" ;
 	string value = "start "+ name+" "+params;
 	memProxy.call<void>("raiseEvent",event,value);
+
+    string action_timestart_key = "NAOqiAction/"+name+"/startTime";
+    float timeValue = getCurrentTime();
+	memProxy.call<void>("insertData",action_timestart_key,timeValue);
+
+    cout << "ActionProxy:: Action " << name << " started at time " << timeValue << endl;
 
     active=true;
 }
@@ -95,6 +105,8 @@ void ActionProxy::end()
 	string value = "end "+name;
 	memProxy.call<void>("raiseEvent",event,value);
 
+    cout << "ActionProxy:: Action " << name << " ended at time " << getCurrentTime() << endl;
+
     active=false;
 }
 
@@ -107,6 +119,8 @@ void ActionProxy::interrupt()
 	string value = "interrupt " + name;
 	memProxy.call<void>("raiseEvent",event,value);
 
+    cout << "ActionProxy:: Action " << name << " interrupted at time " << getCurrentTime() << endl;
+
     active=false;
 }
 
@@ -117,6 +131,7 @@ bool ActionProxy::finished()
 
 void ActionProxy::actionTerminationCallback()
 {
+    cout << "ActionProxy:: Action " << name << " completed at time " << getCurrentTime() << endl;
 	active=false;
 }
 

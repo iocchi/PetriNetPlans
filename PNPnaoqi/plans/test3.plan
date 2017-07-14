@@ -1,0 +1,5 @@
+# A_10 with timeout 5 seconds
+A_10|5; 
+# B with timeout execution rule 
+B
+

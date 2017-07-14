@@ -5,28 +5,33 @@ import time
 import threading
 import os
 
-G_actionThread_exec = {}
+G_actionThread_exec = {}  # action thread execution functions
+G_actionThreads = {}  # action threads functions
+
 acb = None # action callback
 
 def action_cb(value):
-    global  G_actionThread, G_actionThread_exec, G_memory_service, G_session
+    global  G_actionThreads, G_actionThread_exec, G_memory_service, G_session
     v = value.split()
     print "action_cb value ",value
     if (v[0]=='start'):
+        actionName = v[1]
         params=""
         if (len(v)>2):
             params=v[2]
-
-        if (v[1] in G_actionThread_exec):
-            G_actionThread = threading.Thread(target = G_actionThread_exec[v[1]], args=(params,))
-            G_actionThread.mem_serv = G_memory_service
-            G_actionThread.session = G_session
-            G_actionThread.start()
+        
+        if (actionName in G_actionThread_exec):
+            G_actionThreads[actionName] = threading.Thread(target = G_actionThread_exec[v[1]], args=(params,))
+            G_actionThreads[actionName].mem_serv = G_memory_service
+            G_actionThreads[actionName].session = G_session
+            G_actionThreads[actionName].start()
         else:
             print "ERROR: Action ",v[1]," not found !!!"
     elif (v[0]=='end' or v[0]=='stop' or v[0]=='interrupt'):
         try:
-            G_actionThread.do_run = False
+            actionName = v[1]
+            G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
+            # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
         except:
             print "ERROR: Action ",v[1]," not started !!!"
 
@@ -58,7 +63,7 @@ def initApp(actionName):
 
 def init(session, actionName, actionThread_exec):
     global G_actionThread_exec, G_memory_service, G_session, acb
-    G_actionThread_exec[actionName] = actionThread_exec 
+    G_actionThread_exec[actionName] = actionThread_exec # execution thread function associated to actionName
     G_session = session
 
     G_memory_service  = session.service("ALMemory")
@@ -73,22 +78,6 @@ def init(session, actionName, actionThread_exec):
     print "Naoqi Action server "+actionName+" running..."
 
 
-
-#def main(actionName, actionThread_exec):
-#	global G_actionThread_exec, memory_service, session
-#	G_actionThread_exec = actionThread_exec 
-
-#	app = initApp(actionName)
-
-	#Starting services
-#	session = app.session
-
-#    init(session,actionName)
-
-	#Program stays at this point until we stop it
-#	app.run()
-
-#    quit(session,actionName)
 
 
 

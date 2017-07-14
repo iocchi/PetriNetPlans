@@ -1,0 +1,2 @@
+*if* timeout_B_3 *during* B *do* C; skip_action
+

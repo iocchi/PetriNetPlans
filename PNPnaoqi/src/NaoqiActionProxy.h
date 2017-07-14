@@ -3,7 +3,8 @@
 #include <string>
 
 #include <alvalue/alvalue.h>
-//#include <alcommon/almodule.h>
+
+double getCurrentTime();
 
 class ActionProxy : public PetriNetPlans::PnpAction
 {

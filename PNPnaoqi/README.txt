@@ -22,52 +22,72 @@
 	$ qibuild make -c pepper -w <qi_ws>
 
 
-3. Local test
+3. Preliminary Test
 
-	* test 1
-	- run 'pnp_test' in the folder containing 'plans'
+    * pnp_test
+	- run 'pnp_test' in the folder containing 'plans' 
 	  $ build-linux64/sdk/bin/pnp_test 
-	  (actions are not started, so you need to use CTRL-C to stop the execution)
+	  Program will terminate and you should not see any error.
 
-	* test 2 (quick)
+
+3. Plan generation
+
+    In the plan folder run
+
+    $ ./gen_plan.bash <planname.plan> [<executionrules.er>]
+
+    Example:
+
+    $ ./gen_plan.bash test3.plan> test3.er
+
+    This command generates <planname>.pnml
+
+
+4. Plan execution
+
+	
+	* quick test
 	- run 'run_test.sh' in the PNPnaoqi folder
 
-	* test 3 (full manual instructions)
+	* full instructions
 	- launch naoqi
 	  $ <PATH_TO>/naoqi-sdk-2.5.5.5-linux64/naoqi
 	- launch actions
 	  (set PEPPER_IP=localhost if needed)
-	  run the 3 action servers (actions/action_{A,B,C}.py)
+	  run the action servers (cd actions; python init_actions.py)
 	- launch pnp_naoqi
 	  run 'pnp_naoqi' in the folder containing 'plans'
 	- send the plan to be executed to pnp_naoqi
 	  run 'run_plan.py' with the name of a plan
-	  $ python run_plan.py --plan <plan_name> (e.g., 'python run_plan.py --plan test')
+	  $ python run_plan.py --plan <plan_name> (e.g., 'python run_plan.py --plan test1')
 	  (actions are started and the plan terminates after execution, plan can be restarted 
       or stopped with 'python run_plan.py --plan stop')
 
-	* test 4
-	- as in test 3, but with conditions:
-	  run actions/conditions.py to set condition phi
-	  run plan test2, execution of B or C depends on the value of phi
+
+6. Test single actions
+
+    Start the action servers and use action_cmd script to start/end/interrupt single actions
+
+    Example:
+
+    Terminal 1:
+    $ cd actions
+    $ python init_actions
+
+    Terminal 2:
+    $ cd actions
+    $ ./action_cmd -a <actionname> -p <params> -c <start|end|interrupt>
 
 
-4. Uploading and testing on the robot
+
+7. Uploading and running on the robot
 
 	On local machine: 
 	edit 'upload.sh' to match your Pepper environment and run it
 
 	OnPepper:
-	- test 1
-	  run 'pnp_test' in the folder containing 'plans'
-	  (actions are not started, so you need to use CTRL-C to stop the execution)
+    execute actions and plans as described before
+    (without launching naoqi and setting PEPPER_IP=localhost)	
 
-	- other tests
-	  (as for Local tests, without launching naoqi and setting PEPPER_IP)	
-
-5. Test single actions
-
-    $ cd actions
-    $ ./action_cmd -a <actionname> -p <params> -c <start|end|interrupt>
 
 

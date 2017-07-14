@@ -13,6 +13,8 @@
 #include <qi/anyobject.hpp>
 #include <qi/applicationsession.hpp>
 
+#include <boost/algorithm/string.hpp>
+
 #include "NaoqiActionProxy.h"
 
 using namespace PetriNetPlans;
@@ -127,7 +129,32 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
         return result;
     }
 
-    if (atom.find('@') == std::string::npos) {
+    if (atom.substr(0,7)=="timeout") {
+        // cerr << "Checking timeout condition: " << atom << endl;
+
+        vector<std::string> v_params;
+        boost::split(v_params, atom, boost::is_any_of("_"));
+
+        string actionname = v_params[1];
+        float timeoutValue = atof(v_params[2].c_str());
+
+        string action_timestart_key = "NAOqiAction/"+actionname+"/startTime";
+        float at = -1;
+		try{
+			at = memProxy.call<float>("getData",action_timestart_key);
+		}
+		catch (const std::exception& e) {
+			cerr << "Cannot find variable " << action_timestart_key << endl;
+		}
+
+        double ct = getCurrentTime();
+
+        //cerr << "Current time: " << ct << " - Action started at time: " << at <<
+        //        " - Diff: " << (ct-at) << " - Timeout value: " << timeoutValue << endl;
+        r = (ct-at>timeoutValue);
+    }
+
+    if (r==-1 && atom.find('@') == std::string::npos) {
         // Try to read condition from ALmemory
  		string key = "PNP_cond_" + atom;
 		string val="";
@@ -142,6 +169,7 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
 		// printf("Cond: %s value: %s -> %d\n", atom.c_str(), val, r);
     }
 
+
     if (r!=-1) {
         result = (r==1);
         ConditionCache[atom]=result;
@@ -150,7 +178,7 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
         result = false;
 
 
-    cout <<  "Condition: " << atom << " -> r = " << r << " - result = " << result << endl;
+    // cout <<  "Condition: " << atom << " -> r = " << r << " - result = " << result << endl;
 
     return result;
 }

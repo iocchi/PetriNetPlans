@@ -8,7 +8,7 @@ import action_base
 from action_base import *
 
 
-actionName = "B"
+actionName = "wait"
 
 
 def actionThread_exec (params):
@@ -17,7 +17,7 @@ def actionThread_exec (params):
     print "Action "+actionName+" started with params "+params
     # action init
     dt = 0.25
-    count = int(5 / dt)
+    count = int(float(params) / dt)
     # action init
     while (getattr(t, "do_run", True) and count>0): 
         print "Action "+actionName+" "+params+" exec..."
