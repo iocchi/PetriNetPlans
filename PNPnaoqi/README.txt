@@ -90,4 +90,41 @@
     (without launching naoqi and setting PEPPER_IP=localhost)	
 
 
+==========================================================================
+
+== Note about timeouts ==
+
+There are two ways of introducing timeout of actions in the plan files.
+
+1. Executing an action up to n seconds
+
+Use this form in the plan file 'A|n'
+
+Example:
+
+  lookfor|30
+
+will execute the action lookfor for at most 30 seconds, then it will continue with the next action.
+
+2. Using the timeout condition
+
+For each action an automatic timeout condition timeout_<actionname>_<time> is available.
+An execution rule can thus contain rules based on this event.
+
+Example:
+
+Plan:
+    lookfor
+
+ER:
+    *if* timeout_lookfor_30 *during* lookfor *do* somethingelse; ...
+
+In this case after 30 seconds from the start of the acction, the condition timeout_lookfor_30
+will be true and will activate the recovery procedure of the ER
+
+
+
+
+
+
 
