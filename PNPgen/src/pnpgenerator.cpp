@@ -790,9 +790,9 @@ void PNPGenerator::applyExecutionRules() {
                 else
                     tsi = pnp.addInterrupt(current_place,eit->condition,pi);
 
-                cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
+                // cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
                 if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
-                cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
+                // cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
                     Place *wait_exec_place = pnp.timed_action_wait_exec_place[current_action_param];
                     pnp.connect(wait_exec_place,tsi);
                 }
@@ -825,7 +825,19 @@ void PNPGenerator::applyExecutionRules() {
                     else
                         pnp.connectPlaces(po,pnp.endPlaceOf(current_place));
                 }
-
+                else if (R.substr(0,4)=="GOTO") {
+                    string label = R.substr(5);
+                    boost::trim(label);
+                    cout << " -- Recovery GOTO label " << label << endl;
+                    Place *pl = LABELS[label];
+                    if (!pl) {
+                        cout << "ERROR label " << label << " not found." << endl;
+                    }
+                    else {
+                        pl->setName("goto");
+                        pnp.connectPlaces(po,pl);
+                    }
+                }
             }
             eit++;
         }
@@ -1143,7 +1155,7 @@ void find_branches(string& to_branch, vector<string>& observations,vector<string
   
 }
 
-Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
+Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabels)
 {
   
   cout << "current plan: " << plan << endl;
@@ -1163,7 +1175,8 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
     
     //get [ai || <..>]
     string next = getNext(plan);    
-    
+    cout << "current action: " << next << endl;
+
     //conditioning: go deep
     if(next.find('<') != string::npos){
       boost::trim(next);
@@ -1186,7 +1199,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       vector<Place*> to_merge;
       for(int i = 0; i < s.size(); ++i){
         cout << "...continue in the branch: " << branches[i] << endl;
-        Place* p = genFromLine_r(s[i],branches[i]);      //return genFromLine_r(s[i],branches[i]);
+        Place* p = genFromLine_r(s[i],branches[i],vlabels);
         to_merge.push_back(p);
       }
 
@@ -1206,7 +1219,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
         }
       }
 	
-      return genFromLine_r(m,plan);     
+      return genFromLine_r(m,plan,vlabels);     
    } 
     
    //no conditioning: add serial action 
@@ -1215,41 +1228,80 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    if(next.find('>') != string::npos && next.find('<') == string::npos){
      next.erase(remove(next.begin(), next.end(), '>'), next.end());
    }
-
-   if(next == "" || next == " " || next == "  " || next.empty())
-      return pi;
      
    cout << "rest of the plan: " << plan << endl;
+
+   if (next == "" || next.empty())
+      return pi;
+
    cout << "..adding action: " << next << endl;
-   boost::trim(next);
 
    if (next.substr(0,1)=="#") { // comment
-      return genFromLine_r(pi,plan);
+      return genFromLine_r(pi,plan,vlabels);
    }
    else if (next.substr(0,5)=="LABEL") {
-      cout << "Adding label " << next << endl;
-      pi->setName(next);   LABELS[next]=pi;   
-      return genFromLine_r(pi,plan);
+      if (LABELS[next]==NULL) {
+          cout << "Adding label " << next << endl;
+          pi->setName(next);   LABELS[next]=pi;   
+      }
+      else {
+          cout << "Linking existing label " << next << endl;
+      }
+      return genFromLine_r(LABELS[next],plan,vlabels);
    }
    else if (next.substr(0,4)=="GOTO") {
       string label = next.substr(5);
       boost::trim(label);
       cout << "GOTO label " << label << endl;
       Place *pl = LABELS[label];
-      Transition* t = pnp.addTransition(" "); t->setY(pi->getY()-2); t->setX(pi->getX()-2);
-      pnp.connect(pi,t); pnp.connect(t,pl);
-      pi->setName("goto");
+      if (!pl) {
+        bool found = std::find(vlabels.begin(), vlabels.end(), label) != vlabels.end();
+        if (!found) {
+            cout << "ERROR label " << label << " not found." << endl 
+                 << "Plan generation interrupted!" << endl;
+            exit(-1);
+        }
+        else {
+            cout << "Adding label " << label << endl;
+            pl = pnp.addPlace(label);
+            LABELS[label] = pl;
+        }
+      }
+
+      if (pl) {
+          Transition* t = pnp.addTransition(" "); t->setY(pi->getY()-2); t->setX(pi->getX()-2);
+          pnp.connect(pi,t); pnp.connect(t,pl);
+          pi->setName("goto");
+      }
+      else {
+
+
+      }
       return pi;
    }
    else {
-
 	  Place *poa; // place to save in the stack
       Place *n = pnp.addGeneralAction(next,pi,&poa);
 	  addActionToStacks(next,poa);
 
-      return genFromLine_r(n,plan);
+      return genFromLine_r(n,plan,vlabels);
     }
   }
+}
+
+void readLabels(string plan, vector<string> &v) {
+
+    string next = getNext(plan);
+
+    cout << "LABELS" << endl;
+    while (!next.empty()) {
+        if (next.substr(0,5)=="LABEL") {
+          cout << "   " << next << endl;
+          v.push_back(next);
+        }
+        next = getNext(plan);
+    }
+
 }
 
 void readInlineFile(const char*filename, string &plan)
@@ -1259,23 +1311,30 @@ void readInlineFile(const char*filename, string &plan)
     while(f.good()){
       getline(f,app);
       boost::trim(app);
-      if (!app.empty() && app[0]!='#')
-        plan += " " + app;
+      if (!app.empty() && app[0]!='#') {
+        // remove inline comments
+        vector<string> v;
+        boost::split(v, app, boost::is_any_of("#"));
+        plan += " " + v[0];
+      }
     }
     cout << "plan read: " << plan << endl;
     f.close();
 }
 
 
+
 bool PNPGenerator::genFromLine(string path)
 {
   string plan;
-  
+  vector<string> vlabels;
+ 
   //read plan from file
   readInlineFile(path.c_str(),plan);
+  readLabels(plan, vlabels);
   
   //recursively create the pnp
-  Place *p = genFromLine_r(pnp.pinit,plan);
+  Place *p = genFromLine_r(pnp.pinit,plan,vlabels);
   if (p->getName()!="goto")
     p->setName("goal");
   save();

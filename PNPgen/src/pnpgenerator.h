@@ -236,7 +236,7 @@ public:
 				     ConditionalPlan& final_state, map<string,pair<string,vector<ActionOutcome> > > state_action_out);
     bool genFromConditionalPlan_r(ConditionalPlan *plan, Place *place);
     
-    Place* genFromLine_r(Place* pi, string plan);
+    Place* genFromLine_r(Place* pi, string plan, vector<string> &vlabels);
     bool genFromLine(string path);
 
 
