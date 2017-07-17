@@ -212,9 +212,11 @@ private:
     stack< pair<string, Place*> > ASS;  // action, Place* map - stack of actions to be analized for applying the social rules
     stack< pair<string, Place*> > ASE;  // action, Place* map - stack of actions to be analized for applying the execution rules
     map<string, Place*> LABELS;  // label, Place* map 
+    vector<string> vlabels;      // all the labels found in the plan
 
     Place* lastActionPlace = NULL; // init place of last action added in the PNP
                             // to be used by inline ER
+
 
     void addActionToStacks(string a, Place *p) {
         ASS.push(make_pair(a,p)); ASE.push(make_pair(a,p));
@@ -240,7 +242,7 @@ public:
 				     ConditionalPlan& final_state, map<string,pair<string,vector<ActionOutcome> > > state_action_out);
     bool genFromConditionalPlan_r(ConditionalPlan *plan, Place *place);
     
-    Place* genFromLine_r(Place* pi, string plan, vector<string> &vlabels);
+    Place* genFromLine_r(Place* pi, string plan);
     bool genFromLine(string path);
 
 
@@ -257,6 +259,7 @@ public:
 
     void readERFile(const char* filename);
     void readERFile(const string& filename) { readERFile(filename.c_str()); }
+    void readLabels(string plan);
 
     Place * add_before(PNP &pnp, string b, string current_action, Place* current_place);
     Place * add_after(PNP &pnp, string b, string current_action, Place* current_place);
@@ -267,6 +270,8 @@ public:
         addActionToStacks(action,poe);
         return n;
     }
+
+    void addGotoPattern(Place *pi, string next);
 
     vector<Place*> addSensingAction(string action, Place *place, vector<string> outcomes) {
         addActionToStacks(action,place);

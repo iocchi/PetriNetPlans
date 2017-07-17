@@ -811,19 +811,7 @@ void PNPGenerator::applyOneExecutionRule(Place *current_place, string condition,
             pnp.connectPlaces(po,pnp.endPlaceOf(current_place));
     }
     else if (R.substr(0,4)=="GOTO") {
-        string label = R.substr(5);
-        boost::trim(label);
-        cout << " -- Recovery GOTO label " << label << endl;
-        Place *pl = LABELS[label];
-        if (!pl) {
-            cout << "\033[22;31;1mERROR label " << label << " not found. " << endl
-                 << "PLAN NOT GENERATED !!!\033[0m" << endl;
-            exit(-1);
-        }
-        else {
-            pl->setName("goto");
-            pnp.connectPlaces(po,pl);
-        }
+        addGotoPattern(po,R);
     }
     else {
 
@@ -1184,8 +1172,36 @@ void find_branches(string& to_branch, vector<string>& observations,vector<string
   
 }
 
+void PNPGenerator::addGotoPattern(Place *pi, string next) 
+{
+  string label = next.substr(5);
+  boost::trim(label);
+  cout << "GOTO label " << label << endl;
+  Place *pl = LABELS[label];
+  if (!pl) {
+    bool found = std::find(vlabels.begin(), vlabels.end(), label) != vlabels.end();
+    if (!found) {
+        cout << "\033[22;31;1mERROR label " << label << " not found." << endl 
+             << "PLAN NOT GENERATED !!!\033[0m" << endl;
+        exit(-1);
+    }
+    else {
+        cout << "Adding label " << label << endl;
+        pl = pnp.addPlace(label);
+        LABELS[label] = pl;
+    }
+  }
+
+  if (pl) {
+      Transition* t = pnp.addTransition(" "); t->setY(pi->getY()-2); t->setX(pi->getX()-2);
+      pnp.connect(pi,t); pnp.connect(t,pl);
+      pi->setName("goto");
+  }
+}
+
+
 // pi: initial place for this part of the plan (last place of previous part) 
-Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabels)
+Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
 {
   
   cout << endl << "=== Current plan: " << endl << plan << endl;
@@ -1230,7 +1246,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
       vector<Place*> to_merge;
       for(int i = 0; i < s.size(); ++i){
         cout << "...continue in the branch: " << branches[i] << endl;
-        Place* p = genFromLine_r(s[i],branches[i],vlabels);
+        Place* p = genFromLine_r(s[i],branches[i]);
         to_merge.push_back(p);
       }
 
@@ -1250,7 +1266,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
         }
       }
 	
-      return genFromLine_r(m,plan,vlabels);     
+      return genFromLine_r(m,plan);     
    } 
     
    //no conditioning: add serial action 
@@ -1267,7 +1283,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
    cout << endl << "Adding action: [" << next << "]" << endl;
 
    if (next.substr(0,1)=="#") { // comment
-      return genFromLine_r(pi,plan,vlabels);
+      return genFromLine_r(pi,plan);
    }
    else if (next.substr(0,5)=="LABEL") {
       if (LABELS[next]==NULL) {
@@ -1277,32 +1293,12 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
       else {
           cout << "Linking existing label " << next << endl;
       }
-      return genFromLine_r(LABELS[next],plan,vlabels);
+      return genFromLine_r(LABELS[next],plan);
    }
    else if (next.substr(0,4)=="GOTO") {
-      string label = next.substr(5);
-      boost::trim(label);
-      cout << "GOTO label " << label << endl;
-      Place *pl = LABELS[label];
-      if (!pl) {
-        bool found = std::find(vlabels.begin(), vlabels.end(), label) != vlabels.end();
-        if (!found) {
-            cout << "\033[22;31;1mERROR label " << label << " not found." << endl 
-                 << "Plan generation interrupted!\033[0m" << endl;
-            exit(-1);
-        }
-        else {
-            cout << "Adding label " << label << endl;
-            pl = pnp.addPlace(label);
-            LABELS[label] = pl;
-        }
-      }
 
-      if (pl) {
-          Transition* t = pnp.addTransition(" "); t->setY(pi->getY()-2); t->setX(pi->getX()-2);
-          pnp.connect(pi,t); pnp.connect(t,pl);
-          pi->setName("goto");
-      }
+      addGotoPattern(pi,next);
+
       return pi;
    }
    else if (next.substr(0,4)=="*if*") {
@@ -1316,24 +1312,24 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
         cond=strs[1]; boost::algorithm::trim(cond);
         recov=strs[2]; boost::algorithm::trim(recov);
         cout << "ER::  " << pexec->getName() << " - [" << cond << "] - " << recov << endl;
-        applyOneExecutionRule(lastActionPlace, cond, recov );
+        applyOneExecutionRule(lastActionPlace, cond, recov);
       }
       else {
         cout << "\033[22;32;1mWARNING!!! ER " << next << " not well formatted. IGNORED!!! \033[0m" << endl;
       }
-      return genFromLine_r(pi,plan,vlabels);
+      return genFromLine_r(pi,plan);
    }
    else { // normal action
 	  Place *poa; // place to save in the stack (init place of action)
       Place *n = pnp.addGeneralAction(next,pi,&poa);
 	  addActionToStacks(next,poa);
       lastActionPlace = poa; // init place of the last action
-      return genFromLine_r(n,plan,vlabels);
+      return genFromLine_r(n,plan);
     }
   }
 }
 
-void readLabels(string plan, vector<string> &v) {
+void PNPGenerator::readLabels(string plan) {
 
     string next = getNext(plan);
 
@@ -1342,7 +1338,7 @@ void readLabels(string plan, vector<string> &v) {
 
         if (next.substr(0,5)=="LABEL") {
           cout << "   " << next << endl;
-          v.push_back(next);
+          vlabels.push_back(next);
         }
         next = getNext(plan);
     }
@@ -1372,14 +1368,13 @@ void readInlineFile(const char*filename, string &plan)
 bool PNPGenerator::genFromLine(string path)
 {
   string plan;
-  vector<string> vlabels;
  
   //read plan from file
   readInlineFile(path.c_str(),plan);
-  readLabels(plan, vlabels);
+  readLabels(plan);
   
   //recursively create the pnp
-  Place *p = genFromLine_r(pnp.pinit,plan,vlabels);
+  Place *p = genFromLine_r(pnp.pinit,plan);
   if (p->getName()!="goto")
     p->setName("goal");
   save();
