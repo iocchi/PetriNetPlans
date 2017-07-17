@@ -816,7 +816,9 @@ void PNPGenerator::applyOneExecutionRule(Place *current_place, string condition,
         cout << " -- Recovery GOTO label " << label << endl;
         Place *pl = LABELS[label];
         if (!pl) {
-            cout << "ERROR label " << label << " not found." << endl;
+            cout << "\033[22;31;1mERROR label " << label << " not found. " << endl
+                 << "PLAN NOT GENERATED !!!\033[0m" << endl;
+            exit(-1);
         }
         else {
             pl->setName("goto");
