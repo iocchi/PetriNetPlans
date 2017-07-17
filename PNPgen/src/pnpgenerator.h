@@ -140,8 +140,9 @@ protected:
 public:
 
     Place *pinit; // init place of the plan
-    map<string, Place*> timed_action_wait_exec_place; // exec place of corresponding wait action for timed actions
-    map<string, Place*> timed_action_fork_place; // fork place of timed actions
+
+    map<Place *, Place*> timed_action_wait_exec_place; // exec place of corresponding wait action for timed actions (first: init place of a timed action, second: exec place of wait)
+    map<Place *, Place*> timed_action_fork_place; // fork place of timed actions
 
     PNP(string _name);
     ~PNP();
@@ -212,6 +213,9 @@ private:
     stack< pair<string, Place*> > ASE;  // action, Place* map - stack of actions to be analized for applying the execution rules
     map<string, Place*> LABELS;  // label, Place* map 
 
+    Place* lastActionPlace = NULL; // init place of last action added in the PNP
+                            // to be used by inline ER
+
     void addActionToStacks(string a, Place *p) {
         ASS.push(make_pair(a,p)); ASE.push(make_pair(a,p));
     }
@@ -249,6 +253,7 @@ public:
     void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);
     void applySocialRules();
     void applyExecutionRules();
+    void applyOneExecutionRule(Place *current_place, string condition, string recoveryplan);
 
     void readERFile(const char* filename);
     void readERFile(const string& filename) { readERFile(filename.c_str()); }

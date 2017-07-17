@@ -381,9 +381,9 @@ Place* PNP::addTimedAction(string name, Place *p0, int timevalue, Place **p0acti
     nactions+=2;
     *p0action = pi1; // initial place of main action returned for the table of actions to be considered for ER
 
-    // store timed action info for joint interrupts
-    timed_action_wait_exec_place[name]=(Place *)(next(next(pi2)));
-    timed_action_fork_place[name]=p0;
+    // store timed action info for joint interrupts using place as identifier
+    timed_action_wait_exec_place[pi1]=(Place *)(next(next(pi2)));
+    timed_action_fork_place[pi1]=p0;
 
     return po;
 }
@@ -716,7 +716,7 @@ bool PNPGenerator::parseERline(const string line, string &action, string &cond, 
     vector<string> strs;
     boost::algorithm::split_regex( strs, line, boost::regex( "\\*[^ ]*\\*" ) ) ;
 
-    if (strs.size()>=3) {
+    if (strs.size()>3) {
         action=strs[2]; boost::algorithm::trim(action);
         cond=strs[1]; boost::algorithm::trim(cond);
         plan=strs[3]; boost::algorithm::trim(plan);
@@ -743,6 +743,95 @@ void PNPGenerator::readERFile(const char*filename) {
     f.close();
 }
 
+
+void PNPGenerator::applyOneExecutionRule(Place *current_place, string condition, string recoveryplan) {
+
+    // split recovery plan
+    vector<string> v; boost::split(v,recoveryplan,boost::is_any_of("; "),boost::token_compress_on);
+
+    Place *po = NULL; string R="";
+    Place *pi = pnp.addPlace("I",-1); pi->setY(current_place->getY()-1); pi->setX(current_place->getX()+3);
+
+    if (v.size()>1) {
+        // build actual plan without recovery specification
+        string plan = ""; int i=0;
+        for (i=0; i<v.size()-2; i++)
+            plan = plan + v[i] + ";";
+        plan = plan + v[i];
+
+        //cout << "-- recovery plan " << plan << endl;
+        po = genLinearPlan(pi,plan,false); // output place of linear plan
+
+        R = v[v.size()-1];
+    }
+    else {
+        R = recoveryplan;
+        po = pi;
+    }
+
+    Transition *tsi;
+    if(condition=="action_failed")
+        tsi = pnp.addFail(current_place,pi);
+    else
+        tsi = pnp.addInterrupt(current_place,condition,pi);
+
+    // cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
+    if (pnp.timed_action_wait_exec_place.find(current_place) != pnp.timed_action_wait_exec_place.end()) {
+    // cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
+        Place *wait_exec_place = pnp.timed_action_wait_exec_place[current_place];
+        pnp.connect(wait_exec_place,tsi);
+    }
+
+
+    if (R=="fail_plan") {
+        po->setName("fail");
+    }
+    else if (R=="goal") {
+        po->setName("goal");
+    }
+    else if (R=="restart_plan") {
+        pnp.connectPlaces(po,pnp.pinit);
+    }
+    else if (R=="restart_action") {
+        if (pnp.timed_action_wait_exec_place.find(current_place) != pnp.timed_action_wait_exec_place.end()) {
+            //timed action
+            Place *pd = pnp.timed_action_fork_place[current_place];
+            pnp.connectPlaces(po,pd);
+        }
+        else
+            pnp.connectPlaces(po,current_place);
+    }
+    else if (R=="skip_action") {
+        if (pnp.timed_action_wait_exec_place.find(current_place) != pnp.timed_action_wait_exec_place.end()) {
+            //timed action
+            Place *pd = (Place *)(pnp.next(pnp.next(pnp.endPlaceOf(current_place))));
+            pnp.connectPlaces(po,pd);
+        }
+        else
+            pnp.connectPlaces(po,pnp.endPlaceOf(current_place));
+    }
+    else if (R.substr(0,4)=="GOTO") {
+        string label = R.substr(5);
+        boost::trim(label);
+        cout << " -- Recovery GOTO label " << label << endl;
+        Place *pl = LABELS[label];
+        if (!pl) {
+            cout << "ERROR label " << label << " not found." << endl;
+        }
+        else {
+            pl->setName("goto");
+            pnp.connectPlaces(po,pl);
+        }
+    }
+    else {
+
+        cout << endl << "\033[22;31;1mERROR: Invalid last action of recovery procedure [" << R << "]" << endl
+             << "PLAN NOT GENERATED !!!\033[0m" << endl;
+        exit(-1);
+    }
+
+}
+
 void PNPGenerator::applyExecutionRules() {
 
     pair<string, Place*> current; Place* noplace=NULL;
@@ -762,85 +851,12 @@ void PNPGenerator::applyExecutionRules() {
                 cout << "    " << eit->condition << " -> " << eit->recoveryplan << endl;
 
                 boost::trim(eit->recoveryplan);
-                vector<string> v; boost::split(v,eit->recoveryplan,boost::is_any_of("; "),boost::token_compress_on);
 
-                Place *po = NULL; string R="";
-                Place *pi = pnp.addPlace("I",-1); pi->setY(current_place->getY()-1); pi->setX(current_place->getX()+3);
+                applyOneExecutionRule(current_place, eit->condition, eit->recoveryplan);
 
-                if (v.size()>1) {
-                    // build actual plan without recovery specification
-                    string plan = ""; int i=0;
-                    for (i=0; i<v.size()-2; i++)
-                        plan = plan + v[i] + ";";
-                    plan = plan + v[i];
-
-                    //cout << "-- recovery plan " << plan << endl;
-                    po = genLinearPlan(pi,plan,false); // output place of linear plan
-
-                    R = v[v.size()-1];
-                }
-                else {
-                    R = eit->recoveryplan;
-                    po = pi;
-                }
-
-                Transition *tsi;
-                if(eit->condition=="action_failed")
-                    tsi = pnp.addFail(current_place,pi);
-                else
-                    tsi = pnp.addInterrupt(current_place,eit->condition,pi);
-
-                // cout << "DEBUG: checking for wait parallel actions of action " << current_action_param << endl;
-                if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
-                // cout << "DEBUG: connect interrupt for wait parallel actions of action " << current_action_param << endl;
-                    Place *wait_exec_place = pnp.timed_action_wait_exec_place[current_action_param];
-                    pnp.connect(wait_exec_place,tsi);
-                }
-
-
-                if (R=="fail_plan") {
-                    po->setName("fail");
-                }
-				else if (R=="goal") {
-                    po->setName("goal");
-                }
-                else if (R=="restart_plan") {
-                    pnp.connectPlaces(po,pnp.pinit);
-                }
-                else if (R=="restart_action") {
-                    if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
-                        //timed action
-                        Place *pd = pnp.timed_action_fork_place[current_action_param];
-                        pnp.connectPlaces(po,pd);
-                    }
-                    else
-                        pnp.connectPlaces(po,current_place);
-                }
-                else if (R=="skip_action") {
-                    if (pnp.timed_action_wait_exec_place.find(current_action_param)!=pnp.timed_action_wait_exec_place.end()) {
-                        //timed action
-                        Place *pd = (Place *)(pnp.next(pnp.next(pnp.endPlaceOf(current_place))));
-                        pnp.connectPlaces(po,pd);
-                    }
-                    else
-                        pnp.connectPlaces(po,pnp.endPlaceOf(current_place));
-                }
-                else if (R.substr(0,4)=="GOTO") {
-                    string label = R.substr(5);
-                    boost::trim(label);
-                    cout << " -- Recovery GOTO label " << label << endl;
-                    Place *pl = LABELS[label];
-                    if (!pl) {
-                        cout << "ERROR label " << label << " not found." << endl;
-                    }
-                    else {
-                        pl->setName("goto");
-                        pnp.connectPlaces(po,pl);
-                    }
-                }
-            }
+            } // if
             eit++;
-        }
+        } // while
 
     }
 }
@@ -882,7 +898,7 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
 
         if (action=="") {
             if (current_state!=p.final_state)
-                std::cerr << "PNPgen Warning: No action found for state " << current_state << std::endl;
+                std::cerr << "\033[22;32;1mPNPgen Warning: No action found for state " << current_state << "\033[0m" << std::endl;
             continue;
         }
         std::cout << action << " -> ";
@@ -890,7 +906,7 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
         vector<StateOutcome> vo = p.getOutcomes(current_state,action);
 
         if (vo.size()==0) {
-            std::cerr << "PNPgen ERROR: No successor state found for state " << current_state << " and action " << action  << std::endl;
+            std::cerr << "\033[22;31;1mPNPgen ERROR: No successor state found for state " << current_state << " and action " << action  << "\033[0m" << std::endl;
             _error = true;
             break;
         }
@@ -1086,25 +1102,36 @@ int found_end(string line){
 
 string getNext(string& line){
   string res;
+  boost::trim(line);
   
+  // execution rule
+  if (line[0]=='!') {
+    size_t e = line.substr(1).find('!');
+    res = line.substr(1,e-1);
+    line.erase(0,e+2);
+  }
   //we must return an action ..a;
-  if(line.find(';') < line.find('<')){
-//     cout << "case 1 " << line << endl;
+  else if (line.find(';') < line.find('<')){
+    //     cout << "case 1 " << line << endl;
     res = line.substr(0,line.find(';'));
     line.erase(0,line.find(';')+1);
-  }else // we must return a conditioning <..>
-    if(line.find('<') < line.find(';')){
-//             cout << "case 2 " << line << endl;
+  } 
+  // we must return a conditioning <..>
+  else if (line.find('<') < line.find(';')){
+      //    cout << "case 2 " << line << endl;
+      int first = line.find('<');
       int second = found_end(line);
-      res = line.substr(line.find('<'),second-line.find('<')+1);
-      line.erase(1,second+1);
-  }else // we must return the last action ;..a
-    if(line.find(';') == string::npos && line.find('<') == string::npos){
-//       cout << "case 3 " << line << endl;
+      res = line.substr(first,second-first+1);
+      line.erase(first,second-first+2);
+  }
+  // we must return the last action ;..a
+  else if (line.find(';') == string::npos && line.find('<') == string::npos){
+      //   cout << "case 3 " << line << endl;
       res = line;
       line = "";
-   }
+  }
   boost::trim(res);
+  boost::trim(line);
   return res;
 }
 
@@ -1155,10 +1182,11 @@ void find_branches(string& to_branch, vector<string>& observations,vector<string
   
 }
 
+// pi: initial place for this part of the plan (last place of previous part) 
 Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabels)
 {
   
-  cout << "current plan: " << plan << endl;
+  cout << endl << "=== Current plan: " << endl << plan << endl;
 
   if(plan.empty() || plan == "" || plan == " "){ //base case
     cout << "end" << endl << endl;
@@ -1176,6 +1204,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
     //get [ai || <..>]
     string next = getNext(plan);    
     cout << "current action: " << next << endl;
+    cout << "rest of the plan: " << plan << endl;
 
     //conditioning: go deep
     if(next.find('<') != string::npos){
@@ -1229,12 +1258,11 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
      next.erase(remove(next.begin(), next.end(), '>'), next.end());
    }
      
-   cout << "rest of the plan: " << plan << endl;
 
    if (next == "" || next.empty())
       return pi;
 
-   cout << "..adding action: " << next << endl;
+   cout << endl << "Adding action: [" << next << "]" << endl;
 
    if (next.substr(0,1)=="#") { // comment
       return genFromLine_r(pi,plan,vlabels);
@@ -1257,8 +1285,8 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
       if (!pl) {
         bool found = std::find(vlabels.begin(), vlabels.end(), label) != vlabels.end();
         if (!found) {
-            cout << "ERROR label " << label << " not found." << endl 
-                 << "Plan generation interrupted!" << endl;
+            cout << "\033[22;31;1mERROR label " << label << " not found." << endl 
+                 << "Plan generation interrupted!\033[0m" << endl;
             exit(-1);
         }
         else {
@@ -1273,17 +1301,31 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan, vector<string> &vlabe
           pnp.connect(pi,t); pnp.connect(t,pl);
           pi->setName("goto");
       }
-      else {
-
-
-      }
       return pi;
    }
-   else {
-	  Place *poa; // place to save in the stack
+   else if (next.substr(0,4)=="*if*") {
+      Place *pexec = pnp.execPlaceOf(lastActionPlace);
+
+      vector<string> strs;
+      boost::algorithm::split_regex( strs, next, boost::regex( "\\*[^ ]*\\*" ) ) ;
+
+      string cond="", recov="";
+      if (strs.size()>2) {
+        cond=strs[1]; boost::algorithm::trim(cond);
+        recov=strs[2]; boost::algorithm::trim(recov);
+        cout << "ER::  " << pexec->getName() << " - [" << cond << "] - " << recov << endl;
+        applyOneExecutionRule(lastActionPlace, cond, recov );
+      }
+      else {
+        cout << "\033[22;32;1mWARNING!!! ER " << next << " not well formatted. IGNORED!!! \033[0m" << endl;
+      }
+      return genFromLine_r(pi,plan,vlabels);
+   }
+   else { // normal action
+	  Place *poa; // place to save in the stack (init place of action)
       Place *n = pnp.addGeneralAction(next,pi,&poa);
 	  addActionToStacks(next,poa);
-
+      lastActionPlace = poa; // init place of the last action
       return genFromLine_r(n,plan,vlabels);
     }
   }
@@ -1294,7 +1336,8 @@ void readLabels(string plan, vector<string> &v) {
     string next = getNext(plan);
 
     cout << "LABELS" << endl;
-    while (!next.empty()) {
+    while (!plan.empty() && plan!="") {
+
         if (next.substr(0,5)=="LABEL") {
           cout << "   " << next << endl;
           v.push_back(next);
