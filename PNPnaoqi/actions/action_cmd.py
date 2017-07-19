@@ -70,7 +70,7 @@ def main():
 
     if (cmd=='start'):
         start_action(memory_service,action,params)
-    elif (cmd=='end'):
+    elif (cmd=='end' or cmd=='stop'):
         end_action(memory_service,action)
     elif (cmd=='interrupt'):
         interrupt_action(memory_service,action)
