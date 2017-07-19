@@ -1331,16 +1331,13 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
 
 void PNPGenerator::readLabels(string plan) {
 
-    string next = getNext(plan);
-
     cout << "LABELS" << endl;
     while (!plan.empty() && plan!="") {
-
+        string next = getNext(plan);
         if (next.substr(0,5)=="LABEL") {
           cout << "   " << next << endl;
           vlabels.push_back(next);
         }
-        next = getNext(plan);
     }
 
 }
