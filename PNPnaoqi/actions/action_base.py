@@ -27,7 +27,7 @@ def action_cb(value):
             G_actionThreads[actionName].mem_serv = G_memory_service
             G_actionThreads[actionName].session = G_session
             G_actionThreads[actionName].start()
-            G_memory_service.raiseEvent(cakey,actionName)
+            G_memory_service.raiseEvent(cakey,actionName+"_"+params)
         else:
             print "ERROR: Action ",v[1]," not found !!!"
     elif (v[0]=='end' or v[0]=='stop' or v[0]=='interrupt'):
