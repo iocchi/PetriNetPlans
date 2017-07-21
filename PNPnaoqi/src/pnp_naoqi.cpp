@@ -240,6 +240,7 @@ int main(int argc, char** argv)
 
 	memProxy = session->service("ALMemory");
 
+    memProxy.call<void>("declareEvent","PNP/CurrentPlan");
 	memProxy.call<void>("insertData","PNP_planToExec","");
 	memProxy.call<void>("insertData","PNP_naoqi_run","true");
 
@@ -263,7 +264,11 @@ int main(int argc, char** argv)
             else
                 planName = planToExec;
 		  	planToExec = "";
+            memProxy.call<void>("raiseEvent","PNP/CurrentPlan",planName);
 		}			
+
+
+        
 
 		// wait for a plan different from stop
         if (planName=="stop") {

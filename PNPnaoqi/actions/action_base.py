@@ -8,6 +8,8 @@ import os
 G_actionThread_exec = {}  # action thread execution functions
 G_actionThreads = {}  # action threads functions
 
+cakey = "PNP/CurrentAction"
+
 acb = None # action callback
 
 def action_cb(value):
@@ -25,12 +27,14 @@ def action_cb(value):
             G_actionThreads[actionName].mem_serv = G_memory_service
             G_actionThreads[actionName].session = G_session
             G_actionThreads[actionName].start()
+            G_memory_service.raiseEvent(cakey,actionName)
         else:
             print "ERROR: Action ",v[1]," not found !!!"
     elif (v[0]=='end' or v[0]=='stop' or v[0]=='interrupt'):
         try:
             actionName = v[1]
             G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
+            G_memory_service.raiseEvent(cakey,"")
             # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
         except:
             print "ERROR: Action ",v[1]," not started !!!"
@@ -74,6 +78,8 @@ def init(session, actionName, actionThread_exec):
         acb.signal.connect(action_cb)
 
     G_memory_service.declareEvent("PNP_action_result_"+actionName);
+    G_memory_service.declareEvent("PNP/CurrentAction");
+
 
     print "Naoqi Action server "+actionName+" running..."
 
