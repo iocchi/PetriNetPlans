@@ -358,7 +358,7 @@ int main(int argc, char** argv)
 				        cout << "GOAL NODE REACHED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "goal";
-				        //currentActivePlacesPublisher.publish(activePlaces);
+				        memProxy.call<void>("insertData","PNP_active_places", activePlaces);
 				        if (!autorestart)
 				          planToExec="stop";
 				    }
@@ -366,7 +366,7 @@ int main(int argc, char** argv)
 				        cout << "FAIL NODE REACHED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "fail";
-				        //currentActivePlacesPublisher.publish(activePlaces);
+				        memProxy.call<void>("insertData","PNP_active_places", activePlaces);
 				        if (!autorestart)
 				          planToExec="stop";
 				    }
@@ -374,7 +374,7 @@ int main(int argc, char** argv)
 				        cout << "PLAN STOPPED OR CHANGED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "abort";
-				        //currentActivePlacesPublisher.publish(activePlaces);
+				        memProxy.call<void>("insertData","PNP_active_places", activePlaces);
 				    }
 
 				} // if executor getMainPlanName ...
