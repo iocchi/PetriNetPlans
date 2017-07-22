@@ -1172,7 +1172,7 @@ void find_branches(string& to_branch, vector<string>& observations,vector<string
   
 }
 
-void PNPGenerator::addGotoPattern(Place *pi, string next) 
+Place* PNPGenerator::addGotoPattern(Place *pi, string next) 
 {
   string label = next.substr(5);
   boost::trim(label);
@@ -1197,6 +1197,8 @@ void PNPGenerator::addGotoPattern(Place *pi, string next)
       pnp.connect(pi,t); pnp.connect(t,pl);
       pi->setName("goto");
   }
+
+  return pl;
 }
 
 
@@ -1215,7 +1217,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
     pi->setX(x+2);
     pi->setY(y);
     /************************************/
-    
+
     return pi;
   }else{
     
@@ -1288,18 +1290,34 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    else if (next.substr(0,5)=="LABEL") {
       if (LABELS[next]==NULL) {
           cout << "Adding label " << next << endl;
-          pi->setName(next);   LABELS[next]=pi;   
+          pi->setName(next);   LABELS[next]=pi;  
+          cout << " -- Rest of the plan: " << plan << endl;
       }
       else {
           cout << "Linking existing label " << next << endl;
+          pnp.connectPlaces(pi,LABELS[next]);
       }
       return genFromLine_r(LABELS[next],plan);
    }
    else if (next.substr(0,4)=="GOTO") {
 
-      addGotoPattern(pi,next);
+      Place *po = addGotoPattern(pi,next);
 
-      return pi;
+      cout << " -- current plan: " << plan << endl;
+      string label = next.substr(5);
+      cout << " -- current label: " << label << endl;
+
+      size_t n = plan.find(label);
+      if (n!=string::npos) { // found the label in this branch of the plan go to it
+
+          string rest = plan.substr(n);
+          n = rest.find(";");
+          rest = rest.substr(n+1);        
+          cout << " -- rest: " << rest << endl;
+          return genFromLine_r(po,rest);
+      }
+      else // the label is in another branch, will be connected later
+        return pi;
    }
    else if (next.substr(0,4)=="*if*") {
       Place *pexec = pnp.execPlaceOf(lastActionPlace);
@@ -1372,8 +1390,15 @@ bool PNPGenerator::genFromLine(string path)
   
   //recursively create the pnp
   Place *p = genFromLine_r(pnp.pinit,plan);
-  if (p->getName()!="goto")
-    p->setName("goal");
+  if (p->getName()!="goto") { // ???
+     if (p->getName().substr(0,5)=="LABEL") {
+        Place *newp = pnp.addPlace("goal");
+        newp->setX(p->getX()+2); newp->setY(p->getY());
+        pnp.connectPlaces(p,newp);
+    } 
+    else
+     p->setName("goal");
+  }
   save();
   
   return true;

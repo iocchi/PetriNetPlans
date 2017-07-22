@@ -35,7 +35,7 @@ ActionProxy::ActionProxy(const string& nm)
     robotname = "";
     string nms = nm;
 
-    // cout << "Creating action " << nm << endl;
+    cout << "ActionProxy:: ++ new action " << nm << endl;
 
     size_t k = nm.find('#');
     if (k != string::npos) {
@@ -66,7 +66,7 @@ ActionProxy::ActionProxy(const string& nm)
 
 ActionProxy::~ActionProxy() {
 	// terminate this action    
-	// cout << "ActionProxy: terminating action " << name << " " << params << endl;  
+	cout << "ActionProxy:: -- delete action " << name << " " << params << endl;  
     // memProxy.call<void>("unsubscribeToEvent", "actionTerminationCallback", "PNP_ActionProxy");
 
 	acb_signal.disconnect(signalID);
@@ -93,7 +93,7 @@ void ActionProxy::start()
     float timeValue = getCurrentTime();
 	memProxy.call<void>("insertData",action_timestart_key,timeValue);
 
-    cout << "ActionProxy:: Action " << name << " started at time " << timeValue << endl;
+    cout << "ActionProxy::     " << name << "_" << params << " started at time " << timeValue << endl;
 
     activeActions.insert(this);
 
@@ -109,7 +109,7 @@ void ActionProxy::end()
 	string value = "end "+name;
 	memProxy.call<void>("raiseEvent",event,value);
 
-    cout << "ActionProxy:: Action " << name << " ended at time " << getCurrentTime() << endl;
+    cout << "ActionProxy::     " << name << "_" << params << " ended at time " << getCurrentTime() << endl;
 
     active=false;
 }
@@ -123,7 +123,7 @@ void ActionProxy::interrupt()
 	string value = "interrupt " + name;
 	memProxy.call<void>("raiseEvent",event,value);
 
-    cout << "ActionProxy:: Action " << name << " interrupted at time " << getCurrentTime() << endl;
+    cout << "ActionProxy::     " << name << "_" << params << " interrupted at time " << getCurrentTime() << endl;
 
     active=false;
 }
@@ -135,7 +135,7 @@ bool ActionProxy::finished()
 
 void ActionProxy::actionTerminationCallback()
 {
-    cout << "ActionProxy:: Action " << name << " completed at time " << getCurrentTime() << endl;
+    cout << "ActionProxy::     " << name << "_" << params << " completed at time " << getCurrentTime() << endl;
 	active=false;
 }
 

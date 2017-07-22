@@ -134,24 +134,32 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
 
         vector<std::string> v_params;
         boost::split(v_params, atom, boost::is_any_of("_"));
+        int n = v_params.size();
+        if (n!=3) {
+            cerr << "Error in condition " << atom << endl;
+            cerr << "Format: timeout_<actionname>_<timeout in seconds> (no parameters of the action)" << atom << endl;
+        }
+        else {
+            string actionname = v_params[1];
+            float timeoutValue = atof(v_params[2].c_str());
+            if (timeoutValue<=0) {
+                cerr << "Error in timeout value " << timeoutValue << " in condition " << atom << endl;
+            }
+            string action_timestart_key = "NAOqiAction/"+actionname+"/startTime";
+            float at = -1;
+		    try{
+			    at = memProxy.call<float>("getData",action_timestart_key);
+		    }
+		    catch (const std::exception& e) {
+			    cerr << "Cannot find variable " << action_timestart_key << endl;
+		    }
 
-        string actionname = v_params[1];
-        float timeoutValue = atof(v_params[2].c_str());
+            double ct = getCurrentTime();
 
-        string action_timestart_key = "NAOqiAction/"+actionname+"/startTime";
-        float at = -1;
-		try{
-			at = memProxy.call<float>("getData",action_timestart_key);
-		}
-		catch (const std::exception& e) {
-			cerr << "Cannot find variable " << action_timestart_key << endl;
-		}
-
-        double ct = getCurrentTime();
-
-        //cerr << "Current time: " << ct << " - Action started at time: " << at <<
-        //        " - Diff: " << (ct-at) << " - Timeout value: " << timeoutValue << endl;
-        r = (ct-at>timeoutValue);
+            //cerr << "Current time: " << ct << " - Action started at time: " << at <<
+            //        " - Diff: " << (ct-at) << " - Timeout value: " << timeoutValue << endl;
+            r = (ct-at>timeoutValue);
+        }
     }
 
     if (r==-1 && atom.find('@') == std::string::npos) {
@@ -187,15 +195,18 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
 
 string planToExec = "", currentPlanName="stop";
 
-string aplkey = "PNP/ActivePlaces";
-
+string activeplaces_key = "PNP/ActivePlaces";
+string currentplan_key = "PNP/CurrentPlan";
+string currentaction_key = "PNP/CurrentAction";
+string plantoexec_key = "PNP_planToExec";
+string pnpnaoqirun_key = "PNP/running";
 
 bool naoqi_ok() {
-	string p = memProxy.call<string>("getData","PNP_planToExec");
+	string p = memProxy.call<string>("getData",plantoexec_key);
 	// cout << "     almem read: " << p << endl;
 	if (p!="") {
 		planToExec = p;
-		memProxy.call<void>("insertData","PNP_planToExec","");
+		memProxy.call<void>("insertData",plantoexec_key,"");
 	}
 
 	return true;  // node must still run
@@ -215,16 +226,6 @@ int main(int argc, char** argv)
 
     string connection_url = "tcp://"+ip+":"+port;
 
-#if 0
-	session = qi::makeSession();
-	session->connect(connection_url);
-#else
-//    string argv0 = "--qi-url=" + connection_url;
-
-//    int argc=0;
-//    char **argv = NULL;
-//    strcpy(argv[0],argv0.c_str());
-
 
     qi::ApplicationSession app(argc, argv, 0, connection_url);
 
@@ -235,16 +236,14 @@ int main(int argc, char** argv)
 
     session = app.session();
 
-    cout << "Session ptr = " << session << endl;
-
-#endif
+    // cout << "Session ptr = " << session << endl;
 
 
 	memProxy = session->service("ALMemory");
 
-    memProxy.call<void>("declareEvent","PNP/CurrentPlan");
-	memProxy.call<void>("insertData","PNP_planToExec","");
-	memProxy.call<void>("insertData","PNP_naoqi_run","true");
+    memProxy.call<void>("declareEvent",currentplan_key);
+	memProxy.call<void>("insertData",plantoexec_key,"");
+	memProxy.call<void>("insertData",pnpnaoqirun_key,"true");
 
 	PnpExecuter<PnpPlan> *executor = NULL;
 
@@ -266,7 +265,7 @@ int main(int argc, char** argv)
             else
                 planName = planToExec;
 		  	planToExec = "";
-            memProxy.call<void>("raiseEvent","PNP/CurrentPlan",planName);
+            memProxy.call<void>("raiseEvent",currentplan_key,planName);
 		}			
 
 
@@ -352,7 +351,7 @@ int main(int argc, char** argv)
 							str_activePlaces = "init;";
 
 						// cout << "-- active places: " << str_activePlaces << endl;
-                        memProxy.call<void>("insertData",aplkey, str_activePlaces);
+                        memProxy.call<void>("insertData",activeplaces_key, str_activePlaces);
 
 						executor->execMainPlanStep();
 
@@ -365,7 +364,7 @@ int main(int argc, char** argv)
 				        cout << "GOAL NODE REACHED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "goal";
-				        memProxy.call<void>("insertData",aplkey, activePlaces);
+				        memProxy.call<void>("insertData",activeplaces_key, activePlaces);
 				        if (!autorestart)
 				          planToExec="stop";
 				    }
@@ -373,7 +372,7 @@ int main(int argc, char** argv)
 				        cout << "FAIL NODE REACHED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "fail";
-				        memProxy.call<void>("insertData",aplkey, activePlaces);
+				        memProxy.call<void>("insertData",activeplaces_key, activePlaces);
 				        if (!autorestart)
 				          planToExec="stop";
 				    }
@@ -381,7 +380,7 @@ int main(int argc, char** argv)
 				        cout << "PLAN STOPPED OR CHANGED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "abort";
-				        memProxy.call<void>("insertData",aplkey, activePlaces);
+				        memProxy.call<void>("insertData",activeplaces_key, activePlaces);
 				    }
 
 				} // if executor getMainPlanName ...
@@ -397,7 +396,7 @@ int main(int argc, char** argv)
 	delete conditionChecker;
 	delete executor;
 
-    memProxy.call<void>("insertData","PNP_naoqi_run","false");
+    memProxy.call<void>("insertData",pnpnaoqirun_key,"false");
 	cout << "End." << endl;
 
 	return 0;

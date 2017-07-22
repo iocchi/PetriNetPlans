@@ -271,7 +271,7 @@ public:
         return n;
     }
 
-    void addGotoPattern(Place *pi, string next);
+    Place* addGotoPattern(Place *pi, string next);
 
     vector<Place*> addSensingAction(string action, Place *place, vector<string> outcomes) {
         addActionToStacks(action,place);
