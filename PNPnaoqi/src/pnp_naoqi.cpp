@@ -187,6 +187,8 @@ bool Conds::evaluateAtomicExternalCondition(const string& atom)
 
 string planToExec = "", currentPlanName="stop";
 
+string aplkey = "PNP/ActivePlaces";
+
 
 bool naoqi_ok() {
 	string p = memProxy.call<string>("getData","PNP_planToExec");
@@ -350,7 +352,7 @@ int main(int argc, char** argv)
 							str_activePlaces = "init;";
 
 						// cout << "-- active places: " << str_activePlaces << endl;
-                        memProxy.call<void>("insertData","PNP_active_places", str_activePlaces);
+                        memProxy.call<void>("insertData",aplkey, str_activePlaces);
 
 						executor->execMainPlanStep();
 
@@ -363,7 +365,7 @@ int main(int argc, char** argv)
 				        cout << "GOAL NODE REACHED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "goal";
-				        memProxy.call<void>("insertData","PNP_active_places", activePlaces);
+				        memProxy.call<void>("insertData",aplkey, activePlaces);
 				        if (!autorestart)
 				          planToExec="stop";
 				    }
@@ -371,7 +373,7 @@ int main(int argc, char** argv)
 				        cout << "FAIL NODE REACHED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "fail";
-				        memProxy.call<void>("insertData","PNP_active_places", activePlaces);
+				        memProxy.call<void>("insertData",aplkey, activePlaces);
 				        if (!autorestart)
 				          planToExec="stop";
 				    }
@@ -379,7 +381,7 @@ int main(int argc, char** argv)
 				        cout << "PLAN STOPPED OR CHANGED!!!" << endl;
 				        string activePlaces;
 				        activePlaces = "abort";
-				        memProxy.call<void>("insertData","PNP_active_places", activePlaces);
+				        memProxy.call<void>("insertData",aplkey, activePlaces);
 				    }
 
 				} // if executor getMainPlanName ...
