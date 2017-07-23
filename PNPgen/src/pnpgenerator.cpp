@@ -1290,7 +1290,15 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    else if (next.substr(0,5)=="LABEL") {
       if (LABELS[next]==NULL) {
           cout << "Adding label " << next << endl;
-          pi->setName(next);   LABELS[next]=pi;  
+          if (pi->getName().substr(0,5)=="LABEL") { // if this place is a label, add a new one
+            Place *newpi = pnp.addPlace(next);
+            pnp.connect(pi,newpi);
+            LABELS[next]=newpi;
+          }
+          else { // just replace the name of the place
+            pi->setName(next);   
+            LABELS[next]=pi;  
+          }
           cout << " -- Rest of the plan: " << plan << endl;
       }
       else {
