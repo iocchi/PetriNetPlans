@@ -30,8 +30,8 @@ def phraseToSay(memory_service,params):
         return tosay
     elif (params=='ok'):
         return "OK, dann mach ich das."
-    elif (params=='offerTour')
-        return "Ich könnte euch etwas über das Mittelalter in Bielefeld erzählen. Habt ihr lust dazu?"
+    elif (params=='offerTour'):
+        return "Ich koennte euch etwas ueber das Mittelalter in Bielefeld erzaehlen. Habt ihr lust dazu?"
     elif (params=='personnotfound'):
         return "Wo seid ihr denn?"
     elif (params=='goodbye'):
