@@ -15,7 +15,7 @@ def currentNode(params):
 def closestNode(params):
     node = str(params[0])
 
-    topic = "/current_node"
+    topic = "/closest_node"
 
     message = rospy.wait_for_message(topic, String, timeout=10)
 
