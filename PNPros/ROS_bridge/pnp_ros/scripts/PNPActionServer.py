@@ -117,7 +117,7 @@ def handle_PNPConditionEval(req):
     cond_elems = req.cond.split("_")
     cond = cond_elems[0]
     params = cond_elems[1:]
-    rospy.loginfo('Eval condition: ' + cond)
+    rospy.loginfo('Eval condition: ' + cond + ' ' + ' '.join(params))
 
     # find implementation of the condition
     cond_func = find_condition_implementation(cond)
