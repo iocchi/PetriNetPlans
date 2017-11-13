@@ -1,7 +1,5 @@
 goto_WayPoint1;
-say_I_am_on_waypoint1;
-<currentNode_WayPoint1? goto_WayPoint5 : (not hello)? goto_WayPoint3 >
+<currentNode_WayPoint1? say_I_am_on_waypoint1 : (not currentNode_WayPoint1)? say_I_have_not_reached_WayPoint1 >
 goto_WayPoint2;
-say_I_am_on_waypoint2;
 goto_WayPoint3;
 goto_WayPoint4;

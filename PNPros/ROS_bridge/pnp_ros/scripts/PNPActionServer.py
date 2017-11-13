@@ -114,17 +114,17 @@ def find_condition_implementation(cond_name):
 
 ## Callback which take the requests for checking conditions
 def handle_PNPConditionEval(req):
-    global condvalue
     cond_elems = req.cond.split("_")
     cond = cond_elems[0]
     params = cond_elems[1:]
-    print 'Eval condition: ', cond
+    rospy.loginfo('Eval condition: ' + cond)
 
     # find implementation of the condition
     cond_func = find_condition_implementation(cond)
 
     if cond_func:
         cond_value = cond_func(params)
+        rospy.loginfo('Condition ' + cond + ' value: ' + str(cond_value))
         return PNPConditionResponse(cond_value)
     else:
         # return False if not implemented..
