@@ -10,10 +10,10 @@ import rospy
 import actionlib
 sys.path.append(os.path.join(os.path.dirname(__file__), '../actions'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../conditions'))
-import Conditions
 
 from importlib import import_module
 from AbstractAction import AbstractAction
+from ConditionManager import ConditionManager
 from pnp_msgs.msg import PNPActionFeedback, PNPResult, PNPAction
 from pnp_msgs.srv import PNPCondition, PNPConditionResponse
 
@@ -21,20 +21,20 @@ roslib.load_manifest('pnp_ros')
 PKG = 'pnp_ros'
 NODE = 'pnpactionserver'
 action_instances = {}
+conditionManager = None
 
 
 ## find the action implementation
 def find_action_implementation(action_name):
     try:
         action_class = getattr(import_module(action_name), action_name)
+    except (ImportError, AttributeError):
+        rospy.logwarn("action " + action_name + " not implemented")
+    else:
         if issubclass(action_class, AbstractAction):
             return action_class
         else:
             rospy.logwarn("class " + action_class + " must inherit from AbstractAction")
-    except (ImportError, AttributeError):
-        rospy.logwarn("action " + action_name + " not implemented")
-
-
 
 def startAction(goalhandler):
     goal = goalhandler.get_goal()
@@ -104,35 +104,24 @@ class PNPActionServer(object):
             #  print '### End ',goal.name
             cancelAction(goalhandler)
 
-def find_condition_implementation(cond_name):
-    try:
-        cond_func = getattr(Conditions, cond_name)
-        return cond_func
-    except AttributeError:
-        rospy.logwarn("Condition " + cond_name + " not implemented")
-        return None
-
-## Callback which take the requests for checking conditions
 def handle_PNPConditionEval(req):
     cond_elems = req.cond.split("_")
     cond = cond_elems[0]
     params = cond_elems[1:]
+
     rospy.loginfo('Eval condition: ' + cond + ' ' + ' '.join(params))
 
-    # find implementation of the condition
-    cond_func = find_condition_implementation(cond)
+    # evaluate through the condition manager
+    cond_value = conditionManager.evaluate(cond, params)
 
-    if cond_func:
-        cond_value = cond_func(params)
-        rospy.loginfo('Condition ' + cond + ' value: ' + str(cond_value))
-        return PNPConditionResponse(cond_value)
-    else:
-        # return False if not implemented..
-        return PNPConditionResponse(0)
+    rospy.loginfo('Condition ' + cond + ' value: ' + str(cond_value))
+    return PNPConditionResponse(cond_value)
 
 if __name__ == '__main__':
     rospy.init_node(NODE)
     rospy.set_param('robot_name', 'dummy')
+
+    conditionManager = ConditionManager()
 
     PNPActionServer("PNP")
     rospy.Service('PNPConditionEval',
