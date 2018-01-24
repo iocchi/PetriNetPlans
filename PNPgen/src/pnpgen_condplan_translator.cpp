@@ -173,7 +173,7 @@ int main(int argc, char** argv) {
 
   ifstream f(path.c_str());
   if(!f.good()){ 
-    cout << "PNPgen_Translator: file doest not exist!" << endl;
+    cout << "PNPgen_Translator: file " << path << " does not exist!" << endl;
     f.close();
     return 0;
   }
