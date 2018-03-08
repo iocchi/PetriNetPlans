@@ -1,4 +1,4 @@
-#include "digraph_transl.h"
+#include "pnp_translator/digraph_transl.h"
 #include <boost/algorithm/string.hpp> 
 
   DigraphTransl::DigraphTransl(string& path_to_file, string& pnml_out)

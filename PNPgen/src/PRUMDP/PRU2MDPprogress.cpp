@@ -1,12 +1,12 @@
 // Compile a PRU+ into a MDP
 
-#include "PRU2MDPprogress.h"
+#include "PRUMDP/PRU2MDPprogress.h"
 #include <boost/algorithm/string.hpp>
 
-#include "PRU2MDP.h"
+#include "PRUMDP/PRU2MDP.h"
 
 #undef PRINT
-#include "DEBUGprint.h"
+#include "PRUMDP/DEBUGprint.h"
 
 void PRU2MDPprogress::registerActions(map<string, PRU2MDPactionDescriptor> &allActions) const {
   string prefix = lay->name + ".";

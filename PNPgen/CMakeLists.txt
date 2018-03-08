@@ -16,11 +16,9 @@ find_package(Libpcrecpp REQUIRED)
 include_directories(${PCRE_INCLUDE_DIRS})
 
 
-#include directory with the headers of the source files
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
-
+#include directories with the headers of the source files
 include_directories(${PROJECT_SOURCE_DIR}/src/PRUMDP)
-include_directories(${PROJECT_SOURCE_DIR}/src/pnp_translator)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
@@ -43,6 +41,8 @@ target_link_libraries(pnpgen_condplan pnpgen boost_regex)
 target_link_libraries(pnpgen_translator pnpgen boost_regex)
 target_link_libraries(pnpgen_pru pnpgen prumdp boost_regex ${LibXML++_LIBRARIES} ${PCRE_LIBRARIES})
 
+
+install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
 
 install(TARGETS pnpgen prumdp pnpgen_linear pnpgen_policy pnpgen_pru pnpgen_translator
   ARCHIVE DESTINATION lib

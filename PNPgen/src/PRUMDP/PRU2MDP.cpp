@@ -1,11 +1,11 @@
 // Compiles a PRU+ into a MDP
 
-#include "PRU2MDP.h"
+#include "PRUMDP/PRU2MDP.h"
 #include <boost/algorithm/string.hpp>
 #include <pcrecpp.h>
 
 #undef PRINT
-#include "DEBUGprint.h"
+#include "PRUMDP/DEBUGprint.h"
 
 void PRU2MDP::buildProgress(const PRUlayer *layer,
 			    vector<string>::const_iterator itSV, 

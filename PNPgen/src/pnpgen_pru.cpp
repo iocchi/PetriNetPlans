@@ -8,7 +8,7 @@
 
 #include "policy.h"
 #include "pnpgenerator.h"
-#include "PRU2MDP.h"
+#include "PRUMDP/PRU2MDP.h"
 
 
 using namespace std;

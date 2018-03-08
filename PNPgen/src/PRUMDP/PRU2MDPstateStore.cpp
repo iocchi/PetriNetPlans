@@ -1,6 +1,6 @@
 // Stores states so that equivalent states are not duplicated
 // a state is stored as <layer>.<latestAction>.<latestOutcome>$<var1>=<value1>$<var2>=<value2>$...
-#include "PRU2MDPstateStore.h"
+#include "PRUMDP/PRU2MDPstateStore.h"
 
 MDPstate *PRU2MDPstateStore::getState(const string &layerName, const MDPaction *act, const PRUoutcome *out, const PRUstate &res) {
   string name = layerName;

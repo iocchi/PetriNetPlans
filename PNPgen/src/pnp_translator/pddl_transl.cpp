@@ -1,4 +1,4 @@
-#include "pddl_transl.h"
+#include "pnp_translator/pddl_transl.h"
 
   PDDLTransl::PDDLTransl(string &path_to_file){
     this->set_file(path_to_file);

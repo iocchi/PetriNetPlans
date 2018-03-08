@@ -1,11 +1,11 @@
 // Represents a MDP for solving PRUs
 
-#include "MDP.h"
+#include "PRUMDP/MDP.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
 #undef PRINT
-#include "DEBUGprint.h"
+#include "PRUMDP/DEBUGprint.h"
 
 std::string MDPaction::NIL("NIL");
 

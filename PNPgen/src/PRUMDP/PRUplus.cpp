@@ -1,5 +1,5 @@
 // Stores a PRU+ in memory
-#include "PRUplus.h"
+#include "PRUMDP/PRUplus.h"
 
 #include <libxml++/libxml++.h>
 #include <libxml++/parsers/textreader.h>
@@ -9,10 +9,10 @@
 #include <locale.h>
 #include <boost/algorithm/string.hpp>
 
-#include "MDP.h"
+#include "PRUMDP/MDP.h"
 
 #undef PRINT
-#include "DEBUGprint.h"
+#include "PRUMDP/DEBUGprint.h"
 
 map<string, domain_type> PRUplus::actionsDomain;
 PRUfunction PRUplus::domainFunction;

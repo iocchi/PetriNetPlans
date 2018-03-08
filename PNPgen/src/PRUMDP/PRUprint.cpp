@@ -1,5 +1,5 @@
 // Implements all the printing of PRUs
-#include "PRUplus.h"
+#include "PRUMDP/PRUplus.h"
 
 std::ostream& operator<<(std::ostream& os, const PRUoutcome& option) {
   os << option.name << " (" << (option.probability*100) <<"%): "

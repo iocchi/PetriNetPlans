@@ -1,4 +1,4 @@
-#include "kpddl_transl.h"
+#include "pnp_translator/kpddl_transl.h"
 
 
   KPDDLTransl::KPDDLTransl(string &path_to_file){

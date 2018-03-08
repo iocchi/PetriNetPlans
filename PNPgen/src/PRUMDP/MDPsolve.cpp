@@ -1,6 +1,6 @@
 // The part for solving the MDP
 
-#include "MDP.h"
+#include "PRUMDP/MDP.h"
 #include <cmath>
 
 void MDP::initVI() {
