@@ -60,8 +60,8 @@ protected:
   void set_pnml(string& pn){ this->pnml = pn;}
 
 public:
-  CondPlan_Translator(){};
-  ConditionalPlan* read_file();
+  CondPlan_Translator() { }
+  ConditionalPlan* read_file() { cerr << "ConditionalPlan::read_file() NOT IMPLEMENTED!!!" << endl; }
   // void write_plan(string out = "test/translator_out.txt");
 
   void write_plan(string file_to_write = "test/translator_out.txt"){

@@ -133,7 +133,8 @@ int main(int argc, char** argv)
 
     robot_name = "NONAME";
 	if (!n.getParam("robot_name",robot_name))
-		n.getParam("tf_prefix", robot_name);
+	    if (!n.getParam("robotname",robot_name))
+		    n.getParam("tf_prefix", robot_name);
 
 	
     ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLANTOEXEC, 1, planToExecuteCallback);

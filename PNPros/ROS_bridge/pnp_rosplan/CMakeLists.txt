@@ -118,8 +118,8 @@ include_directories(include)
 include_directories(
   ${pnp_ros_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
-  $ENV{PNP_INCLUDE}/../../PNPgen/src
-  $ENV{PNP_INCLUDE}/../../PNPgen/src/pnp_translator
+#  $ENV{PNP_INCLUDE}/../../PNPgen/src
+#  $ENV{PNP_INCLUDE}/../../PNPgen/src/pnp_translator
 )
 #link_directories($ENV{PNPGEN_LIB})
 
