@@ -1,7 +1,7 @@
 <launch>
     
     <arg name="robotname" default="robot_0" />
-    <arg name="planname" default="sensing" />
+    <arg name="planname" default="stop" />
     <arg name="use_gui" default="false" />
     
     <group ns="$(arg robotname)">
