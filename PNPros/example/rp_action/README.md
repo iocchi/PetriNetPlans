@@ -18,7 +18,7 @@ cd ~src/PetriNetPlans/PNPros/example/rp_action/scripts
 
 Plans available in ```ros_pnp\plans``` folder: ```sequence_loop```, ```sensing```, ```interrupt```, ```fork_join```.
 
-Note: the ```obstacle``` condition can be activated by placing (drag with mouse) the red box in the simulated environment in front of the robot.
+Notes: 1) the ```obstacle``` condition can be activated by placing (drag with mouse) the red box in the simulated environment in front of the robot; 2) the ```wave``` action outputs some text on the screen.
 
 
 ### Stop the current plan
