@@ -413,7 +413,7 @@ bool PNPActionServer::evalCondition(string condition) {
 void PNPActionServer::active_places_callback(const std_msgs::String::ConstPtr& msg)
 {
     ConditionCache.clear();
-    if (msg->data.find("init")!=string::npos) {
+    if (msg->data=="init") {  // LI: (msg->data.find("init;")!=string::npos) 
         clear_global_PNPROS_variables();
         ROS_INFO("Init place -> clear PNP global variables.");
     }
