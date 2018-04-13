@@ -39,6 +39,8 @@ PNPActionServer::PNPActionServer() : as(nh, "PNP", false)
     register_action("waitfor",&PNPActionServer::waitfor,this);
     register_action("restartcurrentplan",&PNPActionServer::restartcurrentplan,this);
     register_action("stopcurrentplan",&PNPActionServer::stopcurrentplan,this);
+    register_action("unknownvar",&PNPActionServer::unknownvar,this);
+    register_action("setvar",&PNPActionServer::setvar,this);
 }
 
 PNPActionServer::~PNPActionServer() { }
@@ -141,32 +143,89 @@ void PNPActionServer::CancelAction(string robotname, string action_name, string 
     starttime[goal.robotname+goal.name]=-1;
 }
 
+
+string PNPActionServer::set_variables_from_events(string cond) {
+
+    vector<std::string> splitted_condition = split_condition(cond);
+    vector<std::string> variable_values = get_variables_values(splitted_condition);
+
+    cond = variable_values[0];
+    for (unsigned int i = 1; i < variable_values.size(); i++) {
+      cond += "_" + variable_values[i];
+    }
+
+    return cond;
+}
+
+
+
 // Evaluate an atomic condition
 int PNPActionServer::doEvalCondition(string cond) {
 
-    int r0=-1,r1,r2,r3;
+    int result=-1;
 
-    // This is necessary because multiple calls to the same condition can happen
-    if (ConditionCache.find(cond) != ConditionCache.end()) {
-        r0 = ConditionCache[cond];
+    //cout << "-- EvalCondition (before var. replace) " << cond << " ... " << endl;
+    cond = replace_vars_with_values(cond);
+    cond = set_variables_from_events(cond);
+    //cout << "-- EvalCondition (after var. replace) " << cond << " ... " << endl;
+
+    // check special condition timeout_<actionname>_<value>
+    size_t pt = cond.find("timeout");
+    if (pt!=string::npos) {
+        size_t pt2 = cond.find_last_of("_");
+        string act = goal.robotname+cond.substr(pt+8,pt2-(pt+8));
+        double val_timeout = atof(cond.substr(pt2+1).c_str());
+        // cout << "Evaluating timeout condition for action [" << act << "]" << endl;
+        double d=-1;
+        if (starttime.find(act)!=starttime.end())
+            d = starttime[act];
+        if (d<0) {
+            ROS_WARN_STREAM("Timeout condition:: action " << act << " not running!!!");
+        }
+        else {
+            // cout << "           start time = ... " << starttime[act] << " now = " << ros::Time::now().toSec() << endl;
+            double dt = ros::Time::now().toSec() - starttime[act];
+            if (dt>val_timeout) {
+                result=1;
+                ROS_INFO_STREAM("Timeout condition:: " << cond << " TRUE ");
+            }
+        }
+    }
+    else {
+        vector<string> toks;
+        boost::split(toks,cond,boost::is_any_of("_"));
+        if (toks[0]=="equal" && toks.size()==3) { 
+            result = toks[1]==toks[2];
+            ROS_INFO("evalCondition: equal: %s %s -> %d", toks[1].c_str(),toks[2].c_str(),result);
+        }
     }
 
-    //cout << "-- EvalCondition " << cond << " ... " << endl;
+    
+    if (result<0) {
 
-    r1 = evalCondition(cond); // overwritten by subclass
-    r2 = check_for_event(cond);
-    r3 = evalConditionBuffer(cond); // check condition param buffer
+        int r0=-1,r1,r2,r3;
 
-    //cout << "-- EvalCondition " << cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
+        // This is necessary because multiple calls to the same condition can happen
+        if (ConditionCache.find(cond) != ConditionCache.end()) {
+            r0 = ConditionCache[cond];
+        }
 
-    int result=-1;
-    if (r0!=-1) result=r0; // cached value has priority
-    else if (r1!=-1) result=r1;
-    else if (r2!=-1) result=r2;
-    else result=r3;
+        r1 = evalCondition(cond); // overwritten by subclass
+        r2 = check_for_event(cond);
+        r3 = evalConditionBuffer(cond); // check condition param buffer
 
-    //TODO implement unknown value of a condition in PNP
-    if (result==-1) result=0;
+        //cout << "-- EvalCondition " << cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
+
+        if (r0!=-1) result=r0; // cached value has priority
+        else if (r1!=-1) result=r1;
+        else if (r2!=-1) result=r2;
+        else result=r3;
+
+        //TODO implement unknown value of a condition in PNP
+        if (result==-1) result=0;
+
+        ConditionCache[cond] = result;
+    }
 
     //cout << "-- EvalConditionWrapper RESULT = " << result << endl;
     return result;
@@ -191,42 +250,14 @@ int PNPActionServer::doEvalConditionLiteral(string cond) {
     return r;
 }
 
+
+// ENTRY POINT FOR CONDITION EVALUATION
 bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,
          pnp_msgs::PNPCondition::Response &res)  {
 
-
     // cout << "-- EvalConditionWrapper started with cond: " << req.cond << endl;
 
-    int result = -1; // partial result
-
-    // check special condition timeout_<actionname>_<value>
-    size_t pt = req.cond.find("timeout");
-    if (pt!=string::npos) {
-        size_t pt2 = req.cond.find_last_of("_");
-        string act = goal.robotname+req.cond.substr(pt+8,pt2-(pt+8));
-        double val_timeout = atof(req.cond.substr(pt2+1).c_str());
-        // cout << "Evaluating timeout condition for action [" << act << "]" << endl;
-        double d=-1;
-        if (starttime.find(act)!=starttime.end())
-            d = starttime[act];
-        if (d<0) {
-            ROS_WARN_STREAM("Timeout condition:: action " << act << " not running!!!");
-        }
-        else {
-            // cout << "           start time = ... " << starttime[act] << " now = " << ros::Time::now().toSec() << endl;
-            double dt = ros::Time::now().toSec() - starttime[act];
-            if (dt>val_timeout) {
-                result=1;
-                ROS_INFO_STREAM("Timeout condition:: " << req.cond << " TRUE ");
-            }
-        }
-    }
-    else {
-        result = doEvalCondition(req.cond);
-    }
-	
-    ConditionCache[req.cond] = result;
-    res.truth_value = result;
+    res.truth_value = doEvalCondition(req.cond);
 
     // cout << "-- EvalConditionWrapper ended with result: " << result << endl;
 
@@ -323,6 +354,8 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
       found=true;
       if (action_params.find('@') == std::string::npos)
         f(robotname,action_params,run);
+      else if ((action_name == "unknownvar") || (action_name == "setvar"))
+        f(robotname,action_params,run);
       else
         f(robotname, replace_vars_with_values(action_params),run);
     }
@@ -334,6 +367,8 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
     if (f!=NULL)
     {
       if (action_params.find('@') == std::string::npos)
+        f(action_params,run);
+      else if ((action_name == "unknownvar") || (action_name == "setvar"))
         f(action_params,run);
       else
         f(replace_vars_with_values(action_params),run);
@@ -453,7 +488,9 @@ int PNPActionServer::check_for_event(string cond){
 
 
   int result=-1;
-  
+
+#if 0  
+   -- MOVED IN PNPActionServer::doEvalCondition(string cond) 
   //checking if _@X_@Y_..._@Z is contained in the condition. If so, appropriately instantiating the variables in global_PNPROS_variables
   if (well_formatted_with_variables(cond))
   {    
@@ -470,6 +507,7 @@ int PNPActionServer::check_for_event(string cond){
       }
     }
   }
+#endif
 
   time_t current_time;
   time(&current_time);
@@ -580,47 +618,114 @@ bool PNPActionServer::well_formatted_with_variables(std::string cond){
 }
 
 vector<std::string> PNPActionServer::split_condition(string cond){
+
+ // cerr << "*** condition to split: " << cond << endl;
+#if 1
+  vector<std::string> splitted_condition;
+  boost::split(splitted_condition, cond, boost::is_any_of("_"));
+#else
   vector<std::string> splitted_condition;
   boost::split(splitted_condition, cond, boost::is_any_of("@"));
   for (unsigned int i =1; i < splitted_condition.size()-1; ++i)
     splitted_condition[i].erase(splitted_condition[i].length()-1,1);
-  
+#endif
+  /*  cerr << "*** splitted condition: " << endl;
+    for (unsigned int i=0; i < splitted_condition.size(); ++i)
+        cerr << "     " << splitted_condition[i] << endl;
+  */
   return splitted_condition;
 }
 
-vector<std::string> PNPActionServer::get_variables_values(vector<std::string> splitted_condition){  
-  vector<std::string> variables_values;
-  
-  time_t current_time;
-  time(&current_time);
-  
-  eventBuffer_mutex.lock();
-  for (vector<Event>::reverse_iterator rit = eventBuffer.rbegin(); rit!= eventBuffer.rend(); ++rit)
-  {     
-    //checking that the event is not too old
-    if ((current_time - rit->time) > TIME_THRESHOLD)
-      break;
-    else if (rit->eventName.substr(0, splitted_condition[0].length()) == splitted_condition[0])
-    {
-      std::string truncated_event = rit->eventName.substr(splitted_condition[0].length(), rit->eventName.length()-splitted_condition[0].length());
-      
-      if (truncated_event.find("_@") == std::string::npos)
-        boost::split(variables_values, truncated_event, boost::is_any_of("_"));
-      
-      /* What is the semantic of this ??? if the number of found values is the same as the prefix-length consume and return ?
-      if(variables_values.size() + 1 == splitted_condition[0].size())
-      {
-        rit->eventName = string("***") + rit->eventName;
-	//std::cout << "Consumed4 event " << rit->eventName << std::endl;
-        break;
-      }
-      */
+vector<std::string> PNPActionServer::get_variables_values(vector<std::string> splitted_condition) {
+    vector<std::string> variables_values;
+    variables_values.resize(splitted_condition.size());
+
+    bool bounded = true; // term is bounded: i.e., no variables
+    for (size_t i=0; i<splitted_condition.size(); i++) {
+        // cerr << "   - get_variables_values " << splitted_condition[i];
+        if (splitted_condition[i][0]=='@') // variable
+            variables_values[i] = get_variable_value(splitted_condition[i].substr(1), splitted_condition[i]);
+        else // term (not variable)
+            variables_values[i] = splitted_condition[i];
+        if (variables_values[i][0]=='@') bounded = false;
+        // cerr << " = " << variables_values[i] << endl;
     }
+
+
+  if (!bounded) { // search for events to set variables
+
+      time_t current_time;
+      time(&current_time);
+      
+      eventBuffer_mutex.lock();
+      for (vector<Event>::reverse_iterator rit = eventBuffer.rbegin(); rit!= eventBuffer.rend(); ++rit)
+      {     
+        //checking that the event is not too old
+        if ((current_time - rit->time) > TIME_THRESHOLD)
+          break;
+        else {
+
+            // cerr << "   === event " << rit->eventName << endl;
+            vector<std::string> event_values;
+            boost::split(event_values, rit->eventName, boost::is_any_of("_"));
+
+            if (event_values.size() == splitted_condition.size()) {
+
+              for (size_t i=0; i<splitted_condition.size(); i++) {
+
+#if 1
+                // cerr << "   +++ compare " << event_values[i] << " " << splitted_condition[i] << endl;
+
+                if (splitted_condition[i][0]=='@') { // variable to set
+
+                    string var = splitted_condition[i].substr(1);
+                    // cerr << "   +++ set var " << var << " = " << event_values[i] << endl;
+                    update_variable_with_value(var, event_values[i]);
+
+                }
+                else if (event_values[i] != splitted_condition[i]) {
+                    break;
+                }
+
+#else
+
+                if (rit->eventName.substr(0, splitted_condition[i].length()) == splitted_condition[i]) {
+                  std::string truncated_event = rit->eventName.substr(splitted_condition[i].length(), rit->eventName.length()-splitted_condition[0].length());
+
+                  cerr << "   - truncated event " << truncated_event << endl;
+              
+                  if (truncated_event.find("_@") == std::string::npos) {
+                    boost::split(variables_values, truncated_event, boost::is_any_of("_"));
+                    cerr << "   - truncated event " << variables_values[i] << endl;
+                  }
+                }
+
+          /* What is the semantic of this ??? if the number of found values is the same as the prefix-length consume and return ?
+          if(variables_values.size() + 1 == splitted_condition[0].size())
+          {
+            rit->eventName = string("***") + rit->eventName;
+	    //std::cout << "Consumed4 event " << rit->eventName << std::endl;
+            break;
+          }
+          */
+#endif
+            } // for condition split
+          } // if
+        } // else
+      } // for event
+      eventBuffer_mutex.unlock();
   }
-  eventBuffer_mutex.unlock();
 
   return variables_values;
 }
+
+// reset given variable
+void PNPActionServer::reset_variable(string var_name) {
+    map<string,string>::iterator i = global_PNPROS_variables.find(var_name);
+    if ( i != global_PNPROS_variables.end() )
+      global_PNPROS_variables.erase(i);
+}
+
 
 string PNPActionServer::get_variable_value(string var_name, string default_value){
   
@@ -643,7 +748,7 @@ void PNPActionServer::update_variable_with_value(string var, string value){
   if (it != global_PNPROS_variables.end())
   {
     it->second = value;
-    cerr << "updated " << var << " to value " << value << endl;
+    cerr << "Updated var " << var << " to value " << value << endl;
   }
   else{
     //serve per inizializzare la mappa che altrimenti va in seg fault al primo insert
@@ -751,7 +856,7 @@ void PNPActionServer::wait(string params, bool *run)
     while (*run && count-->0)
         ros::Duration(sleepunit).sleep();
 
-    cout << "### Wait " << params << ((*run)?" Completed":" Aborted") << endl;
+    ROS_INFO_STREAM("### Wait " << params << ((*run)?" Completed":" Aborted"));
 }
 
 void PNPActionServer::waitfor(string params, bool *run)
@@ -761,7 +866,7 @@ void PNPActionServer::waitfor(string params, bool *run)
     while (*run && (doEvalConditionLiteral(params)!=1))
         ros::Duration(0.2).sleep();
 
-    cout << "### WaitFor " << params << ((*run)?" Completed":" Aborted") << endl;
+    ROS_INFO_STREAM("### WaitFor " << params << ((*run)?" Completed":" Aborted"));
 }
 
 
@@ -775,7 +880,7 @@ void PNPActionServer::restartcurrentplan(string params, bool *run)
     s.data = planname;
     plantoexec_pub.publish(s); // restart the plan
 
-    cout << "### Restart " << params << ((*run)?" Completed":" Aborted") << endl;
+    ROS_INFO_STREAM("### Restart " << params << ((*run)?" Completed":" Aborted"));
 }
 
 void PNPActionServer::stopcurrentplan(string params, bool *run)
@@ -788,5 +893,43 @@ void PNPActionServer::stopcurrentplan(string params, bool *run)
     s.data = planname;
     plantoexec_pub.publish(s); // restart the plan
 
-    cout << "### Stop " << params << ((*run)?" Completed":" Aborted") << endl;
+    ROS_INFO_STREAM("### Stop " << params << ((*run)?" Completed":" Aborted"));
 }
+
+// set variables to unknown
+void PNPActionServer::unknownvar(string params, bool *run)
+{
+    ROS_INFO_STREAM("### Executing unknownvar " << params << " ... ");
+
+    vector<std::string> vp;
+    boost::split(vp, params, boost::is_any_of("_"));
+    for (size_t i=0; i<vp.size(); i++) {
+        if (vp[i][0]='@') {
+            string var = vp[i].substr(1);
+            cout << "    Reset variable " << var << endl;
+            reset_variable(var);
+        }
+    }
+
+    ROS_INFO_STREAM("### Unknownvar " << params << ((*run)?" Completed":" Aborted"));
+}
+
+// set variable to value
+void PNPActionServer::setvar(string params, bool *run)
+{
+    ROS_INFO_STREAM("### Executing setvar " << params << " ... ");
+
+    vector<std::string> vp;
+    boost::split(vp, params, boost::is_any_of("_"));
+    for (size_t i=0; i<vp.size()-1; i++) {
+        if (vp[i][0]='@') {
+            string var = vp[i].substr(1);
+            string value = vp[i+1];
+            cout << "    Set variable " << var << " = " << value << endl;
+            update_variable_with_value(var, value);
+        }
+    }
+
+    ROS_INFO_STREAM("### setvar " << params << ((*run)?" Completed":" Aborted"));
+}
+

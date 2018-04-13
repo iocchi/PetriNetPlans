@@ -354,13 +354,15 @@ int main(int argc, char** argv)
                         cout << "Using GUI execution monitoring\nWaiting for a client to connect on port 47996" << endl;
 
                     ConnectionObserver observer(planName, use_java_connection);
-                    PlanObserver* new_observer = &observer;
-
                     executor->setMainPlan(planName);
+
+                    PlanObserver* new_observer = &observer;
                     executor->setObserver(new_observer);
 
-                    if (executor->getMainPlanName()!="") {
-
+                    if (executor->getMainPlanName()=="") {
+                        planToExec="stop";
+                    }
+                    else {
                         cout << "Starting " << executor->getMainPlanName() << endl;
 
                         String activePlaces;

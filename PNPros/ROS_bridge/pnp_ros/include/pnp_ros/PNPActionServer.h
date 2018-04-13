@@ -210,9 +210,11 @@ protected:
          pnp_msgs::PNPSetVariableValue::Response &res);
     
     vector<string> split_condition(string);
-    vector<string> get_variables_values(vector<std::string> );
+    vector<string> get_variables_values(vector<std::string>);
+    void reset_variable(string var_name);
     string get_variable_value(string, string = "");
     string replace_vars_with_values(string);
+    string set_variables_from_events(string cond);
     bool well_formatted_with_variables(string);
     void update_variable_with_value(string, string);
     void internal_clear_buffer();
@@ -226,6 +228,8 @@ public:
     virtual void restartcurrentplan(string params, bool *run); // restart the current plan
     virtual void stopcurrentplan(string params, bool *run); // stop the current plan
     virtual void initGlobalVariables() { clear_global_PNPROS_variables(); }
+    virtual void unknownvar(string params, bool *run);  // set variables to unknown
+    virtual void setvar(string params, bool *run);  // set variables to unknown
 };
 
 #endif

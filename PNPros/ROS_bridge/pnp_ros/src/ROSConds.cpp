@@ -31,7 +31,7 @@ namespace pnpros
 
         int r=-1; bool result=false;
 
-        //ROS_INFO("Eval atomic conditio: %s",atom.c_str());
+        //ROS_INFO("Eval atomic condition: %s",atom.c_str());
         //cout <<  "    evaluateAtomicExternalCondition: " << atom << " begin ... " << endl;
 
         // This is necessary because multiple calls to the same condition can happen

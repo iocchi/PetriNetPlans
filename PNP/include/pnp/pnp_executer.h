@@ -109,10 +109,10 @@ public:
     *\brief sets observer of Planner
     *
     * */
-    inline void setObserver( PlanObserver *observer)
+    inline void setObserver(PlanObserver *observer)
     {
-
-        mainPlan->setObserver(observer);
+        if (mainPlan)
+            mainPlan->setObserver(observer);
     }
 
 
