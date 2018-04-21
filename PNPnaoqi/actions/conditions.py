@@ -40,8 +40,3 @@ def get_condition(memory_service, literal):
     return val
 	
 
-
-
-
-
-
