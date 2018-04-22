@@ -29,8 +29,8 @@ def action_cb(value):
             G_actionThreads[actionName] = threading.Thread(target = G_actionThread_exec[v[1]], args=(params,))
             G_actionThreads[actionName].mem_serv = G_memory_service
             G_actionThreads[actionName].session = G_session
-            G_memory_service.raiseEvent(cakey,actionName+"_"+params)
-            G_memory_service.raiseEvent("PNP_action_result_"+actionName,"running");
+            G_memory_service.raiseEvent(key_currentaction,actionName+"_"+params)
+            G_memory_service.raiseEvent("PNP_action_result_"+actionName,"run");
             G_actionThreads[actionName].start()
 
         else:
@@ -39,8 +39,8 @@ def action_cb(value):
         try:
             actionName = v[1]
             G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
-            G_memory_service.raiseEvent(cakey,"")
-            print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
+            G_memory_service.raiseEvent(key_currentaction,"")
+            # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
         except:
             print "ERROR: Action ",v[1]," not started !!!"
 

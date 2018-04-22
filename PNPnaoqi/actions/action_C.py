@@ -15,9 +15,11 @@ def actionThread_exec (params):
     t = threading.currentThread()
     memory_service = getattr(t, "mem_serv", None)
     print "Action "+actionName+" started with params "+params
+    if params=='':
+        params = '3' # default
     # action init
     dt = 0.25
-    count = int(3 / dt)
+    count = int(float(params) / dt)
     # action init
     while (getattr(t, "do_run", True) and count>0): 
         print "Action "+actionName+" "+params+" exec..."

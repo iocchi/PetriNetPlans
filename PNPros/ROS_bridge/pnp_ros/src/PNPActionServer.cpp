@@ -9,22 +9,24 @@
 //DO NOT DELETE IT. NEEDED FOR INITILIZING THE global_PNPROS_variables map that otherwhise gives a seg fault at the first insert.
 bool first_insert = true;    
 
+
 PNPActionServer::PNPActionServer() : as(nh, "PNP", false)
 {
 
-    cond_service = nh.advertiseService("PNPConditionEval",
+    cond_service = nh.advertiseService(SRV_PNPCONDITIONEVAL,
                 &PNPActionServer::EvalConditionWrapper, this);
-    getEvent_service = nh.advertiseService("PNPGetEventStartingWith",
+    getEvent_service = nh.advertiseService(SRV_PNPGETEVENT,
                 &PNPActionServer::GetEventStartingWith, this);
-    clearBuffer_service = nh.advertiseService("PNPClearBuffer",
+    clearBuffer_service = nh.advertiseService(SRV_PNPCLEARBUFFER,
                 &PNPActionServer::ClearBuffer, this);
-    getVarValue_service = nh.advertiseService("PNPGetVariableValue",
+    getVarValue_service = nh.advertiseService(SRV_PNPGETVAR,
                 &PNPActionServer::GetVariableValue, this);
-    setVarValue_service = nh.advertiseService("PNPSetVariableValue",
+    setVarValue_service = nh.advertiseService(SRV_PNPSETVAR,
                 &PNPActionServer::SetVariableValue, this);
     
     as.registerGoalCallback(boost::bind(&PNPActionServer::goalCallback, this, _1) );
     // as.registerCancelCallback(boost::bind(&PNPActionServer::cancelCallback, this, _1) );
+
     event_topic_sub = nh.subscribe(TOPIC_PNPCONDITION, 10,
                 &PNPActionServer::addEvent_callback, this);  
 
@@ -377,6 +379,8 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
       ROS_ERROR_STREAM("??? UNKNOWN Action " << action_name << " ??? ");
   }
 
+  actionEnd(robotname, action_name, action_params);
+
 }
 
 int PNPActionServer::evalCondition(string cond){
@@ -405,19 +409,28 @@ int PNPActionServer::evalConditionBuffer(string cond){
 
 void PNPActionServer::actionStart(const std::string & robot, const std::string & action, const std::string & params)
 {
-    // Default implementation does nothing.
   // Clear condition cache, since new event arrived...
   ConditionCache.clear();
+  // Set status parameter
+  stringstream ssbuf;
+  ssbuf << PNPACTIONSTATUS << action;
+  ros::param::set(ssbuf.str(),"run");
 }
 
 void PNPActionServer::actionEnd(const std::string & robot, const std::string & action, const std::string & params)
 {
-    // Default implementation does nothing.
+  // Set status parameter
+  stringstream ssbuf;
+  ssbuf << PNPACTIONSTATUS << action;
+  ros::param::set(ssbuf.str(),"success");
 }
 
 void PNPActionServer::actionInterrupt(const std::string & robot, const std::string & action, const std::string & params)
 {
-    // Default implementation does nothing.
+  // Set status parameter
+  stringstream ssbuf;
+  ssbuf << PNPACTIONSTATUS << action;
+  ros::param::set(ssbuf.str(),"interrupt");
 }
 
 #if 0

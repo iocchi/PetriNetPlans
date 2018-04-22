@@ -20,9 +20,18 @@
 #define TOPIC_PNPACTIONTERMINATION "pnp_action_termination"  // notifies action is terminated
 
 
+// Services
+
+#define SRV_PNPCONDITIONEVAL "PNPConditionEval"
+#define SRV_PNPGETEVENT      "PNPGetEventStartingWith"
+#define SRV_PNPCLEARBUFFER   "PNPClearBuffer"
+#define SRV_PNPGETVAR        "PNPGetVariableValue"
+#define SRV_PNPSETVAR        "PNPSetVariableValue"
+
+
 // Params
 #define PARAM_PNPCONDITIONBUFFER "PNPconditionsBuffer/" // PNP Conditions as param values
 
-
+#define PNPACTIONSTATUS "PNPActionStatus/" // PNP action status
 
 
