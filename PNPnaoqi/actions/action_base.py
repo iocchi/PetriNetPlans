@@ -29,8 +29,10 @@ def action_cb(value):
             G_actionThreads[actionName] = threading.Thread(target = G_actionThread_exec[v[1]], args=(params,))
             G_actionThreads[actionName].mem_serv = G_memory_service
             G_actionThreads[actionName].session = G_session
-            G_actionThreads[actionName].start()
             G_memory_service.raiseEvent(cakey,actionName+"_"+params)
+            G_memory_service.raiseEvent("PNP_action_result_"+actionName,"running");
+            G_actionThreads[actionName].start()
+
         else:
             print "ERROR: Action ",v[1]," not found !!!"
     elif (v[0]=='end' or v[0]=='stop' or v[0]=='interrupt'):
@@ -38,7 +40,7 @@ def action_cb(value):
             actionName = v[1]
             G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
             G_memory_service.raiseEvent(cakey,"")
-            # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
+            print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
         except:
             print "ERROR: Action ",v[1]," not started !!!"
 
@@ -82,7 +84,6 @@ def init(session, actionName, actionThread_exec):
 
     G_memory_service.declareEvent(key_actionresult+actionName);
     G_memory_service.declareEvent(key_currentaction);
-
 
     print "Naoqi Action server "+actionName+" running..."
 
