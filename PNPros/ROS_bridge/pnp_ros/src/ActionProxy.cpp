@@ -62,10 +62,11 @@ namespace pnpros
 	    end();
 	}
 	
+    // static function
     void ActionProxy::actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message)
 	{
 		ROS_INFO_STREAM("Deleting " << message->id);
-		activeActions.erase(message->id);
+		activeActions.erase(message->id); // activeActions is static
 	}
 	
     void ActionProxy::transitionCb(actionlib::ClientGoalHandle<pnp_msgs::PNPAction> gh)

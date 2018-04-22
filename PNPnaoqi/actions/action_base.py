@@ -8,7 +8,10 @@ import os
 G_actionThread_exec = {}  # action thread execution functions
 G_actionThreads = {}  # action threads functions
 
-cakey = "PNP/CurrentAction"
+key_actioncmd = "PNP/ActionCmd"
+key_currentaction = "PNP/CurrentAction"
+key_actionresult = "PNP/ActionResult/"
+
 
 acb = None # action callback
 
@@ -74,11 +77,11 @@ def init(session, actionName, actionThread_exec):
 
     #subscribe to PNP action event
     if (acb==None):
-        acb = G_memory_service.subscriber("PNP_action")
+        acb = G_memory_service.subscriber(key_actioncmd)
         acb.signal.connect(action_cb)
 
-    G_memory_service.declareEvent("PNP_action_result_"+actionName);
-    G_memory_service.declareEvent("PNP/CurrentAction");
+    G_memory_service.declareEvent(key_actionresult+actionName);
+    G_memory_service.declareEvent(key_currentaction);
 
 
     print "Naoqi Action server "+actionName+" running..."

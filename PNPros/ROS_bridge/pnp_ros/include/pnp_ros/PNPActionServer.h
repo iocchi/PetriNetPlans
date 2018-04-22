@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <actionlib/server/simple_action_server.h>
+#include <pnp_ros/names.h>
 #include <pnp_msgs/PNPAction.h>
 #include <pnp_msgs/PNPCondition.h>
 #include <pnp_msgs/PNPLastEvent.h>
@@ -14,11 +15,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 
-// Topics name
-#define TOPIC_PLANTOEXEC "planToExec"
-#define TOPIC_PNPACTIVEPLACES "pnp/currentActivePlaces"
-#define TOPIC_PNPCONDITION "PNPConditionEvent"
-#define PARAM_PNPCONDITIONBUFFER "PNPconditionsBuffer/"
+
 
 // Timing for event buffer
 #define TIME_THRESHOLD 2
@@ -41,9 +38,6 @@ struct Event
   std::string eventName;
   std::string parameter;
 };
-
-
-
 
 
 class PNPActionServer

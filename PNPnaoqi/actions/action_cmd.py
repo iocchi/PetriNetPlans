@@ -47,18 +47,15 @@ def init():
 
 
 def start_action(memory_service, actionName, params):
-	key = "PNP_action"
-	memory_service.raiseEvent(key,"start "+actionName+" "+params);
+	memory_service.raiseEvent(action_base.key_actioncmd,"start "+actionName+" "+params);
 
 
 def end_action(memory_service, actionName):
-	key = "PNP_action"
-	memory_service.raiseEvent(key,"end "+actionName);
+	memory_service.raiseEvent(action_base.key_actioncmd,"end "+actionName);
 
 
 def interrupt_action(memory_service, actionName):
-	key = "PNP_action"
-	memory_service.raiseEvent(key,"interrupt "+actionName);
+	memory_service.raiseEvent(action_base.key_actioncmd,"interrupt "+actionName);
 
 
 def main():
@@ -80,6 +77,4 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-
 

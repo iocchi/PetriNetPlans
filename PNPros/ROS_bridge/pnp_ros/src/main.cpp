@@ -1,20 +1,21 @@
-#include <pnp_ros/ActionProxy.h>
-#include <pnp_ros/ROSConds.h>
-#include <pnp_ros/ROSInst.h>
-#include <pnp_ros/LearnPNP/ROSLearnInstantiator.h>
-#include <pnp_ros/LearnPNP/ROSReward.h>
-#include <pnp_ros/LearnPNP/World/World.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <cstdlib>
+#include <fstream>
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <pnp/basic_plan/basic_plan.h>
 #include <pnp/learning_plan/learnPlan.h>
 #include <pnp/pnp_executer.h>
 #include <pnp_msgs/Action.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <cstdlib>
-#include <fstream>
+#include <pnp_ros/ActionProxy.h>
+#include <pnp_ros/ROSConds.h>
+#include <pnp_ros/ROSInst.h>
+#include <pnp_ros/LearnPNP/ROSLearnInstantiator.h>
+#include <pnp_ros/LearnPNP/ROSReward.h>
+#include <pnp_ros/LearnPNP/World/World.h>
+#include <pnp_ros/names.h>
 
 #include <pnp/connection_observer.h>
 
@@ -24,11 +25,6 @@ using namespace pnpros;
 using namespace pnpros::LearnPNP;
 using std_msgs::String;
 
-#define TOPIC_PLANTOEXEC "planToExec"
-#define TOPIC_PNPACTION "pnp_action"
-#define TOPIC_PNPACTIONCMD "PNPActionCmd"
-#define TOPIC_PNPACTIONTERMINATION "pnp_action_termination"
-#define TOPIC_PNPACTIVEPLACES "pnp/currentActivePlaces"
 
 
 // Global variables
