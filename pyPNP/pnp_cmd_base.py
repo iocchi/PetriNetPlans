@@ -18,12 +18,12 @@ class tcol:
     UNDERLINE = '\033[4m'
 
 
-class ActionCmd_Base(object):
+class PNPCmd_Base(object):
 
     def __init__(self):
         self.execlevel = 0 # pretty print
 
-    def PNPaction_cmd(self, action, params, cmd):
+    def action_cmd(self, action, params, cmd):
         self.printindent()
         print("  %s %s -> %s" %(action,params,cmd))
         self.action_cmd(action,params,cmd)
@@ -59,7 +59,7 @@ class ActionCmd_Base(object):
         for i in range(self.execlevel):
             print '    ',
 
-    def execPNPaction(self, action, params, interrupt='', recovery=''):
+    def exec_action(self, action, params, interrupt='', recovery=''):
         self.printindent()
         print("%sExec: %s %s %s" %(tcol.OKGREEN,action,params,tcol.ENDC))
 
@@ -67,7 +67,7 @@ class ActionCmd_Base(object):
 
         while (run): # interrupt may restart this action
 
-            self.PNPaction_cmd(action, params, 'start')
+            self.action_cmd(action, params, 'start')
             time.sleep(0.1)
 
             # wait for action to terminate
@@ -93,9 +93,10 @@ class ActionCmd_Base(object):
                 if rec=='restart_action':
                     run = True
 
+
     # TO BE IMPLEMENTED BY SUBCLASSES
 
-        def action_cmd(self,action,params,cmd):
+        def action_cmd(self,action,params,cmd): # non-blocking
             pass
 
         def action_status(self, action):
@@ -104,21 +105,14 @@ class ActionCmd_Base(object):
         def get_condition(self, cond):
             return False
 
-class PNPPlanCmd_Base(object):
-
-    def __init__(self):
-        # TODO
-        pass
-
-    def PNPplan_cmd(self, planname, cmd): # non-blocking
-        # TODO
-        pass
+        def plan_cmd(self, planname, cmd): # non-blocking
+            if (cmd=='start'):
+                oscmd = 'cd %s; ./genplan.sh %s.plan %s.er' % (self.plan_folder, planname, planname)
+                print(oscmd)
+                os.system(oscmd)
 
 
-    def execPNP(self, planname):  # blocking
-        PNPplan_cmd(planname, 'start')
-        # wait for plan to terminate
-        # TODO
+
 
 
 

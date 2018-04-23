@@ -111,7 +111,7 @@ public:
     * */
     inline void setObserver(PlanObserver *observer)
     {
-        if (mainPlan)
+        if (mainPlan != NULL)
             mainPlan->setObserver(observer);
     }
 

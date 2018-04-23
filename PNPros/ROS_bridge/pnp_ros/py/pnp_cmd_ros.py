@@ -3,29 +3,31 @@
 
 # ROS action_cmd
 
-import threading
-import roslib
-import rospy
+import threading,os
+import roslib, rospy
 
-import pnp_msgs.msg
-import pnp_msgs.srv
+import pnp_msgs.msg, pnp_msgs.srv
 
 import std_msgs.msg
 
 # from PetriNetPlans/pyPNP
-import action_cmd_base
-from action_cmd_base import *
+import pnp_cmd_base
+from pnp_cmd_base import *
 
 
 roslib.load_manifest('pnp_ros')
 PKG = 'pnp_ros'
-NODE = 'pnpactioncmd'
+NODE = 'pnp_cmd'
 
 # ROS names (see pnp_ros/include/pnp_ros/names.h)
 
+TOPIC_PLANTOEXEC = "planToExec"
 TOPIC_PNPACTIONCMD = "PNPActionCmd"
 SRV_PNPCONDITIONEVAL = "PNPConditionEval"
-PNPACTIONSTATUS = "PNPActionStatus/"
+PARAM_PNPACTIONSTATUS = "PNPActionStatus/"
+PARAM_PNPCONDITIONBUFFER = "PNPconditionsBuffer/"
+
+PNPPLANFOLDER = "pnp/plan_folder"
 
 
 def get_robot_key(name):
@@ -34,13 +36,13 @@ def get_robot_key(name):
         key = "/"+rospy.get_param('robotname')+"/"+key
     return key
 
-class ActionCmd(ActionCmd_Base):
+
+class PNPCmd(PNPCmd_Base):
 
     def __init__(self):
-        ActionCmd_Base.__init__(self)
+        PNPCmd_Base.__init__(self)
         self.pub_actioncmd = None
-        
-
+        self.pub_plantoexec = None
 
     def init(self):
         parser = argparse.ArgumentParser()
@@ -68,10 +70,18 @@ class ActionCmd(ActionCmd_Base):
         print("Publisher %s" %key)
         self.rate.sleep()
 
+        key = get_robot_key(TOPIC_PLANTOEXEC)
+        self.pub_plantoexec = rospy.Publisher(key, std_msgs.msg.String, queue_size=10)
+        print("Publisher %s" %key)
+        self.rate.sleep()
+
         key = get_robot_key(SRV_PNPCONDITIONEVAL)
         print("Waiting for service %s ..." %key)
         rospy.wait_for_service(key)
         print("Service %s OK" %key)
+
+
+        self.plan_folder = rospy.get_param(get_robot_key(PNPPLANFOLDER))
 
         # wait for connections on action_cmd topic
         conn = self.pub_actioncmd.get_num_connections()
@@ -92,7 +102,7 @@ class ActionCmd(ActionCmd_Base):
         self.rate.sleep()
 
     def action_status(self, action):
-        key = get_robot_key(PNPACTIONSTATUS)+action
+        key = get_robot_key(PARAM_PNPACTIONSTATUS)+action
         try:
             r = rospy.get_param(key)
             #print('Action %s status %s' %(action,r))
@@ -110,12 +120,22 @@ class ActionCmd(ActionCmd_Base):
             print "Service call failed: %s"%e
             return False
 
+    def plan_cmd(self, planname, cmd): # non-blocking
+        PNPCmd_Base.plan_cmd(planname,cmd)
+        if (cmd=='start'):
+            self.pub_plantoexec.publish(planname)
+        elif (cmd=='stop'):
+            self.pub_plantoexec.publish('stop')
+        else:
+            print("ERROR: plan cmd %s %s undefined!" %(planname,cmd))
+        self.rate.sleep()
+
 
 def main():
-    a = ActionCmd()
+    a = PNPCmd()
     [action, params, cmd] = a.init()
     a.begin()
-    a.PNPaction_cmd(action, params, cmd)
+    a.action_cmd(action, params, cmd)
     a.end()
 
 

@@ -390,7 +390,7 @@ int main(int argc, char** argv)
 */
 
                             rate.sleep();
-                        }
+                        } // while
 
                         if (executor->goalReached()) {
                             cout << "GOAL NODE REACHED!!!" << endl;

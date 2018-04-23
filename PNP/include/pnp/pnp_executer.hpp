@@ -21,6 +21,7 @@ template<typename PnpPlanClass>
 		if (plan == NULL) {
 			PNP_ERR(planName << " is not a plan");
 			delete planEx;
+            planEx = NULL;
 			return;
 		}
 

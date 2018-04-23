@@ -229,7 +229,7 @@ int PNPActionServer::doEvalCondition(string cond) {
         ConditionCache[cond] = result;
     }
 
-    //cout << "-- EvalConditionWrapper RESULT = " << result << endl;
+    //cout << "-- doEvalCondition RESULT = " << result << endl;
     return result;
 }
 
@@ -257,11 +257,12 @@ int PNPActionServer::doEvalConditionLiteral(string cond) {
 bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,
          pnp_msgs::PNPCondition::Response &res)  {
 
-    // cout << "-- EvalConditionWrapper started with cond: " << req.cond << endl;
+    ROS_INFO_STREAM("-- EvalConditionWrapper started with cond: " << req.cond);
 
+    ConditionCache.clear();  // reset cache every service call
     res.truth_value = doEvalCondition(req.cond);
 
-    // cout << "-- EvalConditionWrapper ended with result: " << result << endl;
+    ROS_INFO_STREAM("-- EvalConditionWrapper ended with result: " << res.truth_value);
 
     return true;
 }
@@ -413,7 +414,7 @@ void PNPActionServer::actionStart(const std::string & robot, const std::string &
   ConditionCache.clear();
   // Set status parameter
   stringstream ssbuf;
-  ssbuf << PNPACTIONSTATUS << action;
+  ssbuf << PARAM_PNPACTIONSTATUS << action;
   ros::param::set(ssbuf.str(),"run");
 }
 
@@ -421,7 +422,7 @@ void PNPActionServer::actionEnd(const std::string & robot, const std::string & a
 {
   // Set status parameter
   stringstream ssbuf;
-  ssbuf << PNPACTIONSTATUS << action;
+  ssbuf << PARAM_PNPACTIONSTATUS << action;
   ros::param::set(ssbuf.str(),"success");
 }
 
@@ -429,7 +430,7 @@ void PNPActionServer::actionInterrupt(const std::string & robot, const std::stri
 {
   // Set status parameter
   stringstream ssbuf;
-  ssbuf << PNPACTIONSTATUS << action;
+  ssbuf << PARAM_PNPACTIONSTATUS << action;
   ros::param::set(ssbuf.str(),"interrupt");
 }
 

@@ -50,7 +50,7 @@ namespace pnpros
           }
 
           stringstream ssbuf;
-          ssbuf << PNPACTIONSTATUS << name;
+          ssbuf << PARAM_PNPACTIONSTATUS << name;
           ros::param::set(ssbuf.str(),"init");
 
           active=false;
@@ -130,7 +130,7 @@ namespace pnpros
 		goalhandler = pnpac->sendGoal(goal,boost::bind(&ActionProxy::transitionCb, this,  _1),boost::bind(&ActionProxy::feedbackCb, this, _1, _2));
 
         stringstream ssbuf;
-        ssbuf << PNPACTIONSTATUS << name;
+        ssbuf << PARAM_PNPACTIONSTATUS << name;
         ros::param::set(ssbuf.str(),"run");
 
 
@@ -196,7 +196,7 @@ namespace pnpros
 #endif
 
         stringstream ssbuf;
-        ssbuf << PNPACTIONSTATUS << name;
+        ssbuf << PARAM_PNPACTIONSTATUS << name;
         ros::param::set(ssbuf.str(),"success");
 
         ROS_INFO_STREAM("End: "+robotname+" "+ name + " " + params + " - ID: " + id);
@@ -252,7 +252,7 @@ namespace pnpros
 #endif
 
         stringstream ssbuf;
-        ssbuf << PNPACTIONSTATUS << name;
+        ssbuf << PARAM_PNPACTIONSTATUS << name;
         ros::param::set(ssbuf.str(),"interrupt");
 
         ROS_INFO_STREAM("Interrupt: "+robotname+" "+ name + " " + params + " - ID: " + id);

@@ -32,6 +32,6 @@
 // Params
 #define PARAM_PNPCONDITIONBUFFER "PNPconditionsBuffer/" // PNP Conditions as param values
 
-#define PNPACTIONSTATUS "PNPActionStatus/" // PNP action status
+#define PARAM_PNPACTIONSTATUS "PNPActionStatus/" // PNP action status
 
 
