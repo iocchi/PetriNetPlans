@@ -13,14 +13,13 @@ from action_base import *
 from conditions import *
 
 # from PetriNetPlans/pyPNP
-import action_cmd_base
-from action_cmd_base import *
+import pnp_cmd_base
+from pnp_cmd_base import *
 
-class ActionCmd(ActionCmd_Base):
+class PNPCmd(PNPCmd_Base):
 
     def __init__(self):
-        ActionCmd_Base.__init__(self)
-        self.app = None
+        PNPCmd_Base.__init__(self)
         self.memory_service = None
         self.pip=os.environ['PEPPER_IP']
         self.pport=9559
@@ -71,7 +70,11 @@ class ActionCmd(ActionCmd_Base):
 
     def action_status(self, action):
         key = "PNP_action_result_"+action
-        return self.memory_service.getData(key)
+        try:
+            r = self.memory_service.getData(key)
+        except:
+            r = 'unknown'
+        return r
 
     def get_condition(self, cond):
         return get_condition(self.memory_service, cond)

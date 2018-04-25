@@ -1,5 +1,6 @@
 # pyPNP
-# Module action_cmd
+# Module pnp_cmd_base
+#
 # Luca Iocchi 2018
 
 import argparse
