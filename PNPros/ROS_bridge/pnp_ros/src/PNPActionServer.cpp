@@ -257,12 +257,12 @@ int PNPActionServer::doEvalConditionLiteral(string cond) {
 bool PNPActionServer::EvalConditionWrapper(pnp_msgs::PNPCondition::Request  &req,
          pnp_msgs::PNPCondition::Response &res)  {
 
-    ROS_INFO_STREAM("-- EvalConditionWrapper started with cond: " << req.cond);
+    // ROS_INFO_STREAM("-- EvalConditionWrapper started with cond: " << req.cond);
 
     ConditionCache.clear();  // reset cache every service call
     res.truth_value = doEvalCondition(req.cond);
 
-    ROS_INFO_STREAM("-- EvalConditionWrapper ended with result: " << res.truth_value);
+    // ROS_INFO_STREAM("-- EvalConditionWrapper ended with result: " << res.truth_value);
 
     return true;
 }
