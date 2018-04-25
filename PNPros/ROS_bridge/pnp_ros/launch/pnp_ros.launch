@@ -1,14 +1,10 @@
 <launch>
   <arg name="current_plan" default="sensing" />
   <arg name="plan_folder" default="$(find pnp_ros)/plans" />
-<!--   <arg name="working_dir" default="/tmp" />
-
-  <param name="domain_path" value="$(find rosplan_planning_system)/common/domain.pddl" />
- -->
 
   <node
-    name="pnp_ros" 
-    pkg="pnp_ros" type="pnp_node" 
+    name="pnp_ros"
+    pkg="pnp_ros" type="pnp_node"
     respawn="false" output="screen">
       <param name="current_plan" value="$(arg current_plan)" />
       <param name="plan_folder" value="$(arg plan_folder)" />
@@ -18,8 +14,8 @@
   </node>
 
   <node
-    name="PNPActionServer" 
-    pkg="pnp_ros" type="PNPActionServer.py" 
+    name="PNPActionServer"
+    pkg="pnp_ros" type="PNPActionServer.py"
     respawn="false" output="screen">
     <!-- <param name="name" value="value" /> -->
   </node>
