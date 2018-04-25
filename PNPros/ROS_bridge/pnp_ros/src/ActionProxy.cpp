@@ -197,7 +197,7 @@ namespace pnpros
 
         stringstream ssbuf;
         ssbuf << PARAM_PNPACTIONSTATUS << name;
-        ros::param::set(ssbuf.str(),"success");
+        ros::param::set(ssbuf.str(),"end");
 
         ROS_INFO_STREAM("End: "+robotname+" "+ name + " " + params + " - ID: " + id);
     }

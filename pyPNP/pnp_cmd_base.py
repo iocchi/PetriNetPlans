@@ -88,6 +88,9 @@ class PNPCmd_Base(object):
             else: # interrupt
                 self.printindent()
                 print("  %s%s %s -> %s%s" %(tcol.WARNING,action,params,'interrupt',tcol.ENDC))
+                self.action_cmd(action, params, 'interrupt')
+                while self.action_status(action)!='end':
+                    time.sleep(0.1)
                 self.execlevel += 1
                 rec = self.execRecovery(recovery)
                 self.execlevel -= 1

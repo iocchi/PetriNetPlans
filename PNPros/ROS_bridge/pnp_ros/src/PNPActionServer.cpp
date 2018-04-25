@@ -423,7 +423,7 @@ void PNPActionServer::actionEnd(const std::string & robot, const std::string & a
   // Set status parameter
   stringstream ssbuf;
   ssbuf << PARAM_PNPACTIONSTATUS << action;
-  ros::param::set(ssbuf.str(),"success");
+  ros::param::set(ssbuf.str(),"end");
 }
 
 void PNPActionServer::actionInterrupt(const std::string & robot, const std::string & action, const std::string & params)
