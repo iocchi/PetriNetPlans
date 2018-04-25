@@ -121,8 +121,8 @@ class PNPCmd(PNPCmd_Base):
             return False
 
     def plan_cmd(self, planname, cmd): # non-blocking
-        PNPCmd_Base.plan_cmd(planname,cmd)
         if (cmd=='start'):
+            self.plan_gen(planname)
             self.pub_plantoexec.publish(planname)
         elif (cmd=='stop'):
             self.pub_plantoexec.publish('stop')
