@@ -45,7 +45,7 @@ set(PNP_NAOQI_SRC
 
 # Libraries and executables
 
-include_directories( ../PNP/include ../PNPgen/src include /usr/include)
+include_directories( ../PNP/include ../PNPgen/src ../PNPgen/include include /usr/include)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
