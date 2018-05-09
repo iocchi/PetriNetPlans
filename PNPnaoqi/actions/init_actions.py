@@ -9,18 +9,26 @@ import time
 import action_base
 from action_base import *
 
-import action_A, action_B, action_C, wait
+import action_A, action_B, action_C, wait, action_displayImage, action_moveTo, action_posture, action_say
 
 def init(session):
     action_A.init(session)
     action_B.init(session)
     action_C.init(session)
+    action_displayImage.init(session)
+    action_moveTo.init(session)
+    action_posture.init(session)
+    action_say.init(session)
     wait.init(session)
 
 def quit():
     action_A.quit()
     action_B.quit()
     action_C.quit()
+    action_displayImage.quit()
+    action_moveTo.quit()
+    action_posture.quit()
+    action_say.quit()
     wait.quit()
 
 def main():
