@@ -4,9 +4,17 @@
 
 import qi
 import argparse
-import sys
+import os, sys
 import time
 import threading
+
+try:
+    sys.path.insert(0, os.getenv('PNP_HOME')+'/PNPnaoqi/actions')
+    sys.path.insert(0, os.getenv('PNP_HOME')+'/pyPNP')
+except Exception as e:
+    print "Please set PNP_HOME environment variable to PetriNetPlans folder."
+    print e
+    sys.exit(1)
 
 import action_base
 from action_base import *
@@ -15,6 +23,10 @@ from conditions import *
 # from PetriNetPlans/pyPNP
 import pnp_cmd_base
 from pnp_cmd_base import *
+
+key_actioncmd = "PNP/ActionCmd"
+key_currentaction = "PNP/CurrentAction"
+key_actionresult = "PNP/ActionResult/"
 
 class PNPCmd(PNPCmd_Base):
 
@@ -66,7 +78,9 @@ class PNPCmd(PNPCmd_Base):
         pass
 
     def action_cmd(self,action,params,cmd):
-        self.memory_service.raiseEvent(action_base.key_actioncmd, cmd+" "+action+" "+params);
+        v = cmd+" "+action+" "+params
+        print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
+        self.memory_service.raiseEvent(key_actioncmd, v);
 
     def action_status(self, action):
         key = "PNP_action_result_"+action
@@ -82,10 +96,10 @@ class PNPCmd(PNPCmd_Base):
 
 def main():
 
-    a = ActionCmd()
+    a = PNPCmd()
     [action, params, cmd] = a.init()
     a.begin()
-    a.PNPaction_cmd(action, params, cmd)
+    a.action_cmd(action, params, cmd)
     time.sleep(1)    
     a.end()
 

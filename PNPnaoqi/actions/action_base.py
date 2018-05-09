@@ -79,6 +79,7 @@ def init(session, actionName, actionThread_exec):
 
     #subscribe to PNP action event
     if (acb==None):
+        print('Naoqi subscriber to %s\n' %(key_actioncmd))
         acb = G_memory_service.subscriber(key_actioncmd)
         acb.signal.connect(action_cb)
 
