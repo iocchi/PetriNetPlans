@@ -95,7 +95,6 @@ class PNPCmd(PNPCmd_Base):
 
 
 def main():
-
     a = PNPCmd()
     [action, params, cmd] = a.init()
     a.begin()
