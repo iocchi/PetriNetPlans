@@ -43,10 +43,10 @@ p.exec_action('action', 'param1_param2')
 p.exec_action('action', 'params', interrupt='condition', recovery='waitfor_not_condition;restart_action') 
 
 # start action / non-blocking function
-p.action_cmd_base(action, params, 'start')
+p.action_cmd(action, params, 'start')
 
 # stop action / non-blocking function
-p.action_cmd_base(action, params, 'stop')
+p.action_cmd(action, params, 'stop')
 
 # start plan / non-blocking function
 p.plan_cmd('cocktail_party','start') 
