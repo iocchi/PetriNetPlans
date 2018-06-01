@@ -36,7 +36,7 @@ class PNPCmd(PNPCmd_Base):
         parser.add_argument("-p", type=str, default="",
                             help="params")
         parser.add_argument("-c", type=str, default="",
-                            help="command")
+                            help="command (start, end, interrupt)")
         args = parser.parse_args()
         self.pip = args.pip
         self.pport = args.pport
