@@ -11,9 +11,15 @@ pyPNP is independent from the middleware used. At this moment ROS and Naoqi fram
 
 ## Use
 
-Note: you must run an action server (ROS or Naoqi or both) before running pyPNP scripts.
+Before running pyPNP scripts, you must start an action server (ROS or Naoqi or both).
 
-TODO: how to start an action server...
+### Start an action server
+
+ROS: Start a PNPActionServer
+
+Naoqi: Start the script ```init_actions.py``` in the action folder
+
+### pyPNP script
 
 Main functions available to manage plan and action executions are described through the example below.
 
