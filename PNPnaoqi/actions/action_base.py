@@ -5,6 +5,17 @@ import time
 import threading
 import os
 
+class tcol:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 G_actionThread_exec = {}  # action thread execution functions
 G_actionThreads = {}  # action threads functions
 
@@ -34,7 +45,7 @@ def action_cb(value):
             G_actionThreads[actionName].start()
 
         else:
-            print "ERROR: Action ",v[1]," not found !!!"
+            print("%sERROR: Action %s not found !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
     elif (v[0]=='end' or v[0]=='stop' or v[0]=='interrupt'):
         try:
             actionName = v[1]
@@ -42,7 +53,16 @@ def action_cb(value):
             G_memory_service.raiseEvent(key_currentaction,"")
             # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
         except:
-            print "ERROR: Action ",v[1]," not started !!!"
+            print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
+
+
+def action_success(actionName,params):
+    memory_service.raiseEvent("PNP_action_result_"+actionName,"success")
+    print "Action "+actionName+" "+params+" terminated - success"
+
+def action_failed(actionName,params):
+    memory_service.raiseEvent("PNP_action_result_"+actionName,"failed")
+    print "Action "+actionName+" "+params+" terminated - fail"
 
 
 def initApp(actionName):
@@ -87,7 +107,6 @@ def init(session, actionName, actionThread_exec):
     G_memory_service.declareEvent(key_currentaction);
 
     print "Naoqi Action server "+actionName+" running..."
-
 
 
 
