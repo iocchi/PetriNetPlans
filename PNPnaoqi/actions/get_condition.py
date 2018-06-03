@@ -18,13 +18,10 @@ def init():
                         help="Naoqi port number")
     parser.add_argument("-c", type=str, default="",
                         help="condition")
-    parser.add_argument("-v", type=str, default="true",
-                        help="value")
     args = parser.parse_args()
     pip = args.pip
     pport = args.pport
     cond = args.c
-    val = args.v
 
     #Starting application
     try:
@@ -38,23 +35,22 @@ def init():
 
     app.start()
 
-    return [app, cond, val]
+    return [app, cond]
 
 
 
 
 def main():
 
-    [app, cond, val] = init()
+    [app, cond] = init()
     memory_service  = app.session.service("ALMemory")
 
     if (cond==''):
-        print 'Please specify a condition to set'
+        print 'Please specify a condition to get'
 
     else:
-        conditions.set_condition(memory_service,cond,val)
-        time.sleep(0.5)    
-        print "Set condition: ",cond," = ",conditions.get_condition(memory_service,cond)
+        print "Get condition: ",cond," = ",conditions.get_condition(memory_service,cond)
+
 
 
 
