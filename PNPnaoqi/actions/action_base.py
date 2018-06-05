@@ -18,6 +18,8 @@ class tcol:
 
 G_actionThread_exec = {}  # action thread execution functions
 G_actionThreads = {}  # action threads functions
+G_memory_service = None 
+G_session = None
 
 key_actioncmd = "PNP/ActionCmd"
 key_currentaction = "PNP/CurrentAction"
@@ -57,11 +59,13 @@ def action_cb(value):
 
 
 def action_success(actionName,params):
-    memory_service.raiseEvent("PNP_action_result_"+actionName,"success")
+    global  G_memory_service
+    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"success")
     print "Action "+actionName+" "+params+" terminated - success"
 
 def action_failed(actionName,params):
-    memory_service.raiseEvent("PNP_action_result_"+actionName,"failed")
+    global  G_memory_service
+    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"failed")
     print "Action "+actionName+" "+params+" terminated - fail"
 
 
