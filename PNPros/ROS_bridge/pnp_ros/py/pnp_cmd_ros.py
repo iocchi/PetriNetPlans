@@ -111,6 +111,10 @@ class PNPCmd(PNPCmd_Base):
             r = ''
         return r
 
+    def action_starttime(self, action):
+        # TODO
+        return 0
+
     def get_condition(self, cond):
         try:
             service = rospy.ServiceProxy(get_robot_key(SRV_PNPCONDITIONEVAL), pnp_msgs.srv.PNPCondition)

@@ -14,6 +14,8 @@ p = PNPCmd()
 
 p.begin()
 
+p.exec_action('waitfor', 'screentouched', interrupt='timeout_2.5')
+
 p.exec_action('say', 'hello')
 
 while (not p.get_condition('screentouched')):

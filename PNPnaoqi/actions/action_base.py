@@ -44,6 +44,11 @@ def action_cb(value):
             G_actionThreads[actionName].session = G_session
             G_memory_service.raiseEvent(key_currentaction,actionName+"_"+params)
             G_memory_service.raiseEvent("PNP_action_result_"+actionName,"run");
+            # start time
+            starttime = time.time() # seconds
+            G_actionThreads[actionName].starttime = starttime
+            G_memory_service.insertData("PNP_action_starttime_"+actionName,str(starttime));
+            #print('action_base setting starttime %s : %f' %(actionName,starttime))
             G_actionThreads[actionName].start()
 
         else:
@@ -52,21 +57,39 @@ def action_cb(value):
         try:
             actionName = v[1]
             G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
-            G_memory_service.raiseEvent(key_currentaction,"")
+            #quit_action(actionName)
             # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
         except:
             print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
 
 
+def quit_action(actionName):
+    global  G_memory_service
+    G_memory_service.raiseEvent(key_currentaction,"")
+    try:
+        G_memory_service.removeData("PNP_action_starttime_"+actionName);
+        # print('removed key entry PNP_action_starttime_%s' %actionName)
+    except:
+        pass
+    
+
+
 def action_success(actionName,params):
     global  G_memory_service
     G_memory_service.raiseEvent("PNP_action_result_"+actionName,"success")
+    quit_action(actionName)
     print "Action "+actionName+" "+params+" terminated - success"
+
 
 def action_failed(actionName,params):
     global  G_memory_service
-    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"failed")
+    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"failure")
+    quit_action(actionName)
     print "Action "+actionName+" "+params+" terminated - fail"
+
+
+def action_failure(actionName,params):
+    action_failed(actionName,params)
 
 
 def initApp(actionName):

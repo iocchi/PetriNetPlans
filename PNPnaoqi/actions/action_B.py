@@ -32,6 +32,7 @@ def actionThread_exec (params):
     count = 0
     # action end
     action_success(actionName,params)
+    #action_failure(actionName,params)
 
 
 def init(session):

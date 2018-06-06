@@ -79,7 +79,7 @@ class PNPCmd(PNPCmd_Base):
 
     def action_cmd(self,action,params,cmd):
         v = cmd+" "+action+" "+params
-        print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
+        #print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
         self.memory_service.raiseEvent(key_actioncmd, v);
 
     def action_status(self, action):
@@ -89,6 +89,9 @@ class PNPCmd(PNPCmd_Base):
         except:
             r = 'unknown'
         return r
+
+    def action_starttime(self, action):
+        return float(self.memory_service.getData("PNP_action_starttime_"+action))
 
     def get_condition(self, cond):
         return get_condition(self.memory_service, cond)

@@ -27,7 +27,16 @@ class PNPCmd_Base(object):
 
     def action_cmd_base(self, action, params, cmd):
         self.printindent()
-        print("  %s %s -> %s" %(action,params,cmd))
+        if (cmd=='start'):
+            print("  %s%s %s -> %s%s" %(tcol.OKGREEN,action,params,cmd,tcol.ENDC))
+        elif (cmd=='interrupt'):
+            print("  %s%s %s -> %s%s" %(tcol.WARNING,action,params,cmd,tcol.ENDC))
+        elif (cmd=='end' or cmd=='success'):
+            print("  %s%s %s -> %s%s" %(tcol.OKGREEN,action,params,cmd,tcol.ENDC))
+        elif (cmd=='failure'):
+            print("  %s%s %s -> %s%s" %(tcol.FAIL,action,params,cmd,tcol.ENDC))
+        else:
+            print("  %s %s -> %s" %(action,params,cmd))
         self.action_cmd(action,params,cmd)
 
 
@@ -40,6 +49,8 @@ class PNPCmd_Base(object):
 
 
     def execRecovery(self, recovery):
+        if recovery=='':
+            return
         v = recovery.split(';')
         for i in range(len(v)):
             ap = v[i].strip()
@@ -78,17 +89,26 @@ class PNPCmd_Base(object):
             c = False
             while (r=='run' and not c):
                 r = self.action_status(action)
-                c = self.get_condition(interrupt)
+                # check for interrupt condition
+                if (interrupt[0:7].lower()=='timeout'):
+                    now = time.time() 
+                    st = self.action_starttime(action)
+                    v = interrupt.split('_')
+                    #print 'timeout %f %f diff: %f > %f' %(now, st, now-st, float(v[1]) )
+                    c = (now - st) > float(v[1])
+                else:
+                    c = self.get_condition(interrupt)
                 #print "   -- action status: %s, interrupt condition: %r" %(r,c)
                 time.sleep(0.1)
             #print "   -- action status: %s, interrupt condition: %r" %(r,c)
             run = False  # exit 
             if (not c): # normal termination
                 self.printindent()
-                print("  %s %s -> %s" %(action,params,r))
+                if (r=='success'):
+                    print("  %s%s %s -> %s%s" %(tcol.OKGREEN,action,params,r,tcol.ENDC))
+                else:
+                    print("  %s%s %s -> %s%s" %(tcol.FAIL,action,params,r,tcol.ENDC))
             else: # interrupt
-                self.printindent()
-                print("  %s%s %s -> %s%s" %(tcol.WARNING,action,params,'interrupt',tcol.ENDC))
                 self.action_cmd_base(action, params, 'interrupt')
                 while self.action_status(action)=='run':
                     time.sleep(0.1)
