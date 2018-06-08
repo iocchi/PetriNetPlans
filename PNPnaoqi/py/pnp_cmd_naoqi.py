@@ -27,6 +27,7 @@ from pnp_cmd_base import *
 key_actioncmd = "PNP/ActionCmd"
 key_currentaction = "PNP/CurrentAction"
 key_actionresult = "PNP/ActionResult/"
+key_plantoexec = "PNP_planToExec"
 
 class PNPCmd(PNPCmd_Base):
 
@@ -100,6 +101,21 @@ class PNPCmd(PNPCmd_Base):
 
     def get_condition(self, cond):
         return get_condition(self.memory_service, cond)
+
+    def plan_cmd(self, planname, cmd): # non-blocking
+        if (cmd=='start'):
+            #DO WE WANT TO GENERATE THE PLAN ON THE FLY???
+            #print "Generating plan ", planname
+            #cmd = 'pnpgen_translator inline %s %s' %(planname, planname)
+            #os.system(cmd)
+            print "Starting plan ", planname
+            self.memory_service.insertData(key_plantoexec,planname)
+        elif (cmd=='stop'):
+            print "Stopping plan ", planname
+            self.memory_service.insertData(key_plantoexec,'stop')
+        else:
+            print "Unknown command ", planname, cmd
+
 
 
 def main():
