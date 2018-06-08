@@ -14,7 +14,6 @@ p = PNPCmd()
 
 p.begin()
 
-
 p.exec_action('waitfor', 'screentouched', interrupt='timeout_2.5')
 
 p.exec_action('say', 'hello')
@@ -38,12 +37,21 @@ while (i<5 and not p.get_condition('screentouched')):
 
 p.exec_action('headpose', '0_-10')
 
-
 p.exec_action('say', 'goodbye')
 
-#p.plan_cmd('rips', 'start')
-#time.sleep(30)
-#p.plan_cmd('rips', 'stop')
+p.plan_cmd('hello', 'start')
+
+while (not 'goal' in p.plan_status()):
+    print p.plan_name(), p.plan_status()
+    time.sleep(0.5)
+
+print p.plan_name(), p.plan_status()
+
+p.plan_cmd('hello', 'stop')
+
+p.end()
+
+sys.exit(0)
 
 p.end()
 

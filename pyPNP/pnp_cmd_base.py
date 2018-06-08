@@ -143,8 +143,11 @@ class PNPCmd_Base(object):
     def plan_cmd(self, planname, cmd): # non-blocking
         pass
 
+    def plan_name(self):
+        return 'no plan'
 
-
+    def plan_status(self):
+        return 'no status'
 
 
 

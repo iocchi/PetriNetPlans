@@ -22,16 +22,32 @@ G_memory_service = None
 G_session = None
 
 key_actioncmd = "PNP/ActionCmd"
+key_actioncmd2 = "PNP_action"
 key_currentaction = "PNP/CurrentAction"
 key_actionresult = "PNP/ActionResult/"
-
+key_actionstatus = "PNP/ActionStatus/"
+key_action_starttime = "PNP/ActionStarttime/"
 
 acb = None # action callback
+acb2 = None # action callback
 
+# action callback
+# key = 'PNP/ActionCmd'
+# value = '<command> <actionname> <params>'
 def action_cb(value):
+    doActionCmd(value)
+
+# action callback
+# key = 'PNP_action'
+# value = '<command> <actionname> <params>'
+def action_cb2(value):
+    doActionCmd(value)
+
+# value = '<command> <actionname> <params>'
+def doActionCmd(value):
     global  G_actionThreads, G_actionThread_exec, G_memory_service, G_session
-    v = value.split()
     print "action_cb value ",value
+    v = value.split()
     if (v[0]=='start'):
         actionName = v[1]
         params=""
@@ -43,11 +59,11 @@ def action_cb(value):
             G_actionThreads[actionName].mem_serv = G_memory_service
             G_actionThreads[actionName].session = G_session
             G_memory_service.raiseEvent(key_currentaction,actionName+"_"+params)
-            G_memory_service.raiseEvent("PNP_action_result_"+actionName,"run");
+            G_memory_service.raiseEvent(key_actionstatus+actionName,"run");
             # start time
             starttime = time.time() # seconds
             G_actionThreads[actionName].starttime = starttime
-            G_memory_service.insertData("PNP_action_starttime_"+actionName,str(starttime));
+            G_memory_service.insertData(key_action_starttime+actionName,str(starttime));
             #print('action_base setting starttime %s : %f' %(actionName,starttime))
             G_actionThreads[actionName].start()
 
@@ -63,12 +79,14 @@ def action_cb(value):
             print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
 
 
+
 def quit_action(actionName):
     global  G_memory_service
     G_memory_service.raiseEvent(key_currentaction,"")
     try:
-        G_memory_service.removeData("PNP_action_starttime_"+actionName);
-        # print('removed key entry PNP_action_starttime_%s' %actionName)
+        G_memory_service.removeData(key_action_starttime+actionName);
+        G_memory_service.raiseEvent(key_actionstatus+actionName,"end")
+        # print('removed key entry %s%s' %(key_action_starttime,actionName))
     except:
         pass
     
@@ -118,7 +136,7 @@ def initApp(actionName):
 
 
 def init(session, actionName, actionThread_exec):
-    global G_actionThread_exec, G_memory_service, G_session, acb
+    global G_actionThread_exec, G_memory_service, G_session, acb, acb2
     G_actionThread_exec[actionName] = actionThread_exec # execution thread function associated to actionName
     G_session = session
 
@@ -126,15 +144,16 @@ def init(session, actionName, actionThread_exec):
 
     #subscribe to PNP action event
     if (acb==None):
-        print('Naoqi subscriber to %s\n' %(key_actioncmd))
+        print('Naoqi subscriber to %s' %(key_actioncmd))
         acb = G_memory_service.subscriber(key_actioncmd)
         acb.signal.connect(action_cb)
-
+        print('Naoqi subscriber to %s' %(key_actioncmd2))
+        acb2 = G_memory_service.subscriber(key_actioncmd2)
+        acb2.signal.connect(action_cb2)
+    
     G_memory_service.declareEvent(key_actionresult+actionName);
     G_memory_service.declareEvent(key_currentaction);
 
     print "Naoqi Action server "+actionName+" running..."
-
-
 
 
