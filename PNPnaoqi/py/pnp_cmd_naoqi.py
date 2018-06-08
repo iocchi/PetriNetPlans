@@ -91,7 +91,12 @@ class PNPCmd(PNPCmd_Base):
         return r
 
     def action_starttime(self, action):
-        return float(self.memory_service.getData("PNP_action_starttime_"+action))
+        try:
+            starttime_str = self.memory_service.getData("PNP_action_starttime_"+action)
+            return float(starttime_str)
+        except:
+            print "Exception in starttime"
+            return time.time()
 
     def get_condition(self, cond):
         return get_condition(self.memory_service, cond)
