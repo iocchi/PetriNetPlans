@@ -51,7 +51,3 @@ p.plan_cmd('hello', 'stop')
 
 p.end()
 
-sys.exit(0)
-
-p.end()
-
