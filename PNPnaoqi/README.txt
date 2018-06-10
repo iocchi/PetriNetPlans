@@ -75,9 +75,9 @@
     $ python init_actions
 
     Terminal 2:
-    $ cd actions
-    $ ./action_cmd -a <actionname> -p <params> -c <start|end|interrupt>
 
+    & cd <PetriNetPlans>/PNPnaoqi/py
+    python pnp_cmd_naoqi.py -a <actionname> -p <params> -c <start|end|interrupt>
 
 
 7. Uploading and running on the robot
