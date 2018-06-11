@@ -16,8 +16,14 @@
 	* Compile PNPnaoqi stuff:
 
 	$ cd <PATH_TO>/PetriNetPlans/PNPnaoqi
+
+    For linux systems:
+
 	$ qibuild configure -c linux64 -w <qi_ws>
 	$ qibuild make -c linux64 -w <qi_ws>
+
+    For Pepper robot:
+
 	$ qibuild configure -c pepper -w <qi_ws>
 	$ qibuild make -c pepper -w <qi_ws>
 
@@ -32,15 +38,16 @@
 
 3. Plan generation
 
-    In the plan folder run
+    In the plans folder run
 
-    $ ./gen_plan.bash <planname.plan> [<executionrules.er>]
+    $ ./gen_plan.bash <planname>.plan [<executionrules.er>]
+
+    to generate <planname>.pnml
 
     Example:
 
-    $ ./gen_plan.bash test3.plan> test3.er
+    $ ./gen_plan.bash test3.plan test3.er
 
-    This command generates <planname>.pnml
 
 
 4. Plan execution
