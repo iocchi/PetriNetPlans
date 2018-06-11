@@ -72,7 +72,7 @@
 
     Terminal 1:
     $ cd actions
-    $ python init_actions
+    $ python init_actions.py
 
     Terminal 2:
 
@@ -121,10 +121,5 @@ ER:
 
 In this case after 30 seconds from the start of the acction, the condition timeout_lookfor_30
 will be true and will activate the recovery procedure of the ER
-
-
-
-
-
 
 
