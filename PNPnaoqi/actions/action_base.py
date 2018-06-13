@@ -103,10 +103,13 @@ def quit_all_running_actions():
 
 
 def update_quit_action_status(actionName):
+    global G_actions_running, G_memory_service
+
     try:
         G_actions_running.remove(actionName)
         G_memory_service.insertData(key_runningactions, G_actions_running)
         G_memory_service.removeData(key_action_starttime+actionName)
+        G_memory_service.raiseEvent(key_actionstatus+actionName,"finished");
         #G_memory_service.raiseEvent(key_currentaction,"")
         # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
     except:
