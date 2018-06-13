@@ -24,8 +24,8 @@ def get_condition(memory_service, literal):
         v = literal.split('_')
         neg = False
         cond = literal
-        if (len(v)==2):
-            cond = v[1]
+        if (v[0]=='not'):
+            cond = '_'.join(v[1:])
             neg=True
         try:
             key = "PNP_cond_"+cond
