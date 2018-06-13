@@ -79,7 +79,9 @@ def doActionCmd(value):
             G_actionThreads[actionName].starttime = starttime
             G_memory_service.insertData(key_action_starttime+actionName,str(starttime));
             #print('action_base setting starttime %s : %f' %(actionName,starttime))
+            G_actionThreads[actionName].do_run = True  # execution thread associated to actionName
             G_actionThreads[actionName].start()
+            time.sleep(0.1)
             G_actions_running.append(actionName)
             G_memory_service.insertData(key_runningactions, G_actions_running)
         else:
@@ -88,11 +90,7 @@ def doActionCmd(value):
         try:
             actionName = v[1]
             G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
-            G_actions_running.remove(actionName)
-            G_memory_service.insertData(key_runningactions, G_actions_running)
-            G_memory_service.removeData(key_action_starttime+actionName)
-            #G_memory_service.raiseEvent(key_currentaction,"")
-            # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
+            #update_quit_action_status(actionName)
         except:
             print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
 
@@ -101,19 +99,52 @@ def quit_all_running_actions():
     global G_actions_running, G_memory_service
     l = list(G_actions_running) # use a copy because the list may be modified by action threads
     for a in l:
-        G_memory_service.raiseEvent(key_actioncmd, 'end '+a)
+        G_memory_service.raiseEvent(key_actioncmd, 'interrupt '+a)
+
+
+def update_quit_action_status(actionName):
+    try:
+        G_actions_running.remove(actionName)
+        G_memory_service.insertData(key_runningactions, G_actions_running)
+        G_memory_service.removeData(key_action_starttime+actionName)
+        #G_memory_service.raiseEvent(key_currentaction,"")
+        # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
+    except:
+        print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
+
+
+
+# action terminated by the action thread
+def action_termination(actionName,params):
+    global  G_memory_service, G_actionThreads
+    if (not actionName in G_actionThreads):
+        print("Action %s not in action threads" %actionName)
+        return 
+
+    if G_actionThreads[actionName].do_run:
+        status = 'success'
+        colstatus = tcol.OKGREEN
+    else:
+        status = 'failure'
+        colstatus = tcol.FAIL
+    G_memory_service.raiseEvent("PNP_action_result_"+actionName,status) # feedback to pnp_naoqi
+    update_quit_action_status(actionName)
+    print "%sAction %s %s terminated - %s%s" %(colstatus,actionName,params,status,tcol.ENDC)
+
 
 # action terminated by the action thread
 def action_success(actionName,params):
     global  G_memory_service
-    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"success")
-    print "Action "+actionName+" "+params+" terminated - success"
+    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"success") # feedback to pnp_naoqi
+    update_quit_action_status(actionName)
+    print "%sAction "+actionName+" "+params+" terminated - success%s" %(tcol.OKGREEN, tcol.ENDC)
 
 # action terminated by the action thread
 def action_failed(actionName,params):
     global  G_memory_service
-    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"failure")
-    print "Action "+actionName+" "+params+" terminated - fail"
+    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"failure") # feedback to pnp_naoqi
+    update_quit_action_status(actionName)
+    print "%sAction "+actionName+" "+params+" terminated - fail%s" %(tcol.FAIL, tcol.ENDC)
 
 
 def action_failure(actionName,params):

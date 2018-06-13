@@ -31,7 +31,7 @@ def actionThread_exec (params):
     # action end
     count = 0
     # action end
-    action_success(actionName,params)
+    action_termination(actionName,params)
     #action_failure(actionName,params)
 
 
