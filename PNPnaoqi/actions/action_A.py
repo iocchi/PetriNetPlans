@@ -33,6 +33,8 @@ def actionThread_exec (params):
     count = 0
     # action end
     action_termination(actionName,params)
+    #action_success(actionName,params)
+    #action_failure(actionName,params)
 
 
 def init(session):

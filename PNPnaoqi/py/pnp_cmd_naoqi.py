@@ -88,7 +88,7 @@ class PNPCmd(PNPCmd_Base):
 
     def action_cmd(self,action,params,cmd):
         v = cmd+" "+action+" "+params
-        print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
+        #print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
         self.memory_service.raiseEvent(key_actioncmd, v)
 
     def action_status(self, action):
@@ -104,7 +104,7 @@ class PNPCmd(PNPCmd_Base):
             starttime_str = self.memory_service.getData(key_action_starttime+action)
             return float(starttime_str)
         except:
-            print "Exception in starttime"
+            #print "Exception in starttime"
             return time.time()
 
     def get_condition(self, cond):
@@ -119,7 +119,7 @@ class PNPCmd(PNPCmd_Base):
             print "Starting plan ", planname
             self.memory_service.insertData(key_plantoexec,planname)
             self.memory_service.insertData(key_activeplaces,'starting')
-        elif (cmd=='stop'):
+        elif (cmd=='stop' or cmd=='end'):
             print "Stopping plan ", planname
             self.memory_service.insertData(key_plantoexec,'stop')
         else:
@@ -145,7 +145,8 @@ class PNPCmd(PNPCmd_Base):
             return []
 
     def quit_running_actions(self):
-        return self.memory_service.raiseEvent(key_quitrunningactions, "unused")
+        self.memory_service.raiseEvent(key_quitrunningactions, "unused")
+        time.sleep(0.1)
 
 
 def main():

@@ -102,14 +102,13 @@ def quit_all_running_actions():
         G_memory_service.raiseEvent(key_actioncmd, 'interrupt '+a)
 
 
-def update_quit_action_status(actionName):
+def update_quit_action_status(actionName, status):
     global G_actions_running, G_memory_service
-
     try:
         G_actions_running.remove(actionName)
         G_memory_service.insertData(key_runningactions, G_actions_running)
         G_memory_service.removeData(key_action_starttime+actionName)
-        G_memory_service.raiseEvent(key_actionstatus+actionName,"finished");
+        G_memory_service.raiseEvent(key_actionstatus+actionName,status);
         #G_memory_service.raiseEvent(key_currentaction,"")
         # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
     except:
@@ -118,41 +117,31 @@ def update_quit_action_status(actionName):
 
 
 # action terminated by the action thread
-def action_termination(actionName,params):
+def action_termination(actionName,params,status=''):
     global  G_memory_service, G_actionThreads
     if (not actionName in G_actionThreads):
         print("Action %s not in action threads" %actionName)
-        return 
-
-    if G_actionThreads[actionName].do_run:
-        status = 'success'
-        colstatus = tcol.OKGREEN
-    else:
-        status = 'failure'
+        return
+    colstatus = tcol.OKGREEN
+    if (status==''):
+        if G_actionThreads[actionName].do_run:
+            status = 'success'            
+        else:
+            status = 'failure'
+    if (status!='success'):
         colstatus = tcol.FAIL
     G_memory_service.raiseEvent("PNP_action_result_"+actionName,status) # feedback to pnp_naoqi
-    update_quit_action_status(actionName)
+    update_quit_action_status(actionName, status)
     print "%sAction %s %s terminated - %s%s" %(colstatus,actionName,params,status,tcol.ENDC)
 
 
 # action terminated by the action thread
 def action_success(actionName,params):
-    global  G_memory_service
-    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"success") # feedback to pnp_naoqi
-    update_quit_action_status(actionName)
-    status = "success"
-    colstatus = tcol.OKGREEN
-    print "%sAction %s %s terminated - %s%s" %(colstatus,actionName,params,status,tcol.ENDC)
+    action_termination(actionName,params,status='success')
 
 # action terminated by the action thread
 def action_failed(actionName,params):
-    global  G_memory_service
-    G_memory_service.raiseEvent("PNP_action_result_"+actionName,"failure") # feedback to pnp_naoqi
-    update_quit_action_status(actionName)
-    status = "failure"
-    colstatus = tcol.FAIL
-    print "%sAction %s %s terminated - %s%s" %(colstatus,actionName,params,status,tcol.ENDC)
-
+    action_termination(actionName,params,status='failure')
 
 def action_failure(actionName,params):
     action_failed(actionName,params)
