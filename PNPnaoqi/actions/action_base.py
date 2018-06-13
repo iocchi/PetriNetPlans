@@ -113,7 +113,7 @@ def update_quit_action_status(actionName):
         #G_memory_service.raiseEvent(key_currentaction,"")
         # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
     except:
-        print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
+        print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,actionName,tcol.ENDC))
 
 
 
