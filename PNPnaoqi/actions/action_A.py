@@ -28,11 +28,11 @@ def actionThread_exec (params):
         count = count-1
         # action exec
         time.sleep(dt)
-    print "Action "+actionName+" "+params+" terminated"
+
     # action end
     count = 0
     # action end
-    action_success(actionName,params)
+    action_termination(actionName,params)
 
 
 def init(session):
