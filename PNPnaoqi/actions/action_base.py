@@ -79,10 +79,9 @@ def doActionCmd(value):
             G_actionThreads[actionName].starttime = starttime
             G_memory_service.insertData(key_action_starttime+actionName,str(starttime));
             #print('action_base setting starttime %s : %f' %(actionName,starttime))
-            G_actionThreads[actionName].do_run = True  # execution thread associated to actionName
-            G_actionThreads[actionName].start()
-            time.sleep(0.1)
             G_actions_running.append(actionName)
+            G_actionThreads[actionName].do_run = True  # execution thread associated to actionName
+            G_actionThreads[actionName].start()            
             G_memory_service.insertData(key_runningactions, G_actions_running)
         else:
             print("%sERROR: Action %s not found !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
@@ -90,9 +89,9 @@ def doActionCmd(value):
         try:
             actionName = v[1]
             G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
-            #update_quit_action_status(actionName)
         except:
             print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
+
 
 # actions quit from pyPNP
 def quit_all_running_actions():
@@ -111,8 +110,9 @@ def update_quit_action_status(actionName, status):
         G_memory_service.raiseEvent(key_actionstatus+actionName,status);
         #G_memory_service.raiseEvent(key_currentaction,"")
         # print "DEBUG: action ",actionName," ended.  Thread ",G_actionThreads[actionName]
-    except:
-        print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,actionName,tcol.ENDC))
+    except Exception as e:
+        print("%sERROR: quit action %s failed !!!%s" %(tcol.FAIL,actionName,tcol.ENDC))
+        print e
 
 
 
