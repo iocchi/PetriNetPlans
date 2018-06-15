@@ -83,6 +83,8 @@ def doActionCmd(value):
             G_actionThreads[actionName].do_run = True  # execution thread associated to actionName
             G_actionThreads[actionName].start()            
             G_memory_service.insertData(key_runningactions, G_actions_running)
+            G_memory_service.raiseEvent(key_runningactions, G_actions_running)
+
         else:
             print("%sERROR: Action %s not found !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
     elif (v[0]=='end' or v[0]=='stop' or v[0]=='interrupt'):
@@ -106,6 +108,7 @@ def update_quit_action_status(actionName, status):
     try:
         G_actions_running.remove(actionName)
         G_memory_service.insertData(key_runningactions, G_actions_running)
+        G_memory_service.raiseEvent(key_runningactions, G_actions_running)
         G_memory_service.removeData(key_action_starttime+actionName)
         G_memory_service.raiseEvent(key_actionstatus+actionName,status);
         #G_memory_service.raiseEvent(key_currentaction,"")
