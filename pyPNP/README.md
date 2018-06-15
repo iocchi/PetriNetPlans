@@ -57,6 +57,12 @@ p.plan_cmd('cocktail_party','stop')
 # read conditions
 r = p.get_condition('condition')
 
+# get a list of all the running actions
+l = q.running_actions()
+
+# quit all the running actions
+q.quit_running_actions()
+
 p.end()
 q.end()
 ```

@@ -8,6 +8,18 @@ import time
 
 from naoqi import ALProxy
 
+# colored prints
+class tcol:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 # list all files in here you don't want autoloaded
 # (without .py at the end, just the name)
 # blacklisted_actions = ['personhere']
@@ -73,9 +85,12 @@ def init_actions(modules, session=None):
                 print("*** exception quitting action %s: %s ***"
                       % (module.__name__, str(e)))
                 failed_inits.append(module.__name__)
+    if len(actions_running) > 0:
+        print("%s+++ actions running:: \n  + %s%s" %
+            (tcol.OKGREEN, '\n  + '.join(actions_running), tcol.ENDC))
     if len(failed_inits) > 0:
-        print("*** failed initialisations: \n  ! %s" %
-              '\n  ! '.join(failed_inits))
+        print("%s*** failed initialisations: \n  ! %s%s" %
+            (tcol.FAIL, '\n  ! '.join(failed_inits), tcol.ENDC))
     return failed_inits
 
 
@@ -168,9 +183,6 @@ def main():
     modules = find_and_import()
     time.sleep(1)
     init(session, modules)
-    if len(actions_running) > 0:
-        print("+++ actions running:: \n  + %s" %
-              '\n  + '.join(actions_running))
 
     app.run()
 

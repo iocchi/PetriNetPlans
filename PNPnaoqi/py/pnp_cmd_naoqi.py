@@ -26,13 +26,13 @@ from pnp_cmd_base import *
 
 key_actioncmd = "PNP/ActionCmd"
 #key_actioncmd2 = "PNP_action"
-key_currentaction = "PNP/CurrentAction"
-key_actionresult = "PNP/ActionResult/"
 key_plantoexec = "PNP_planToExec"
 key_currentplan = "PNP/CurrentPlan"
 key_activeplaces = "PNP/ActivePlaces"
 key_actionstatus = "PNP/ActionStatus/"
 key_action_starttime = "PNP/ActionStarttime/"
+key_runningactions = "PNP/RunningActions/"
+key_quitrunningactions = "PNP/QuitRunningActions/"
 
 
 class PNPCmd(PNPCmd_Base):
@@ -79,6 +79,8 @@ class PNPCmd(PNPCmd_Base):
 
         app.start()
         self.memory_service  = app.session.service("ALMemory")
+        self.memory_service.declareEvent(key_actioncmd);
+        self.memory_service.declareEvent(key_quitrunningactions);
 
 
     def end(self):
@@ -86,8 +88,8 @@ class PNPCmd(PNPCmd_Base):
 
     def action_cmd(self,action,params,cmd):
         v = cmd+" "+action+" "+params
-        print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
-        self.memory_service.raiseEvent(key_actioncmd, v);
+        #print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
+        self.memory_service.raiseEvent(key_actioncmd, v)
 
     def action_status(self, action):
         key = key_actionstatus+action
@@ -102,7 +104,7 @@ class PNPCmd(PNPCmd_Base):
             starttime_str = self.memory_service.getData(key_action_starttime+action)
             return float(starttime_str)
         except:
-            print "Exception in starttime"
+            #print "Exception in starttime"
             return time.time()
 
     def get_condition(self, cond):
@@ -120,19 +122,34 @@ class PNPCmd(PNPCmd_Base):
             print "Starting plan ", planname
             self.memory_service.insertData(key_plantoexec,planname)
             self.memory_service.insertData(key_activeplaces,'starting')
-        elif (cmd=='stop'):
+        elif (cmd=='stop' or cmd=='end'):
             print "Stopping plan ", planname
             self.memory_service.insertData(key_plantoexec,'stop')
         else:
             print "Unknown command ", planname, cmd
 
-
     def plan_name(self):
-        return self.memory_service.getData(key_currentplan)
+        try:
+            return self.memory_service.getData(key_currentplan)
+        except:
+            return 'error'
 
 
     def plan_status(self):
-        return self.memory_service.getData(key_activeplaces)
+        try:
+            return self.memory_service.getData(key_activeplaces)
+        except:
+            return 'error'
+
+    def running_actions(self):
+        try:
+            return self.memory_service.getData(key_runningactions)
+        except:
+            return []
+
+    def quit_running_actions(self):
+        self.memory_service.raiseEvent(key_quitrunningactions, "unused")
+        time.sleep(0.1)
 
 
 def main():

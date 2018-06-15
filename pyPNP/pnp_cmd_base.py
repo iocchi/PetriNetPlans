@@ -109,6 +109,7 @@ class PNPCmd_Base(object):
                 else:
                     print("  %s%s %s -> %s%s" %(tcol.FAIL,action,params,r,tcol.ENDC))
             else: # interrupt
+                r = 'interrupt'
                 self.action_cmd_base(action, params, 'interrupt')
                 while self.action_status(action)=='run':
                     time.sleep(0.1)
@@ -117,6 +118,8 @@ class PNPCmd_Base(object):
                 self.execlevel -= 1
                 if rec=='restart_action':
                     run = True
+        return r
+
 
     def plan_gen(self, planname):
         oscmd = 'cd %s; ./genplan.sh %s.plan %s.er' % (self.plan_folder, planname, planname)
