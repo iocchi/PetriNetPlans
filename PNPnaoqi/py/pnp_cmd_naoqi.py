@@ -108,6 +108,9 @@ class PNPCmd(PNPCmd_Base):
     def get_condition(self, cond):
         return get_condition(self.memory_service, cond)
 
+    def set_condition(self, cond, value):
+        set_condition(self.memory_service, cond, value)
+
     def plan_cmd(self, planname, cmd): # non-blocking
         if (cmd=='start'):
             #DO WE WANT TO GENERATE THE PLAN ON THE FLY???

@@ -140,6 +140,9 @@ class PNPCmd_Base(object):
     def get_condition(self, cond):
         return False
 
+    def set_condition(self, cond, value):
+        return
+
     def plan_cmd(self, planname, cmd): # non-blocking
         pass
 
