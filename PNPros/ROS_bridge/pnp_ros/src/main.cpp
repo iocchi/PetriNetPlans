@@ -26,6 +26,8 @@ using namespace pnpros::LearnPNP;
 using std_msgs::String;
 
 
+string planFolder = "plans/";
+
 
 // Global variables
 string robot_name = "NONAME";
@@ -38,7 +40,8 @@ actionlib::ActionClient<pnp_msgs::PNPAction> *pnpac = NULL;
 void planToExecuteCallback(const std_msgs::String::ConstPtr& msg)
 {
   planToExec = msg->data;
-  ROS_INFO("Plan received from topic %s. Executing plan %s ... ", TOPIC_PLANTOEXEC, planToExec.c_str());
+  ros::param::param<std::string>("~plan_folder",planFolder,string("plans/"));
+  ROS_INFO("Plan received from topic %s. Executing plan %s from folder %s ", TOPIC_PLANTOEXEC, planToExec.c_str(), planFolder.c_str());
   
 }
 
@@ -136,7 +139,7 @@ int main(int argc, char** argv)
     ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLANTOEXEC, 1, planToExecuteCallback);
 	
 	ExternalConditionChecker* conditionChecker;
-    string planName = "stop", currentPlanName="stop", planFolder = "plans/";
+    string planName = "stop", currentPlanName="stop";
 	int episodes, epochs, learningPeriod, samples;
 
 	bool learning = false, logPlaces = false, autorestart = false;
