@@ -31,6 +31,7 @@ public:
 	inline std::string getName() { return name; }
 	inline std::set< PlaceClass*> getPlaces() { return places; }
 	void resetInitialMarking();
+    void setInitialMarking(std::vector<std::string> placenames);
 	virtual bool fireAll();
 	bool isEnabled(TransitionClass* );
 	bool fire(TransitionClass* );

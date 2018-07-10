@@ -190,15 +190,16 @@ struct TExecutionRule
     string action;
     string condition;
     string recoveryplan;
+    double confidence;
 
-    TExecutionRule(string a, string c, string r) : action(a), condition(c), recoveryplan(r) { }
+    TExecutionRule(string a, string c, string r, double cf) : action(a), condition(c), recoveryplan(r), confidence(cf) { }
 };
 
 struct TExecutionRules {
     vector<TExecutionRule> v;
 
-    void add(string action, string condition, string recoveryplan) {
-        v.push_back(TExecutionRule(action,condition,recoveryplan));
+    void add(string action, string condition, string recoveryplan, double confidence) {
+        v.push_back(TExecutionRule(action,condition,recoveryplan,confidence));
     }
 };
 
@@ -222,7 +223,7 @@ private:
         ASS.push(make_pair(a,p)); ASE.push(make_pair(a,p));
     }
 
-    bool parseERline(const string line, string &action, string &cond, string &plan);
+    bool parseERline(const string line, string &action, string &cond, string &plan, double &confidence);
 
 public:
     PNP pnp;
@@ -255,7 +256,7 @@ public:
     void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);
     void applySocialRules();
     void applyExecutionRules();
-    void applyOneExecutionRule(Place *current_place, string condition, string recoveryplan);
+    void applyOneExecutionRule(Place *current_place, string condition, string recoveryplan, double confidence);
 
     void readERFile(const char* filename);
     void readERFile(const string& filename) { readERFile(filename.c_str()); }

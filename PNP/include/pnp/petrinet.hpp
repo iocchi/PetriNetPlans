@@ -106,6 +106,26 @@ void PetriNet<PlaceClass, TransitionClass>::resetInitialMarking()
    }
 }
 
+// LI 2018
+// Set an initial marking for this PNP that may be different from the one stored in the pnml file.
+// placenames is a vector of string labels corresponding to the places that will have an initial marking set
+template<typename PlaceClass, typename TransitionClass>
+void PetriNet<PlaceClass, TransitionClass>::setInitialMarking(std::vector<std::string> placenames)
+{
+   typename std::set<PlaceClass*>::iterator p_iter=places.begin();
+   for(;p_iter!=places.end();p_iter++) {
+      // TODO
+      // ir = (*p_iter)->name in placenames;
+      bool ir = false;
+      if (ir)
+        (*p_iter)->currentMarking = 1;
+      else
+        (*p_iter)->currentMarking = 0;
+   }
+}
+
+
+
 template<typename PlaceClass, typename TransitionClass>
 bool PetriNet<PlaceClass, TransitionClass>::isEnabled(TransitionClass* tr)
 {

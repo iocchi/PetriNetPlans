@@ -196,9 +196,9 @@ int PNPActionServer::doEvalCondition(string cond) {
     else {
         vector<string> toks;
         boost::split(toks,cond,boost::is_any_of("_"));
-        if (toks[0]=="equal" && toks.size()==3) { 
+        if ((toks[0]=="equals" || toks[0]=="equal") && toks.size()==3) { 
             result = toks[1]==toks[2];
-            ROS_INFO("evalCondition: equal: %s %s -> %d", toks[1].c_str(),toks[2].c_str(),result);
+            ROS_INFO("evalCondition: equals: %s %s -> %d", toks[1].c_str(),toks[2].c_str(),result);
         }
     }
 
