@@ -1231,6 +1231,10 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
     // cout << "current action: " << next << endl;
     // cout << "rest of the plan: " << plan << endl;
 
+    // TODO
+    // if there are spaces or new lines in the name of an action returns an error and quit the PNP generation
+    // example: if ; is missing between two actions the generation should show an error!!!
+
     //conditioning: go deep
     if(next.find('<') != string::npos){
       boost::trim(next);

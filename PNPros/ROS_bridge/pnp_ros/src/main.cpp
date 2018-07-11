@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 	bool learning = false, logPlaces = false, autorestart = false;
 	bool use_java_connection = false;
 	
-    np.param("current_plan",planName,string("stop"));
+    np.param(PARAM_PNP_CURRENT_PLAN,planName,string("stop"));
 	np.param("plan_folder",planFolder,string("plans/"));
 	np.param("learning",learning,false);
 	np.param("autorestart",autorestart,false);
@@ -343,8 +343,8 @@ int main(int argc, char** argv)
                   executor = new PnpExecuter<PnpPlan>(i);
                 }
                 catch(int e) {
-                cerr << "No plan found!!!" << endl;
-                planToExec="stop"; continue;
+                    cerr << "No plan found!!!" << endl;
+                    planToExec="stop"; continue;
                 }
 
                 if (executor!=NULL) {
@@ -362,6 +362,7 @@ int main(int argc, char** argv)
                         planToExec="stop";
                     }
                     else {
+                        np.setParam(PARAM_PNP_CURRENT_PLAN,planName);
                         cout << "Starting " << executor->getMainPlanName() << endl;
 
                         String activePlaces;

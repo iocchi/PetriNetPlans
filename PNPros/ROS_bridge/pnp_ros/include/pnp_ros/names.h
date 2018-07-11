@@ -34,4 +34,6 @@
 
 #define PARAM_PNPACTIONSTATUS "PNPActionStatus/" // PNP action status
 
+#define PARAM_PNP_CURRENT_PLAN "PNPCurrentPlan" // current plan
+
 
