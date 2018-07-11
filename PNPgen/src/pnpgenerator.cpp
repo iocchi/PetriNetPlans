@@ -8,6 +8,19 @@
 #include <boost/regex.hpp>
 #include <sstream>
 
+// colored prints
+struct TCOL {
+    std::string HEADER = "\033[95m";
+    std::string OKBLUE = "\033[94m";
+    std::string OKGREEN = "\033[92m";
+    std::string WARNING = "\033[93m";
+    std::string FAIL = "\033[91m";
+    std::string ENDC = "\033[0m";
+    std::string BOLD = "\033[1m";
+    std::string UNDERLINE = "\033[4m";
+} tcol;
+
+
 int node_id=0;  // unique id of the nodes
 int arc_id=0;   // unique id of the arcs
 
@@ -503,8 +516,8 @@ void PNPGenerator::save(const char* filename, bool noGraphics) {
     std::ofstream of(ss.str().c_str());
     of << pnp;
     of.close();
-    std::cout << "PNP '" << pnp.getName() << "' saved." << std::endl;
-    std::cout << "PNP stats: '" << pnp.stats() << std::endl;
+    std::cout << tcol.OKGREEN << "PNP '" << pnp.getName() << "' saved." << tcol.ENDC << std::endl;
+    std::cout << tcol.OKGREEN << "PNP stats: '" << pnp.stats() << tcol.ENDC << std::endl;
 }
 
 
@@ -1231,9 +1244,13 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
     // cout << "current action: " << next << endl;
     // cout << "rest of the plan: " << plan << endl;
 
-    // TODO
     // if there are spaces or new lines in the name of an action returns an error and quit the PNP generation
     // example: if ; is missing between two actions the generation should show an error!!!
+
+    if (next.find(" ")!=string::npos) {
+        cout << tcol.FAIL << "*** ERROR *** Action name " << next << " not valid. Plan not generated!" << tcol.ENDC << endl;
+        exit(-2);
+    }
 
     //conditioning: go deep
     if(next.find('<') != string::npos){
