@@ -860,7 +860,7 @@ void PNPGenerator::applyExecutionRules() {
         vector<TExecutionRule>::iterator eit;
         eit = executionrules.v.begin();
         while (eit!=executionrules.v.end()) {
-            if (eit->action==current_action) {
+            if (eit->action==current_action || eit->action=="anything") {
                 cout << "    " << eit->condition << " -> " << eit->recoveryplan << "  - conf: " << eit->confidence << endl;
 
                 boost::trim(eit->recoveryplan);
@@ -1251,6 +1251,11 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
 
     // if there are spaces or new lines in the name of an action returns an error and quit the PNP generation
     // example: if ; is missing between two actions the generation should show an error!!!
+
+    if (next.find(" ")!=string::npos) {
+        cout << tcol.FAIL << "*** ERROR *** Action name " << next << " not valid. Plan not generated!" << tcol.ENDC << endl;
+        exit(-2);
+    }
 
     //conditioning: go deep
     if(next.find('<') != string::npos){
