@@ -1247,11 +1247,6 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
     // if there are spaces or new lines in the name of an action returns an error and quit the PNP generation
     // example: if ; is missing between two actions the generation should show an error!!!
 
-    if (next.find(" ")!=string::npos) {
-        cout << tcol.FAIL << "*** ERROR *** Action name " << next << " not valid. Plan not generated!" << tcol.ENDC << endl;
-        exit(-2);
-    }
-
     //conditioning: go deep
     if(next.find('<') != string::npos){
       boost::trim(next);
@@ -1376,6 +1371,12 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       return genFromLine_r(pi,plan);
    }
    else { // normal action
+
+      if (next.find(" ")!=string::npos) {
+          cout << tcol.FAIL << "*** ERROR *** Action name " << next << " not valid. Plan not generated!" << tcol.ENDC << endl;
+          exit(-2);
+      }
+
 	  Place *poa; // place to save in the stack (init place of action)
       Place *n = pnp.addGeneralAction(next,pi,&poa);
 	  addActionToStacks(next,poa);
