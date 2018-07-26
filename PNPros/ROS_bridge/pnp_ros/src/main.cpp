@@ -310,6 +310,7 @@ int main(int argc, char** argv)
 
             if (planName=="stop") {
 			  cerr << "\033[22;31;1mWaiting for a plan...\033[0m" << endl;
+              np.setParam(PARAM_PNP_CURRENT_PLAN,"stop");
 
 			  while (planToExec=="" && ros::ok()) {
 			      rate.sleep();
@@ -418,6 +419,8 @@ int main(int argc, char** argv)
                             activePlaces.data = "abort";
                             currentActivePlacesPublisher.publish(activePlaces);
                         }
+
+                        np.setParam(PARAM_PNP_CURRENT_PLAN,"stop");
 
                     } // if executor getMainPlanName ...
 
