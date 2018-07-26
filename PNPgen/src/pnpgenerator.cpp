@@ -772,15 +772,19 @@ void PNPGenerator::applyOneExecutionRule(Place *current_place, string condition,
 
     if (v.size()>1) {
         // build actual plan without recovery specification
+        int n = v.size()-2;
+        if (v[v.size()-1].size()==0)
+            n--;
+
         string plan = ""; int i=0;
-        for (i=0; i<v.size()-2; i++)
+        for (i=0; i<n; i++)
             plan = plan + v[i] + ";";
         plan = plan + v[i];
 
         //cout << "-- recovery plan " << plan << endl;
         po = genLinearPlan(pi,plan,false); // output place of linear plan
 
-        R = v[v.size()-1];
+        R = v[n+1];
     }
     else {
         R = recoveryplan;
@@ -834,6 +838,7 @@ void PNPGenerator::applyOneExecutionRule(Place *current_place, string condition,
     else {
 
         cout << endl << "\033[22;31;1mERROR: Invalid last action of recovery procedure [" << R << "]" << endl
+             << "Valid values: fail_plan, goal, restart_plan, restart_action, skip_action" << endl
              << "PLAN NOT GENERATED !!!\033[0m" << endl;
         exit(-1);
     }
