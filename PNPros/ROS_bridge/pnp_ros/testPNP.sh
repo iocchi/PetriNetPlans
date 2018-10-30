@@ -8,7 +8,7 @@ echo "Executing plan $PLAN"
 
 xterm -e roscore &
 sleep 3
-xterm -e scripts/PNPActionServer.py &
+xterm -e py/PNPActionServer.py &
 sleep 3
 xterm -e rosrun pnp_ros pnp_node _current_plan:=$PLAN &
 sleep 1
