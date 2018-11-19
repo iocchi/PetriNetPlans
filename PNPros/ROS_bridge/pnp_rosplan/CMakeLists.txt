@@ -112,14 +112,20 @@ catkin_package(
 ## Build ##
 ###########
 
+find_library(PNP_LIBRARY NAMES pnp PATHS $ENV{PNP_LIB})
+get_filename_component(PNP_LIBRARY_DIR ${PNP_LIBRARY} DIRECTORY CACHE)
+find_library(PNPGEN_LIBRARY NAMES pnpgen PATHS $ENV{PNP_LIB})
+
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(include)
 include_directories(
   ${pnp_ros_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
-#  $ENV{PNP_INCLUDE}/../../PNPgen/src
-#  $ENV{PNP_INCLUDE}/../../PNPgen/src/pnp_translator
+  $ENV{PNP_INCLUDE}/../../PNPgen/src
+  $ENV{PNP_INCLUDE}/../../PNPgen/src/pnp_translator
+  ${PNP_LIBRARY_DIR}/../include
 )
 #link_directories($ENV{PNPGEN_LIB})
 
@@ -142,7 +148,7 @@ include_directories(
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(pnp_rosplan_node
-   pnpgen
+   ${PNPGEN_LIBRARY}
    ${catkin_LIBRARIES}
    ${pnpgen_LIBRARIES}
  )

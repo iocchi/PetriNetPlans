@@ -50,3 +50,5 @@ install(TARGETS pnpgen prumdp pnpgen_linear pnpgen_policy pnpgen_pru pnpgen_tran
   RUNTIME DESTINATION bin
 )
 
+install(DIRECTORY src/pnp_translator DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
+install(FILES src/pnpgenerator.h src/conditionalplan.h src/policy.h DESTINATION ${CMAKE_INSTALL_PREFIX}/include)
