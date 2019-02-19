@@ -148,6 +148,7 @@ class PNPCmd(PNPCmd_Base):
             return []
 
     def quit_running_actions(self):
+        print('Quitting all running actions %r ...' %self.running_actions())
         self.memory_service.raiseEvent(key_quitrunningactions, "unused")
         time.sleep(0.1)
 

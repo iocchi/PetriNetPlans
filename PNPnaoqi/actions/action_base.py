@@ -18,6 +18,7 @@ class tcol:
 
 G_actionThread_exec = {}  # action thread execution functions
 G_actionThreads = {}  # action threads functions
+G_actionClasses = {}  # action classes
 G_memory_service = None 
 G_session = None
 
@@ -58,7 +59,7 @@ def quitactions_cb(value):
 
 # value = '<command> <actionname> <params>'
 def doActionCmd(value):
-    global G_actionThreads, G_actionThread_exec, G_memory_service, G_session
+    global G_actionThreads, G_actionThread_exec, G_actionClasses, G_memory_service, G_session
     global G_actions_running 
     print "action_cb value ",value
     v = value.split()
@@ -68,7 +69,10 @@ def doActionCmd(value):
         if (len(v)>2):
             params=v[2]
         
-        if (actionName in G_actionThread_exec):
+        if (actionName in G_actionClasses):
+            G_actionClasses[actionName].start(params)            
+
+        elif (actionName in G_actionThread_exec):
             G_actionThreads[actionName] = threading.Thread(target = G_actionThread_exec[v[1]], args=(params,))
             G_actionThreads[actionName].mem_serv = G_memory_service
             G_actionThreads[actionName].session = G_session
@@ -90,7 +94,11 @@ def doActionCmd(value):
     elif (v[0]=='end' or v[0]=='stop' or v[0]=='interrupt'):
         try:
             actionName = v[1]
-            G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
+
+            if (actionName in G_actionClasses):
+                G_actionClasses[actionName].stop()            
+            else:
+                G_actionThreads[actionName].do_run = False  # execution thread associated to actionName
         except:
             print("%sERROR: Action %s not started !!!%s" %(tcol.FAIL,v[1],tcol.ENDC))
 
@@ -121,13 +129,20 @@ def update_quit_action_status(actionName, status):
 
 # action terminated by the action thread
 def action_termination(actionName,params,status=''):
-    global  G_memory_service, G_actionThreads
+    global  G_memory_service, G_actionThreads, G_actionClasses
     if (not actionName in G_actionThreads):
         print("Action %s not in action threads" %actionName)
         return
     colstatus = tcol.OKGREEN
     if (status==''):
-        if G_actionThreads[actionName].do_run:
+        check_run = False
+        if actionName in G_actionClasses:
+            check_run = G_actionClasses[actionName].do_run
+            G_actionClasses[actionName].do_run = False  # actual sets do_run to False
+        else:
+            check_run = G_actionThreads[actionName].do_run
+            G_actionThreads[actionName].do_run = False  # actual sets do_run to False
+        if check_run:
             status = 'success'            
         else:
             status = 'failure'
@@ -150,7 +165,7 @@ def action_failure(actionName,params):
     action_failed(actionName,params)
 
 
-def initApp(actionName):
+def initApp(appName='initApp'):
     
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--pip", type=str, default=os.environ['PEPPER_IP'],
@@ -165,7 +180,7 @@ def initApp(actionName):
 	try:
 		connection_url = "tcp://" + pip + ":" + str(pport)
 		print "Connecting to ",	connection_url
-		app = qi.Application(["Action_"+actionName, "--qi-url=" + connection_url ])
+		app = qi.Application([appName, "--qi-url=" + connection_url ])
 	except RuntimeError:
 		print ("Can't connect to Naoqi at ip \"" + pip + "\" on port " + str(pport) +".\n"
                "Please check your script arguments. Run with -h option for help.")
@@ -175,12 +190,8 @@ def initApp(actionName):
 	return app
 
 
-def init(session, actionName, actionThread_exec):
-    global G_actionThread_exec, G_memory_service, G_session, acb, acb2, qacb
-    G_actionThread_exec[actionName] = actionThread_exec # execution thread function associated to actionName
-    G_session = session
-    G_memory_service  = session.service("ALMemory")
-
+def subscribePNPevents():
+    global acb, acb2, qacb, G_memory_service
     #subscribe to PNP action event
     if (acb==None):
         print('Naoqi subscriber to %s' %(key_actioncmd))
@@ -195,9 +206,78 @@ def init(session, actionName, actionThread_exec):
         qacb = G_memory_service.subscriber(key_quitrunningactions)
         qacb.signal.connect(quitactions_cb)
 
-    G_memory_service.declareEvent(key_actionresult+actionName);
-    #G_memory_service.declareEvent(key_currentaction);
 
+
+def init(session, actionName, actionThread_exec):
+    global G_actionThread_exec, G_memory_service, G_session, key_actionresult
+    G_actionThread_exec[actionName] = actionThread_exec # execution thread function associated to actionName
+    G_session = session
+    if G_memory_service == None:
+        G_memory_service = session.service("ALMemory")
+    G_memory_service.declareEvent(key_actionresult+actionName);
+    subscribePNPevents()
     print "Naoqi Action server "+actionName+" running..."
+
+
+def initActionClass(actionName, objref):
+    global G_actionClasses, G_memory_service, G_session
+    G_actionClasses[actionName] = objref  # object reference associated to function
+    if G_memory_service == None:
+        G_memory_service = objref.memory_service
+    subscribePNPevents()
+    print "Naoqi Action server "+actionName+" running..."
+
+
+
+class NAOqiAction_Base(object):
+
+    def __init__(self, actionName, session):
+        global key_actionresult
+        self.actionName = actionName
+        print('init action %s' %self.actionName)
+        self.session = session
+        self.memory_service = session.service("ALMemory")
+        initActionClass(self.actionName, self)
+        self.memory_service.declareEvent(key_actionresult+actionName);
+        self.do_run = False
+
+    def __del__(self):
+        # just in case
+        self.stop()
+
+
+    def start(self, params):
+        global G_actionThreads, G_actions_running, key_actionstatus, key_action_starttime, key_runningactions
+        if self.actionThread_exec != None:
+            # execution thread associated to actionName
+            G_actionThreads[self.actionName] = threading.Thread(target = self.actionThread_exec, args=(params,))
+
+            self.memory_service.raiseEvent(key_actionstatus+self.actionName,"run");
+
+            # start time
+            self.starttime = time.time() # seconds
+            G_actionThreads[self.actionName].starttime = self.starttime
+            self.memory_service.insertData(key_action_starttime+self.actionName,str(self.starttime));
+            #print('action_base setting starttime %s : %f' %(self.actionName, self.starttime))
+            
+            self.do_run = True
+            print('start action %s' %self.actionName)
+            G_actionThreads[self.actionName].start()            
+            
+            G_actions_running.append(self.actionName)
+            self.memory_service.insertData(key_runningactions, G_actions_running)
+            self.memory_service.raiseEvent(key_runningactions, G_actions_running)
+
+
+    def isRunning(self):
+        return self.do_run
+
+
+    def stop(self):
+        print('stop action %s' %self.actionName)
+        if self.actionThread_exec == None:
+            # print('Action %s not running' %(self.actionName))
+            pass
+        self.do_run = False
 
 

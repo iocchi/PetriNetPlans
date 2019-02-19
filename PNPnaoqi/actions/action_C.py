@@ -30,6 +30,8 @@ def quit():
 
 if __name__ == "__main__":
 
+    print('Starting action server for action %s (CTRL-C to quit)' %actionName)
+
     app = action_base.initApp(actionName)
         
     init(app.session)

@@ -121,6 +121,31 @@ class PNPCmd_Base(object):
         return r
 
 
+
+    def start_action(self, action, params):
+        self.printindent()
+        print("%sStart: %s %s %s" %(tcol.OKGREEN,action,params,tcol.ENDC))
+
+        self.action_cmd_base(action, params, 'start')
+        time.sleep(0.1)
+
+
+    def wait_for_termination(self, action):
+        # wait for action to terminate, returns termination status
+        r = 'run'
+        while (r=='run'):
+            r = self.action_status(action)
+            time.sleep(0.1)
+
+        self.printindent()
+        if (r=='success'):
+            print("  %s%s .. -> %s%s" %(tcol.OKGREEN,action,r,tcol.ENDC))
+        else:
+            print("  %s%s .. -> %s%s" %(tcol.FAIL,action,r,tcol.ENDC))
+        return r
+
+
+
     def plan_gen(self, planname):
         oscmd = 'cd %s; ./genplan.sh %s.plan %s.er' % (self.plan_folder, planname, planname)
         print(oscmd)

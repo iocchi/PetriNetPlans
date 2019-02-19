@@ -71,6 +71,18 @@
       or stopped with 'python run_plan.py --plan stop')
 
 
+5. Write actions
+
+    An action requires a name and a procedure that implements it. There are two ways of defining actions: using Python functions (see example in action_A.py) or using a class (see example in action_B.py).
+    The action procedure will be executed in a thread monitored by the do_run variable.
+    Make sure that the action is reactive to this variable and that it stops as soon as do_run variable is set to False outside the action itself.
+
+    Class-based actions can use self.do_run to read the action control variable and self.session and self.memory_service to access NAOqi session.
+    Function-based actions can access such values through the getattr function.
+
+    Each action file has to include an init(session) and a quit() function that are used to automatically initialize the action by a general action initialization script.
+
+
 6. Test single actions
 
     Start the action servers and use action_cmd script to start/end/interrupt single actions
@@ -78,7 +90,7 @@
     Example:
 
     Terminal 1:
-    $ cd actions
+    $ cd <PetriNetPlans>/PNPnaoqi/actions
     $ python init_actions.py
 
     Terminal 2:

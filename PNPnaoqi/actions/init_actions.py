@@ -80,13 +80,15 @@ def init_actions(modules, session=None):
         if "init" in module.__dict__:
             try:
                 module.init(session)
-                actions_running.append(module.__name__)
+                #actions_running.append(module.__name__)
+                actions_running.append(module.actionName)
             except Exception as e:
-                print("*** exception quitting action %s: %s ***"
+                print("*** exception initialising action %s: %s ***"
                       % (module.__name__, str(e)))
                 failed_inits.append(module.__name__)
+
     if len(actions_running) > 0:
-        print("%s+++ actions running:: \n  + %s%s" %
+        print("%s+++ action servers running: \n  + %s%s" %
             (tcol.OKGREEN, '\n  + '.join(actions_running), tcol.ENDC))
     if len(failed_inits) > 0:
         print("%s*** failed initialisations: \n  ! %s%s" %
@@ -105,7 +107,7 @@ def quit_actions(modules):
             try:
                 module.quit()
             except Exception as e:
-                print("*** exception initialising action %s: %s ***"
+                print("*** exception quitting action %s: %s ***"
                       % (module.__name__, str(e)))
 
 
