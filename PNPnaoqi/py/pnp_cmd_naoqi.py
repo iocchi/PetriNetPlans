@@ -37,11 +37,12 @@ key_quitrunningactions = "PNP/QuitRunningActions/"
 
 class PNPCmd(PNPCmd_Base):
 
-    def __init__(self):
+    def __init__(self, app=None):
         PNPCmd_Base.__init__(self)
         self.memory_service = None
         self.pip=os.environ['PEPPER_IP']
         self.pport=9559
+        self.app = app
 
 
     def init(self):
@@ -68,17 +69,19 @@ class PNPCmd(PNPCmd_Base):
 
     def begin(self):
         #Starting application
-        try:
-            connection_url = "tcp://" + self.pip + ":" + str(self.pport)
-            print "Connecting to ",    connection_url
-            app = qi.Application(["Conditions", "--qi-url=" + connection_url ])
-        except RuntimeError:
-            print ("Can't connect to Naoqi at ip \"" + pip + "\" on port " + str(pport) +".\n"
-                   "Please check your script arguments. Run with -h option for help.")
-            sys.exit(1)
+        if self.app==None:
+            try:
+                connection_url = "tcp://" + self.pip + ":" + str(self.pport)
+                print "Connecting to ",    connection_url
+                self.app = qi.Application(["Conditions", "--qi-url=" + connection_url ])
+            except RuntimeError:
+                print ("Can't connect to Naoqi at ip \"" + pip + "\" on port " + str(pport) +".\n"
+                       "Please check your script arguments. Run with -h option for help.")
+                sys.exit(1)
 
-        app.start()
-        self.memory_service  = app.session.service("ALMemory")
+        self.app.start()
+
+        self.memory_service  = self.app.session.service("ALMemory")
         self.memory_service.declareEvent(key_actioncmd);
         self.memory_service.declareEvent(key_quitrunningactions);
 
@@ -87,7 +90,7 @@ class PNPCmd(PNPCmd_Base):
         pass
 
     def action_cmd(self,action,params,cmd):
-        v = cmd+" "+action+" "+params
+        v = cmd+" "+action+" "+str(params)
         #print('Writing on key: %s value: %s\n' %(key_actioncmd, v))
         self.memory_service.raiseEvent(key_actioncmd, v)
 

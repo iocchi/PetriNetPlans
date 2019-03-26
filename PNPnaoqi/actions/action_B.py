@@ -18,7 +18,7 @@ class ActionB(NAOqiAction_Base):
 
     def actionThread_exec (self, params):
         # self.memory_service 
-        print "Action "+actionName+" started with params "+params
+        print "Action "+self.actionName+" started with params "+params
         if params=='':
             params = '3' # default
         # action init
@@ -26,7 +26,7 @@ class ActionB(NAOqiAction_Base):
         count = int(float(params) / dt)
         # action init
         while (self.do_run and count>0): 
-            print "Action "+actionName+" "+params+" exec..."
+            print "Action "+self.actionName+" "+params+" exec..."
             #print "DEBUG:: Action thread ",t," run ",getattr(t, "do_run", True)
             # action exec
             count = count-1
@@ -36,7 +36,7 @@ class ActionB(NAOqiAction_Base):
         # action end
         count = 0
         # action end
-        action_termination(actionName,params)
+        action_termination(self.actionName,params)
         #action_success(actionName,params)
         #action_failure(actionName,params)
 

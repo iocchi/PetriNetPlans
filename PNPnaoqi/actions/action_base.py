@@ -219,13 +219,13 @@ def init(session, actionName, actionThread_exec):
     print "Naoqi Action server "+actionName+" running..."
 
 
-def initActionClass(actionName, objref):
+def initActionClass(objref):
     global G_actionClasses, G_memory_service, G_session
-    G_actionClasses[actionName] = objref  # object reference associated to function
+    G_actionClasses[objref.actionName] = objref  # object reference associated to function
     if G_memory_service == None:
         G_memory_service = objref.memory_service
     subscribePNPevents()
-    print "Naoqi Action server "+actionName+" running..."
+    print "Naoqi Action server "+objref.actionName+" running..."
 
 
 
@@ -237,7 +237,7 @@ class NAOqiAction_Base(object):
         print('init action %s' %self.actionName)
         self.session = session
         self.memory_service = session.service("ALMemory")
-        initActionClass(self.actionName, self)
+        initActionClass(self)
         self.memory_service.declareEvent(key_actionresult+actionName);
         self.do_run = False
 

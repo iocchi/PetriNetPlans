@@ -129,6 +129,12 @@ class PNPCmd_Base(object):
         self.action_cmd_base(action, params, 'start')
         time.sleep(0.1)
 
+    def interrupt_action(self, action):
+        self.printindent()
+        print("%sInterrupt: %s %s" %(tcol.WARNING,action,tcol.ENDC))
+
+        self.action_cmd_base(action, '', 'interrupt')
+        time.sleep(0.1)
 
     def wait_for_termination(self, action):
         # wait for action to terminate, returns termination status
@@ -144,6 +150,22 @@ class PNPCmd_Base(object):
             print("  %s%s .. -> %s%s" %(tcol.FAIL,action,r,tcol.ENDC))
         return r
 
+
+    def start_plan(self, planname):  # non-blocking
+        self.plan_cmd(planname, 'start')
+
+
+    def stop_plan(self, planname):   # non-blocking
+        self.plan_cmd(planname, 'end')
+
+
+    def execute_plan(self, planname):   # blocking
+        self.plan_cmd(planname, 'start')
+        r = 'run'
+        while r=='run':
+            r = self.plan_status()
+            time.sleep(0.5)
+        return r
 
 
     def plan_gen(self, planname):

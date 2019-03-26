@@ -13,6 +13,7 @@ def set_condition(memory_service, atom, value):
     if (atom!=''):
         key = "PNP_cond_"+atom
         memory_service.insertData(key,value);
+        #print "Setting ", atom, " to ", value
 
 
 # Input: either 'cond' or 'not_cond'
@@ -30,6 +31,7 @@ def get_condition(memory_service, literal):
         try:
             key = "PNP_cond_"+cond
             cval = memory_service.getData(key);
+            cval = str(cval)
             if (not neg):
                 val = (cval.lower()=='true') or (cval=='1')
             else:
@@ -38,7 +40,7 @@ def get_condition(memory_service, literal):
             cval = 'except'
             val = False # 'Unknown'
 
-    #print "Evaluating ", literal, " cval ", cval, " neg: ", neg, " -> ", val
+        #print "Evaluating ", literal, " cval ", cval, " neg: ", neg, " -> ", val
     return val
     
 
