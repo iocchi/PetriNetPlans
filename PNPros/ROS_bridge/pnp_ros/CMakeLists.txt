@@ -92,7 +92,7 @@ catkin_package(
 ###########
 
 find_library(PNP_LIBRARY NAMES pnp PATHS $ENV{PNP_LIB})
-
+get_filename_component(PNP_LIBRARY_DIR ${PNP_LIBRARY} DIRECTORY CACHE)
 
 
 ## Specify additional locations of header files
@@ -102,9 +102,9 @@ include_directories(
   $ENV{PNP_INCLUDE}
   ${catkin_INCLUDE_DIRS}
   ${BOOST_INCLUDE_DIRS}
+  ${PNP_LIBRARY_DIR}/../include
 )
 link_directories($ENV{PNP_LIB})
-#message(include_var $ENV{PNP_INCLUDE})
 
 ## Declare a cpp library
 add_library(pnpros
