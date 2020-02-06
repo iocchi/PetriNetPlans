@@ -4,7 +4,7 @@ Compilation and Installation
 
 * Install dependent libraries
 
-    $ sudo apt-get install g++ cmake libboost1.54-dev libxml2 libxml2-dev flex 
+    $ sudo apt-get install g++ cmake libxml2 libxml2-dev flex 
 
 * Compile the code
 

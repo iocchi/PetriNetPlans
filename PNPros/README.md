@@ -14,8 +14,6 @@ For example
 
     catkin_ws/src$ ln -s <path_to_PNP>/PNPros/ROS_bridge/pnp_ros .
     catkin_ws/src$ ln -s <path_to_PNP>/PNPros/ROS_bridge/pnp_msgs .
-    catkin_ws/src$ ln -s <path_to_PNP>/PNPros/ROS_bridge/rp_action .
-    catkin_ws/src$ ln -s <path_to_PNP>/PNPros/ROS_bridge/rp_action_msgs .
 
 and run '''catkin_make''' from your catkin workspace
 to compile the ROS packages related to PNPros

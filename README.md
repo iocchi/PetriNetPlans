@@ -21,7 +21,7 @@ Please follow this order.
 2. Compile and test pnp_ros and rp_action (see PNPros/README.txt)
 
 These packages have been tested with Ubuntu 12.04 + ROS hydro, 
-Ubuntu 14.04 + ROS indigo, Ubuntu 16.04 + ROS Kinetic.
+Ubuntu 14.04 + ROS indigo, Ubuntu 16.04 + ROS Kinetic, Ubuntu 18.04 + ROS Melodic.
 
 If you encounter and problem, please contact one of the maintainers
 (e.g., iocchi@dis.uniroma1.it)
