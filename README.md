@@ -5,11 +5,9 @@ Petri Net Plans
 This repository contains Petri Net Plans library, PNP ROS bridge and some sample applications.
 More information on the PNP web site: pnp.dis.uniroma1.it
 
+This master branch contains up-to-date development of main PNP library, other utilities for plan generation, bridges with ROS and NAOqi and examples.
 
-This master branch contains up-to-date development, with hydro/indigo version of PNPros.
-
-Look for ROS-groovy branch for ROS groovy version of PNPros.
-
+PNP is licensed under GPL v3.
 
 How to install and run
 ======================
@@ -18,13 +16,14 @@ Please follow this order.
 
 1. Compile and install PNP (see PNP/README.txt)
 
-2. Compile and test pnp_ros and rp_action (see PNPros/README.txt)
+2. Compile and test pnp_ros and rp_action (see PNPros/README.md)
 
 These packages have been tested with Ubuntu 12.04 + ROS hydro, 
 Ubuntu 14.04 + ROS indigo, Ubuntu 16.04 + ROS Kinetic, Ubuntu 18.04 + ROS Melodic.
 
 If you encounter and problem, please contact one of the maintainers
-(e.g., iocchi@dis.uniroma1.it)
+(e.g., iocchi@diag.uniroma1.it)
+
 
 How to use variables in PNP
 ======================
