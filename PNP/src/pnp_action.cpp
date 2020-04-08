@@ -25,7 +25,7 @@ void PnpAction::fail() { PNP_OUT("failing action");}
 void PnpAction::executeStep() {PNP_OUT("executing action step"); }
   
   
-void PnpAction::init(const string& params2)  throw(invalid_argument)
+void PnpAction::init(const string& params2) // throw(invalid_argument)
 {
 	initParams();
 	string params = params2;
@@ -36,7 +36,7 @@ void PnpAction::init(const string& params2)  throw(invalid_argument)
 	}
 }
 
-void PnpAction::setParamByName(const string& paramName, const string& value) throw(invalid_argument)
+void PnpAction::setParamByName(const string& paramName, const string& value) // throw(invalid_argument)
 {
 	map<string, pair<string, void*> >::iterator it = params.find(paramName);
 	if (it == params.end()) {

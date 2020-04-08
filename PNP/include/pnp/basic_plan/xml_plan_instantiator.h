@@ -31,7 +31,7 @@ namespace PetriNetPlans {
 	* 				\p filePath
 	* \exception std::runtime_error thrown whenever the parsing fails
 	*/
-      void loadFromPNML(const std::string& filePath,  PnpPlan* plan) throw(std::runtime_error);
+      void loadFromPNML(const std::string& filePath,  PnpPlan* plan); // throw(std::runtime_error)
 
 	  /**
 	  *\brief dtor

@@ -31,7 +31,7 @@ class ExecutableInstantiator {
 	* \exception runtime_error if it cannot istantiate the executable (e.g. the name
 	* is wrong)
 	*/
-    virtual PnpExecutable* createExecutable(const std::string& name) throw(std::runtime_error) = 0;
+    virtual PnpExecutable* createExecutable(const std::string& name) = 0; // throw(std::runtime_error)
 
 	/** 
 	* \brief dtor

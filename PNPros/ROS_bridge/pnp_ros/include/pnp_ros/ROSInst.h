@@ -20,7 +20,7 @@ namespace pnpros
 			
 			virtual ~ROSInst();
 			
-			virtual PetriNetPlans::PnpExecutable* createExecutable(const std::string& name) throw(std::runtime_error);
+			virtual PetriNetPlans::PnpExecutable* createExecutable(const std::string& name); // throw(std::runtime_error)
 	};
 }
 

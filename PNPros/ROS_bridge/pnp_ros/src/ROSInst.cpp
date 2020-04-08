@@ -14,7 +14,7 @@ namespace pnpros
 	
 	ROSInst::~ROSInst() {;}
 	
-	PnpExecutable* ROSInst::createExecutable(const string& name) throw (runtime_error)
+	PnpExecutable* ROSInst::createExecutable(const string& name) // throw (runtime_error)
 	{
 		string actionName, path;
 		ifstream file;

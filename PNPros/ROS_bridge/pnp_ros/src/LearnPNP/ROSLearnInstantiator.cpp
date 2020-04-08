@@ -60,7 +60,7 @@ namespace pnpros
 			return learnLog;
 		}
 		
-		PnpExecutable* ROSLearnInstantiator::createExecutable(const string& name) throw(runtime_error)
+		PnpExecutable* ROSLearnInstantiator::createExecutable(const string& name) // throw(runtime_error)
 		{
 			if (name == "fakeplan") return new PnpPlan(this,0,"fake");
 			

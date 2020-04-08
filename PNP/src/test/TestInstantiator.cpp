@@ -23,8 +23,8 @@ TestInstantiator::TestInstantiator ( RewEnv *checker ) :
 
 }
 
-PnpExecutable* TestInstantiator::createExecutable ( const std::string& name )
-throw ( std::runtime_error ) {
+PnpExecutable* TestInstantiator::createExecutable ( const std::string& name ) //throw ( std::runtime_error ) 
+{
 
 	if ( name == "fake" )
 		return new LearnPlan ( this,checker,createController ( "fake_txt" ) );
@@ -50,9 +50,6 @@ throw ( std::runtime_error ) {
 
 		return plan;
 	} catch ( std::runtime_error& ) {
-
-
-
 		throw std::runtime_error ( "unknown action " + name );
 	}
 }

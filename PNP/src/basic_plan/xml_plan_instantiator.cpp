@@ -26,8 +26,8 @@ struct hideParams {
 	xmlNodePtr cur;
 };
 
-void XMLPnpPlanInstantiator::loadFromPNML ( const string& filePath, PnpPlan* plan )
-throw ( runtime_error ) {
+void XMLPnpPlanInstantiator::loadFromPNML ( const string& filePath, PnpPlan* plan ) // throw ( runtime_error ) 
+{
 
 	xmlDocPtr doc;
 

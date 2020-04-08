@@ -40,7 +40,8 @@ double Learner::valueOf(const Marking& s)  {
 	return V[s];
 }
 
-double Learner::valueOfId(const std::string& s) throw(std::runtime_error) {
+double Learner::valueOfId(const std::string& s) // throw(std::runtime_error) 
+{
 	std::map<Marking,double>::const_iterator it = V.begin();
 
 	for(; it != V.end(); ++it) {

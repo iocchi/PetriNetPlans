@@ -39,7 +39,7 @@ class Inst : public PetriNetPlans::ExecutableInstantiator
 		
 		virtual ~Inst();
 		
-		virtual PetriNetPlans::PnpExecutable* createExecutable(const std::string& name) throw(std::runtime_error);
+		virtual PetriNetPlans::PnpExecutable* createExecutable(const std::string& name); // throw(std::runtime_error)
 };
 
 
@@ -50,7 +50,7 @@ Inst::Inst(ExternalConditionChecker* checker, const string& planFolder) : checke
 Inst::~Inst() 
 {}
 
-PnpExecutable* Inst::createExecutable(const string& name) throw (runtime_error)
+PnpExecutable* Inst::createExecutable(const string& name) // throw (runtime_error)
 {
 	string actionName, path;
 	ifstream file;

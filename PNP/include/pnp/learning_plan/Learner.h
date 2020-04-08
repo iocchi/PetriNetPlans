@@ -63,7 +63,7 @@ public:
 	 *\param s the state whose value must be returned.
 	 *\throw std::runtime_error if there is no marking with id \p s
 	 */
-	virtual double valueOfId(const std::string& s) throw(std::runtime_error);
+	virtual double valueOfId(const std::string& s); // throw(std::runtime_error);
 
 	/**
 	*\brief Updates the value function according to a transition between two states

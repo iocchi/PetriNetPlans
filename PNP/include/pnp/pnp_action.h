@@ -125,7 +125,7 @@ public:
 	* \throw std::invalid_argument if the string \p params contains parameters that
 	* do not exist or their type is not recognized
 	*/
-	virtual void init(const std::string& params)  throw(std::invalid_argument);
+	virtual void init(const std::string& params);  // throw(std::invalid_argument)
 	
 	/**
 	*\brief Sets a single parameter from its string representation
@@ -139,7 +139,7 @@ public:
 	*\throw std::invalid_argument if the \p paramName does not correspond to any parameter
 	* or its type is not recognized
 	*/
-	virtual void setParamByName(const std::string& paramName, const std::string& value)  throw(std::invalid_argument);
+	virtual void setParamByName(const std::string& paramName, const std::string& value); //  throw(std::invalid_argument)
 	//@}
 	
 	/**
@@ -149,7 +149,9 @@ public:
 	* that do not use ActionFactory for their instantiation will not 
 	* have to implement it. You can also use the macro #ACTION_DEFAULT_CLONE()
 	*/
-	virtual PnpAction* clone() const {throw std::runtime_error("This class does not prove a clone() method");}
+	virtual PnpAction* clone() const {
+        throw std::runtime_error("This class does not prove a clone() method");
+    }
 
 protected:
     /**
