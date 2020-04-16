@@ -26,9 +26,9 @@ PNP is licensed under GPL v3.
 
 Download the library and compile the components, following this order.
 
-* Compile and install PNP (see [PNP/README.txt](PNP/README.txt))
+* Compile and install PNP (see [PNP/README.md](PNP/README.md))
 
-* Compile and install PNPgen (see [PNPgen/README.txt](PNPgen/README.txt))
+* Compile and install PNPgen (see [PNPgen/README.md](PNPgen/README.md))
 
 * Compile pnp_ros and rp_action (see [PNPros/README.md](PNPros/README.md))
 
