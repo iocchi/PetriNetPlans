@@ -10,9 +10,7 @@ if [ ! "$1" == "" ]; then
 fi
 
 # change setings here if needed
-PNP_HOME=$HOME/src/PetriNetPlans
 PLAYGROUND_FOLDER=$HOME/playground
-
 
 echo "Running image $IMAGENAME:$VERSION ..."
 

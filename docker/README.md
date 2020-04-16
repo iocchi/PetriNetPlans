@@ -5,7 +5,7 @@ This folder contains scripts for Docker installation of Petri Net Plans.
 
 ## INSTALL ##
 
-* Install [docker](www.docker.com)
+* Install [docker](http://www.docker.com)
 
     Linux version suggested. See also 
     [Post-installation steps for Linux](https://docs.docker.com/install/linux/linux-postinstall/).
@@ -24,6 +24,9 @@ This folder contains scripts for Docker installation of Petri Net Plans.
     If you want to use different folders, duplicate and modify the `run.bash` script with your own folders.
     Do not change `run.bash` directly.
 
+
+
+
 * Build an image
 
     Choose the version you prefer (you can use both anyway):
@@ -36,11 +39,16 @@ This folder contains scripts for Docker installation of Petri Net Plans.
         cd docker/[1604|1804]
         ./build.bash 
 
+    Note: every time you build an image an updated version of `PetriNetPlans` is downloaded from repository 
+
 
 * Run an image
 
         cd docker/[1604|1804]
         ./run.bash
+
+    These docker images use [tmux](https://github.com/tmux/tmux/wiki) as  terminal multiplexer.
+
 
 * Build and run specific images
 
@@ -50,9 +58,6 @@ This folder contains scripts for Docker installation of Petri Net Plans.
         ./build.bash <new_Dockerfile> <version>
 
         ./run.bash <version>
-
-
-    These docker images use [tmux](https://github.com/tmux/tmux/wiki) as  terminal multiplexer.
 
 
 
