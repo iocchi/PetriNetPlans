@@ -13,7 +13,7 @@ void wave(string params, bool *run);
 void turn360(string params, bool *run);
 void sense1(string params, bool *run);
 
-int closeToHomeCond();
+int closeToHomeCond(string params);
 
 #endif
 

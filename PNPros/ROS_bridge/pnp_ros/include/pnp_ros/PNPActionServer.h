@@ -21,10 +21,15 @@
 #define TIME_THRESHOLD 2
 #define REMEMBERING_TIME 60
 
-typedef void (*action_fn_t)(std::string, bool *); // action name, run flag
-typedef void (*MRaction_fn_t)(std::string, std::string, bool *);  // robot name, action name, run flag
+typedef void (*action_fn_t)(std::string, bool *); // params, run flag
+typedef void (*MRaction_fn_t)(std::string, std::string, bool *);  // robot name, params, run flag
+typedef int (*condition_fn_t)(std::string); // params, return 0:false, 1:true, -1:unknown
+typedef int (*MRcondition_fn_t)(std::string, std::string); // robot name, params, return 0:false, 1:true, -1:unknown
+
 typedef boost::function<void(std::string, bool *)> boost_action_fn_t;
 typedef boost::function<void(std::string, std::string, bool *)> boost_MRaction_fn_t;
+typedef boost::function<int(std::string)> boost_condition_fn_t;
+typedef boost::function<int(std::string, std::string)> boost_MRcondition_fn_t;
 
 typedef actionlib::ActionServer<pnp_msgs::PNPAction> PNPAS;
 
@@ -72,6 +77,8 @@ protected:
     map<string,double> starttime; // ROS Time in seconds
     map<string,boost_action_fn_t> global_PNPROS_action_fns;
     map<string,boost_MRaction_fn_t> global_PNPROS_MRaction_fns;
+    map<string,boost_condition_fn_t> global_PNPROS_condition_fns;
+    map<string,boost_MRcondition_fn_t> global_PNPROS_MRcondition_fns;
     map<string,string> global_PNPROS_variables;
 
 	map<string,int> ConditionCache;
@@ -155,6 +162,7 @@ protected:
     //--------------------------------------------------------------------------
 
 
+    /*** ACTIONS ***/
 
     // For registering and retrieving action functions
     void register_action(string actionname, action_fn_t actionfn);
@@ -182,6 +190,29 @@ protected:
     // void cancelCallback(PNPAS::GoalHandle gh)
     void ActionExecutionThread(PNPAS::GoalHandle gh);
     void CancelAction(string robotname, string action_name, string action_params);
+
+    /*** CONDITIONS ***/
+
+    // For registering and retrieving condition functions
+    void register_condition(string conditionname, condition_fn_t conditionfn);
+
+    void register_MRcondition(string conditionname, MRcondition_fn_t conditionfn); // multi-robot version
+
+    template<class T>
+    void register_condition(string conditionname, int(T::*fp)(std::string), T* obj)  {
+        cout << "PNPROS:: REGISTERING CONDITION " << conditionname << " (class method)" << endl;
+        global_PNPROS_condition_fns[conditionname] = boost::bind(fp, obj, _1);
+    }
+
+    template<class T>
+    void register_MRcondition(string conditionname, int(T::*fp)(std::string, std::string), T* obj)  {
+        cout << "PNPROS:: REGISTERING MR CONDITION " << conditionname << " (class method)" << endl;
+        global_PNPROS_MRcondition_fns[conditionname] = boost::bind(fp, obj, _1, _2);
+    }
+
+    boost_condition_fn_t get_condition_fn(string conditionname);
+    boost_MRcondition_fn_t get_MRcondition_fn(string conditionname);
+
 
     // Condition evaluation
     void addEvent_callback(const std_msgs::String::ConstPtr& msg);
@@ -224,6 +255,10 @@ public:
     virtual void initGlobalVariables() { clear_global_PNPROS_variables(); }
     virtual void unknownvar(string params, bool *run);  // set variables to unknown
     virtual void setvar(string params, bool *run);  // set variables to unknown
+
+    // Predefined conditions
+    int alwaystrue(string params) { return 1; }
+
 };
 
 #endif

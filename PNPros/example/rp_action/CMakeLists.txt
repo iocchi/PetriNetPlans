@@ -109,7 +109,7 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(gotopose src/nodes/gotopose.cpp)
+add_executable(gotopose src/nodes/gotopose.cpp src/nodes/robotpose.cpp)
 target_link_libraries(gotopose ${catkin_LIBRARIES})
 add_executable(stopmove src/nodes/stopmove.cpp)
 target_link_libraries(stopmove ${catkin_LIBRARIES})

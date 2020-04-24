@@ -15,11 +15,13 @@ RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E
 
 RUN apt-get update
 
-RUN apt-get install -y tmux less sudo eom
+RUN apt-get install -y tmux less sudo eom xterm
 
 RUN apt-get install -y nano unzip iputils-ping net-tools openssh-client
 
 RUN apt-get install -y libxml2-dev libxml++2.6-dev flex
+
+RUN apt-get install -y ros-kinetic-navigation ros-kinetic-stage-ros
 
 RUN rm -rf /var/lib/apt/lists/*
 

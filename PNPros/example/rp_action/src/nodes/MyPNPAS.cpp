@@ -22,55 +22,52 @@ private:
     ros::NodeHandle handle;
     ros::Publisher event_pub;
     ros::Subscriber laser_sub;
-    
-    //int status;
-    //std::string movebase_topic;
-    // Define the action client (true: we want to spin a thread)
-    //MoveBaseClient *ac;  
 
 public:
 
-    MyPNPActionServer() : PNPActionServer() //, status(0), movebase_topic(""), ac(NULL)
-    { 
-        // boost::thread t(boost::bind(&MyPNPActionServer::changeStatus, this));
-	event_pub = handle.advertise<std_msgs::String>("PNPConditionEvent", 10); 
-	laser_sub = handle.subscribe("scan", 10, &MyPNPActionServer::laser_callback, this);
+    MyPNPActionServer() : PNPActionServer() { 
+        event_pub = handle.advertise<std_msgs::String>("PNPConditionEvent", 10); 
+        laser_sub = handle.subscribe("scan", 10, &MyPNPActionServer::laser_callback, this);
 
-	// robotname external defined in MyActions.h/cpp
-	handle.param("robot_name",robotname,std::string(""));
-	ROS_INFO("ROBOTNAME: %s",robotname.c_str());
-	
-	register_action("init",&ainit);
-	register_action("gotopose",&gotopose);
-	register_action("home",&home);
-	register_action("wave",&wave);
-	register_action("sense1",&sense1);
-	register_action("turn360",&turn360);
+        // robotname external defined in MyActions.h/cpp
+        handle.param("robot_name",robotname,std::string(""));
+        ROS_INFO("ROBOTNAME: %s",robotname.c_str());
+
+        register_action("init",&ainit);
+        register_action("gotopose",&gotopose);
+        register_action("home",&home);
+        register_action("wave",&wave);
+        register_action("sense1",&sense1);
+        register_action("turn360",&turn360);
+
+        register_condition("closeToHome",&closeToHomeCond);
 	
     }
-    
+
+    /*
     virtual int evalCondition(string cond)
     {
       if (cond == "closeToHome")
       {
-	int res = closeToHomeCond();
-	
-	cerr << "\033[22;34;1mCloseToHome: " << ((res == 1) ? "true" : "false") << "\033[0m" << endl;
-	
-	return res;
+        int res = closeToHomeCond();
+
+        cerr << "\033[22;34;1mCloseToHome: " << ((res == 1) ? "true" : "false") << "\033[0m" << endl;
+
+        return res;
       }
       
       return PNPActionServer::evalCondition(cond);
     }
-    
+    */
+
     void laser_callback(const sensor_msgs::LaserScan::ConstPtr& msg)
     {
       std::vector<float> scans;
       scans=std::vector<float>(msg->ranges);
       if (scans[scans.size()/2]<1.0) {
-	std_msgs::String cond;
-	cond.data = "obstacle";
-	event_pub.publish(cond);
+        std_msgs::String cond;
+        cond.data = "obstacle";
+        event_pub.publish(cond);
       }
     }
 

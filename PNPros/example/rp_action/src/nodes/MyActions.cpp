@@ -2,9 +2,6 @@
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
-//#include <PNPros/PNPAction.h>
-//#include <PNPros/PNPCondition.h>
-//#include <PNPros/PNPActionServer.h>
 #include <sensor_msgs/LaserScan.h>
 
 #include <rp_action_msgs/TurnAction.h>
@@ -18,6 +15,8 @@ std::string robotname="";
 // defined in robotpose.cpp
 bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad);
 
+// defined in gotopose.cpp
+void exec_gotopose(std::string robotname, float GX, float GY, float GTh, bool *run);
 
 using namespace std;
 
@@ -28,62 +27,12 @@ actionlib::SimpleActionClient<rp_action_msgs::TurnAction> *ac_turn = NULL;
 actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *ac_movebase = NULL;  
 
 
+/*** ACTIONS ***/
+
 void start_gotopose(float GX, float GY, float GTh, bool *run) {
 
-  if (ac_movebase==NULL) {
-    // Define the action client (true: we want to spin a thread)
-    ac_movebase = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>(movebase_topic, true);  
+  exec_gotopose(robotname, GX, GY, GTh, run);
 
-    // Wait for the action server to come up
-    while(!ac_movebase->waitForServer(ros::Duration(5.0))){
-		    ROS_INFO("Waiting for move_base action server to come up");
-    }
-  }
-
-  // Read time
-  double secs =ros::Time::now().toSec();
-  while (secs==0) {  // NEEDED OTHERWISE CLOCK WILL BE 0 AND GOAL_ID IS NOT SET CORRECTLY
-	  ROS_ERROR_STREAM("Time is null: " << ros::Time::now());
-	  ros::Duration(1.0).sleep();
-    secs =ros::Time::now().toSec();
-  }
-
-  // Set the goal (MAP frame)
-  move_base_msgs::MoveBaseGoal goal;
-
-  goal.target_pose.header.frame_id = "/map";
-  goal.target_pose.header.stamp = ros::Time::now();
-
-  goal.target_pose.pose.position.x = GX;
-  goal.target_pose.pose.position.y = GY;
-  goal.target_pose.pose.orientation.z = sin(radians(GTh)/2);
-  goal.target_pose.pose.orientation.w = cos(radians(GTh)/2);
-
-  // Send the goal
-  ROS_INFO("Sending goal");
-  ac_movebase->sendGoal(goal);
-
-  // Wait for termination
-  double d_threshold=0.5, d=d_threshold+1.0;
-  while (!ac_movebase->waitForResult(ros::Duration(0.5)) && (*run) && (d>d_threshold)) {
-    // ROS_INFO("Running...");
-    double RX,RY,RTH;
-    if (getRobotPose(robotname, RX, RY, RTH))
-      d = fabs(GX-RX)+fabs(GY-RY);
-  }
-
-  // Print result
-  if (!(*run))
-    ROS_INFO("External interrupt!!!");
-  else if (d<=d_threshold) 
-    ROS_INFO("Target reached (Internal check)");
-  else if (ac_movebase->getState() != actionlib::SimpleClientGoalState::SUCCEEDED)
- 		ROS_INFO("The base failed to reach the move_base goal for some reason");
-  else
-    ROS_INFO("!move_base goal reached!");
-
-  // Cancel all goals (NEEDED TO ISSUE NEW GOALS LATER)
-  ac_movebase->cancelAllGoals(); ros::Duration(1).sleep(); // wait 1 sec
 }
 
 
@@ -104,10 +53,6 @@ void ainit(string params, bool *run) {
   else
       cout << "### Aborted Init  " << endl;
 }
-
-
-
-
 
 void gotopose(string params, bool *run) {
   cout << "### Executing Gotopose ... " << params << endl;
@@ -167,7 +112,7 @@ void turn360(string params, bool *run) {
         cout << "### Aborted turn360  " << endl;
 #else
     // Set turn topic
-    std::string turn_topic = "/"+robotname+"/turn";
+    std::string turn_topic = robotname+"/turn";
 
     // Define the action client (true: we want to spin a thread)
     actionlib::SimpleActionClient<rp_action_msgs::TurnAction> ac(turn_topic, true);
@@ -217,14 +162,23 @@ void sense1(string params, bool *run) {
   cout << "### Executing Sense1 ... " << params << endl;
 }
 
-int closeToHomeCond()
-{
+
+
+/*** CONDITIONS ***/
+
+int closeToHomeCond(string params) {
+  int r = -1; // unknown
   double x, y, theta;
   
-  if (getRobotPose(robotname,x,y,theta))
-  {
-    if ((fabs(x - 2) <= 4) && (fabs(y - 2) <= 4)) return 1;
-    else return 0;
+  if (getRobotPose(robotname,x,y,theta)) {
+    if ((fabs(x - 2) <= 4) && (fabs(y - 2) <= 4)) {
+        // cerr << "\033[22;34;1mCloseToHome\033[0m" << endl;
+        r = 1;
+    }
+    else {
+        r = 0;
+    }
   }
-  else return 0;
+  return r;
 }
+

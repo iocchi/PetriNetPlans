@@ -44,9 +44,7 @@ floorplan
 
 # robots
 erratic( pose [   0.0   1.8 0 0 ] name "robot_0" color "blue")
-erratic( pose [  -1.0   1.8 0 0 ] name "robot_1" color "red")
-erratic( pose [  -8.0 -10.0 0 0 ] name "robot_2" color "green")
-erratic( pose [  -6.0 -10.0 0 0 ] name "robot_3" color "magenta")
+
 
 define box model
 (

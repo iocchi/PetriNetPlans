@@ -1,21 +1,38 @@
 <launch>
-	
+	<arg name="multirobot" default="false" />
+
 	<param name="/use_sim_time" value="true"/>  
 
-	<node pkg="map_server" type="map_server" name="map_server" args="$(find rp_action)/maps/dis-B1.yaml" respawn="false" >
-		<param name="frame_id" value="/map" />
-	</node>
+    <!-- Single robot -->
 
-	<node pkg="stage_ros" type="stageros" name="stageros" args="$(find rp_action)/maps/dis-B1.world" respawn="false">
+    <group unless="$(arg multirobot)">
+
+	  <node pkg="stage_ros" type="stageros" name="stageros" 
+            args="$(find rp_action)/maps/dis-B1.world" respawn="false">
 	      <param name="base_watchdog_timeout" value="0.2"/>
+	      <remap from="base_scan" to="scan" />
+      </node>
 
-	      <remap from="/robot_0/base_scan" to="/robot_0/scan" />
-	      <remap from="/robot_1/base_scan" to="/robot_1/scan" />
+    </group>
 
-	      <!-- remap from="/robot_0/base_laser_link" to="/robot_0/laser_frame" />
-	      <remap from="/robot_1/base_laser_link" to="/robot_1/laser_frame" / -->
 
-	</node>
+    <!-- Multi-robot -->
+
+    <group if="$(arg multirobot)">
+
+	  <node pkg="stage_ros" type="stageros" name="stageros" 
+            args="$(find rp_action)/maps/dis-B1_4robots.world" respawn="false">
+	    <param name="base_watchdog_timeout" value="0.2"/>
+
+	    <remap from="/robot_0/base_scan" to="/robot_0/scan" />
+	    <remap from="/robot_1/base_scan" to="/robot_1/scan" />
+	    <remap from="/robot_2/base_scan" to="/robot_2/scan" />
+	    <remap from="/robot_3/base_scan" to="/robot_3/scan" />
+
+	  </node>
+
+    </group>
+
 
 </launch>
 

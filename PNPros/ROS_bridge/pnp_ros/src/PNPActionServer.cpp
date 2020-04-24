@@ -43,6 +43,9 @@ PNPActionServer::PNPActionServer() : as(nh, "PNP", false)
     register_action("stopcurrentplan",&PNPActionServer::stopcurrentplan,this);
     register_action("unknownvar",&PNPActionServer::unknownvar,this);
     register_action("setvar",&PNPActionServer::setvar,this);
+
+    register_condition("true",&PNPActionServer::alwaystrue,this);
+
 }
 
 PNPActionServer::~PNPActionServer() { }
@@ -344,6 +347,30 @@ boost_MRaction_fn_t PNPActionServer::get_MRaction_fn(string actionname) {
   return global_PNPROS_MRaction_fns[actionname];
 }
 
+
+void PNPActionServer::register_condition(string conditionname, condition_fn_t conditionfn) {
+  cout << "PNPROS:: REGISTERING CONDITION " << conditionname << endl;
+  global_PNPROS_condition_fns[conditionname] = boost::bind(*conditionfn,_1);
+
+}
+
+void PNPActionServer::register_MRcondition(string conditionname, MRcondition_fn_t conditionfn) {
+  cout << "PNPROS:: REGISTERING MR CONDITION " << conditionname << endl;
+  global_PNPROS_MRcondition_fns[conditionname] = boost::bind(*conditionfn,_1,_2);
+}
+
+boost_condition_fn_t PNPActionServer::get_condition_fn(string conditionname) {
+  return global_PNPROS_condition_fns[conditionname];
+}
+
+boost_MRcondition_fn_t PNPActionServer::get_MRcondition_fn(string conditionname) {
+  return global_PNPROS_MRcondition_fns[conditionname];
+}
+
+
+
+
+
 // This function is called in a separate thread for each action to be executed
 // Action implementation must check if run is true during execution, 
 // if not it must abort the action.
@@ -384,8 +411,20 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
 
 }
 
-int PNPActionServer::evalCondition(string cond){
-    return -1;
+int PNPActionServer::evalCondition(string cond) {
+
+    int r = -1; // unknown
+
+    boost_condition_fn_t f = get_condition_fn(cond);
+
+    if (f!=NULL) {
+      string condition_params = "";
+      r = f(condition_params);
+    }
+    else
+      ROS_ERROR_STREAM("??? UNKNOWN Condition " << cond << " ??? ");
+
+    return r;
 }
 
 int PNPActionServer::evalConditionBuffer(string cond){
