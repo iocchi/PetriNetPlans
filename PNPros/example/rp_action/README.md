@@ -18,11 +18,11 @@ Build this package in your ROS environment.
 Start the demo
 
         cd ~src/PetriNetPlans/PNPros/example/rp_action/scripts
-        ./start_demo.sh 
+        ./start_demo.bash 
 
 Run a plan
 
-        ./runplan.sh <planname>
+        ./runplan.bash <planname>
 
 Stop the current plan
 
