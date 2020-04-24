@@ -1,8 +1,10 @@
 # rp_action examples
 
+This folder contains a full example of PNP application using ROS actions.
 
-# Link and compile rp_action package
+## Link and compile rp_action package
 
+Build this package in your ROS environment.
 
         cd ~/ros/catkin_ws/src
         ln -s ~/src/PetriNetPlans/PNPros/example/rp_action .
@@ -13,34 +15,34 @@
 
 ## Single robot execution
 
-    Start the demo
+Start the demo
 
         cd ~src/PetriNetPlans/PNPros/example/rp_action/scripts
         ./start_demo.sh 
 
-    Run a plan
+Run a plan
 
         ./runplan.sh <planname>
 
-    Stop the current plan
+Stop the current plan
 
         ./runplan.bash stop
 
 
 ## Multi-robot execution
 
-    NOTE: Multi-robot configuration not working yet on ROS Melodic!
+NOTE: Multi-robot configuration not working yet on ROS Melodic!
 
-    Start the demo
+Start the demo
 
         cd ~src/PetriNetPlans/PNPros/example/rp_action/scripts
         ./start_demo.bash  multirobot
 
-    Run a plan
+Run a plan
 
         ./runplan.bash <robotname> <planname>
 
-    Stop the current plan
+Stop the current plan
 
         ./runplan.bash <robotname> stop
 
