@@ -9,10 +9,10 @@
     <group unless="$(arg multirobot)">
         <param name="robot_name" value="$(arg robotname)" />
 
-        <node pkg="rp_action" type="mypnpas" name="pnpas" args="" output="screen" />
+        <node pkg="rp_pnp" type="mypnpas" name="pnpas" args="" output="screen" />
 
         <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen">
-            <param name="plan_folder" value="$(find pnp_ros)/plans/" />
+            <param name="plan_folder" value="$(find rp_pnp)/plans/" />
             <param name="current_plan" value="$(arg planname)" />
             <param name="use_java_connection" value="$(arg use_gui)" />
         </node>
@@ -26,14 +26,15 @@
         <param name="robot_name" value="$(arg robotname)" />
         <param name="tf_prefix" value="$(arg robotname)" />
 
-        <node pkg="rp_action" type="mypnpas" name="pnpas" args="" output="screen" />
+        <node pkg="rp_pnp" type="mypnpas" name="pnpas" args="" output="screen" />
 
         <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen">
-            <param name="plan_folder" value="$(find pnp_ros)/plans/" />
+            <param name="plan_folder" value="$(find rp_pnp)/plans/" />
             <param name="current_plan" value="$(arg planname)" />
             <param name="use_java_connection" value="$(arg use_gui)" />
         </node>
 
     </group>
+
 </launch>
 

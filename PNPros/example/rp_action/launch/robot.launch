@@ -13,7 +13,7 @@
       <param name="robot_name" value="$(arg robotname)" />
 
       <!-- map_server -->
-      <node pkg="map_server" type="map_server" name="map_server" args="$(find rp_action)/maps/dis-B1.yaml" respawn="false" >
+      <node pkg="map_server" type="map_server" name="map_server" args="$(find rp_demo)/maps/dis-B1.yaml" respawn="false" >
           <param name="frame_id" value="map" />
       </node>
 
@@ -60,7 +60,7 @@
       <param name="tf_prefix" value="$(arg robotname)" />
 
       <!-- map_server -->
-      <node pkg="map_server" type="map_server" name="map_server" args="$(find rp_action)/maps/dis-B1.yaml" respawn="false" >
+      <node pkg="map_server" type="map_server" name="map_server" args="$(find rp_demo)/maps/dis-B1.yaml" respawn="false" >
           <param name="frame_id" value="map" />
       </node>
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rp_action)
+project(rp_pnp)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -109,14 +109,8 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(gotopose src/gotopose.cpp src/robotpose.cpp)
-target_link_libraries(gotopose ${catkin_LIBRARIES})
-add_executable(stopmove src/stopmove.cpp)
-target_link_libraries(stopmove ${catkin_LIBRARIES})
-add_executable(turn src/turn.cpp src/robotpose.cpp)
-target_link_libraries(turn ${catkin_LIBRARIES})
-#add_executable(mypnpas src/nodes/MyPNPAS.cpp src/nodes/MyActions.cpp src/nodes/robotpose.cpp)
-#target_link_libraries(mypnpas ${pnp_ros_LIBRARIES} ${catkin_LIBRARIES})
+add_executable(mypnpas src/MyPNPAS.cpp src/MyActions.cpp src/movebase_wrapper.cpp src/turn_wrapper.cpp)
+target_link_libraries(mypnpas ${pnp_ros_LIBRARIES} ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

@@ -31,7 +31,9 @@ RUN cd $HOME/ros/catkin_ws/src && \
     ln -s $HOME/src/PetriNetPlans/PNPros/ROS_bridge/pnp_msgs . && \
     ln -s $HOME/src/PetriNetPlans/PNPros/ROS_bridge/pnp_ros . && \
     ln -s $HOME/src/PetriNetPlans/PNPros/example/rp_action . && \
-    ln -s $HOME/src/PetriNetPlans/PNPros/example/rp_action_msgs .
+    ln -s $HOME/src/PetriNetPlans/PNPros/example/rp_action_msgs . && \
+    ln -s $HOME/src/PetriNetPlans/PNPros/example/rp_pnp . && \
+    ln -s $HOME/src/PetriNetPlans/PNPros/example/rp_demo .
 
 
 # Compile ROS packages
