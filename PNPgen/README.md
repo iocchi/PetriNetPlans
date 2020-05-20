@@ -4,6 +4,10 @@ Luca Iocchi and Laurent Jeanpierre 2015-2016
 
 # Build and install
 
+```diff
+- Note: not needed if you are using the docker image. -
+```
+
 Required libraries: `boost, libxml++2.6-dev, pcrecpp`
 
         mkdir build
