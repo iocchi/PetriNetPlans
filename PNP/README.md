@@ -5,13 +5,17 @@
 
 ### Install dependent libraries
 
-Note: not needed if you are using the docker image.
+```diff
+- Note: not needed if you are using the docker image. -
+```
 
     sudo apt-get install g++ cmake libxml2 libxml2-dev flex 
 
 ### Compile the code
 
-Note: not needed if you are using the docker image.
+```diff
+- Note: not needed if you are using the docker image. -
+```
     
     cd PNP
     mkdir build
@@ -21,7 +25,9 @@ Note: not needed if you are using the docker image.
 
 ### Install
 
-Note: not needed if you are using the docker image.
+```diff
+- Note: not needed if you are using the docker image. -
+```
     
 Choose either global or local install. Choose local install if you plan to develop with PNP and you want to keep several versions on the same machine.
 
