@@ -3,45 +3,49 @@
 ## Build and Install
 
 
-* Install dependent libraries
+### Install dependent libraries
 
-        sudo apt-get install g++ cmake libxml2 libxml2-dev flex 
+Note: not needed if you are using the docker image.
 
-* Compile the code
+    sudo apt-get install g++ cmake libxml2 libxml2-dev flex 
 
-        cd PNP
-        mkdir build
-        cd build
-        cmake ..
-        make
+### Compile the code
 
-* Install
+Note: not needed if you are using the docker image.
+    
+    cd PNP
+    mkdir build
+    cd build
+    cmake ..
+    make
 
+### Install
+
+Note: not needed if you are using the docker image.
+    
 Choose either global or local install. Choose local install if you plan to develop with PNP and you want to keep several versions on the same machine.
 
 Global install (`/usr/local/lib`)
 
-        sudo make install
+    sudo make install
+
+Local install in any `<lib_folder>` and set up environment variables
+
+    mkdir <lib_folder>
+    cd <lib_folder>
+    ln -s <path_to>/PetriNetPlans/PNP/build/src/libpnp.so .
+
+    export PNP_HOME=$HOME/src/PetriNetPlans
+    export PNP_INCLUDE=$PNP_HOME/PNP/include
+    export PNP_LIB=<lib_folder>
 
 
-Local install (`<path_to_PNP>/lib`)
 
-        cd PNP/lib
-        ln -s ../build/src/libpnp.so .
-
-Set up environment variables in the file .bashrc in your home directory
-
-        export PNP_INCLUDE=<path_to_PNP>/include
-        export PNP_LIB=<path_to_PNP>/lib
-
-(open a new shell or set these variables in your current shell to use it in the current terminal session).
-
-
-* Doxygen 
+### Doxygen 
 
 You can generate the reference documentation using doxygen:
 
-        doxygen
+    doxygen
 
 in the directory `PNP` where the file named `Doxyfile` is. 
 
