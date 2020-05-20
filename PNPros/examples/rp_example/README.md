@@ -68,6 +68,29 @@ Stop the current plan for each robot
 
 Plans available in `rp_pnp\plans` folder: `sequence_loop`, `sensing`, `interrupt`, `fork_join`.
 
+### `sequence_loop`
+
+![plan1](rp_pnp/plans/sequence_loop.png)
+
+### `sensing`
+
+![plan1](rp_pnp/plans/sensing.png)
+
+
+### `interrupt`
+
+![plan1](rp_pnp/plans/interrupt.png)
+
+### `fork_join`
+
+![plan1](rp_pnp/plans/fork_join.png)
+
+### `multi_robot`
+
+![plan1](rp_pnp/plans/multi_robot.png)
+
+
+
 Notes: 1) the `obstacle` condition can be activated by placing (drag with mouse) the red box in the simulated environment in front of the robot; 2) the `wave` action outputs some text on the screen.
 
 
