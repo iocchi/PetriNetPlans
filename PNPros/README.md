@@ -6,7 +6,9 @@ ROS hydro/indigo/kinetic/melodic (catkin) version.
 
 ## Compiling 
 
-Note: not needed if you are using the docker image.
+```diff
+- Note: not needed if you are using the docker image. -
+```
 
 Add links from the folders in PNPros to your catkin workspace.
 For example
