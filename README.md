@@ -22,16 +22,20 @@ PNP is licensed under GPL v3.
 
 # Install
 
-## Option 1 - Local installation
+## Best Option - Docker installation
 
-Download the library and compile the components, following this order.
+Follow instructions in [docker](docker) folder.
+
+
+## Manual Configuration Option - Local installation
+
+Download the library (default folder is `$HOME/src`) and compile the components, following this order.
 
 * Compile and install PNP (see [PNP/README.md](PNP/README.md))
 
 * Compile and install PNPgen (see [PNPgen/README.md](PNPgen/README.md))
 
-* Compile pnp_ros and rp_action (see [PNPros/README.md](PNPros/README.md))
-
+* Compile pnp_ros (see [PNPros/README.md](PNPros/README.md))
 
 Libraries and packages have been tested with Ubuntu 12.04 + ROS hydro, 
 Ubuntu 14.04 + ROS indigo, Ubuntu 16.04 + ROS Kinetic, Ubuntu 18.04 + ROS Melodic,
@@ -40,13 +44,8 @@ PNPnaoqi has been tested on NAOQi version 2.5.
 
 
 
-## Option 2 - Docker installation
-
-Follow instructions in [docker](docker) folder.
-
-
 # Examples
 
-* [PNPros examples](PNPros/example/rp_action)
+* [PNPros example](PNPros/examples/rp_example)
 
 
