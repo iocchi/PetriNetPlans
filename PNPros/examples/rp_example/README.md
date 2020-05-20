@@ -2,6 +2,13 @@
 
 This folder contains a full example of PNP application using ROS actions.
 
+Organization of the folders:
+
+* `rp_action` and `rp_action_msgs`: implementation of basic actions (no PNP code)
+* `rp_pnp`: plans and scripts to run plans (PNP ActionServer code)
+* `rp_demo`: overall demo launch
+
+
 ## Link and compile rp_action packages
 
 ```diff
