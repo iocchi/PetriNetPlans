@@ -11,10 +11,10 @@ Make sure PNP and PNPros have been installed and build ROS packages in this fold
 Example:
 
         cd ~/ros/catkin_ws/src
-	ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_action . 
-    	ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_action_msgs . 
-    	ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_pnp . 
-    	ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_demo .
+        ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_action . 
+        ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_action_msgs . 
+        ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_pnp . 
+        ln -s $HOME/src/PetriNetPlans/PNPros/examples/rp_example/rp_demo .
         cd ..
         catkin_make
 
@@ -28,14 +28,14 @@ Start the demo
 
 Run a plan
 
-	roscd rp_pnp/scripts
+        roscd rp_pnp/scripts
         ./runplan.bash sequence_loop
 
 Other plans to test available in `rp_pnp/plans` folder.
 
 Stop the current plan
 
-	roscd rp_pnp/scripts
+        roscd rp_pnp/scripts
         ./runplan.bash stop
 
 
@@ -50,13 +50,13 @@ Start the demo
 
 Run a plan for each robot
 
-	roscd rp_pnp/scripts
+        roscd rp_pnp/scripts
         ./runplan.bash robot_0 sequence_loop
         ./runplan.bash robot_1 sequence_loop
 
 Stop the current plan for each robot
 
-	roscd rp_pnp/scripts
+        roscd rp_pnp/scripts
         ./runplan.bash robot_0 stop
         ./runplan.bash robot_1 stop
 
