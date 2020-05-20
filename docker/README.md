@@ -60,7 +60,6 @@ This folder contains scripts for Docker installation of Petri Net Plans.
         ./run.bash <version>
 
 
-
 * Delete an image
 
     Images use several GB of disk space. If you want to remove an image you are
@@ -73,34 +72,15 @@ This folder contains scripts for Docker installation of Petri Net Plans.
         
         docker image rm -f <IMAGE ID>
 
+    You can also prune containers and images you are not using
+    
+        docker container prune
+        docker image prune
 
 
 
 
-### Test ###
-
-Run each set of commands in a different terminal.
-If you are using `tmux` in docker (default configuration), 
-use `CTRL-b c` to create new tmux windows.
 
 
-* Run ROS core
-
-        roscore
-
-
-* RUN `pnp_node`
-
-        rosrun pnp_ros pnp_node
-
-
-* RUN an action server
-
-        rosrun pnp_ros PNPActionServer.py
-
-
-### Development ###
-
-TODO
 
 
