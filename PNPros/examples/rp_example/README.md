@@ -4,7 +4,9 @@ This folder contains a full example of PNP application using ROS actions.
 
 ## Link and compile rp_action packages
 
-Note: this step is not needed if you are using the PNP docker image
+```diff
+- Note: not needed if you are using the docker image. -
+```
 
 Make sure PNP and PNPros have been installed and build ROS packages in this folder.
 
