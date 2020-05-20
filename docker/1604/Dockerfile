@@ -38,7 +38,7 @@ RUN cd $HOME/ros/catkin_ws/src && \
 
 # Compile ROS packages
 
-RUN /bin/bash -ci "cd $HOME/ros/catkin_ws; catkin_make"
+RUN /bin/bash -ci "cd $HOME/ros/catkin_ws; catkin_make -j1"
 
 
 # Set working dir and container command

@@ -6,9 +6,9 @@ project(rp_action)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   actionlib
+  pnp_msgs
   rp_action_msgs
   move_base
-  pnp_ros
   roscpp
   rospy
   std_msgs
@@ -72,7 +72,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   pnp_action_msgs#   std_msgs
+#   std_msgs
 # )
 
 ###################################
@@ -87,7 +87,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES rp_action
-#  CATKIN_DEPENDS actionlib move_base pnp_action_msgs pnp_ros roscpp rospy std_msgs
+#  CATKIN_DEPENDS actionlib move_base roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -99,7 +99,6 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(include)
 include_directories(  
-  ${pnp_ros_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -115,8 +114,6 @@ add_executable(stopmove src/stopmove.cpp)
 target_link_libraries(stopmove ${catkin_LIBRARIES})
 add_executable(turn src/turn.cpp src/robotpose.cpp)
 target_link_libraries(turn ${catkin_LIBRARIES})
-#add_executable(mypnpas src/nodes/MyPNPAS.cpp src/nodes/MyActions.cpp src/nodes/robotpose.cpp)
-#target_link_libraries(mypnpas ${pnp_ros_LIBRARIES} ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

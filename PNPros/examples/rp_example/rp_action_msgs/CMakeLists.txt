@@ -7,6 +7,7 @@ project(rp_action_msgs)
 find_package(catkin REQUIRED COMPONENTS
   actionlib
   actionlib_msgs
+  pnp_msgs
   message_generation
 )
 
