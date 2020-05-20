@@ -39,7 +39,10 @@ This folder contains scripts for Docker installation of Petri Net Plans.
         cd docker/[1604|1804]
         ./build.bash 
 
+    Note: ignore red warning messages appearing during building PNP
+    
     Note: every time you build an image an updated version of `PetriNetPlans` is downloaded from repository 
+    
 
 
 * Run an image
