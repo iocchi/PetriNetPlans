@@ -2,7 +2,7 @@
 # Petri Net Plans
 
 This repository contains Petri Net Plans (PNP) library, PNP ROS bridge and some sample applications.
-More information on the PNP web site: pnp.dis.uniroma1.it
+More information on the [PNP web site](http://pnp.diag.uniroma1.it).
 
 This master branch contains up-to-date development of main PNP library, other utilities for plan generation, bridges with ROS and NAOqi and examples.
 
