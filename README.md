@@ -19,7 +19,6 @@ PNP is licensed under GPL v3.
 * docker - docker installation files and scripts
 
 
-
 # Install
 
 ## Best Option - Docker installation
@@ -47,5 +46,11 @@ PNPnaoqi has been tested on NAOQi version 2.5.
 # Examples
 
 * [PNPros example](PNPros/examples/rp_example)
+
+
+
+# Video Tutorials
+
+[![PNP install and run](https://img.youtube.com/vi/3tGcuBrs8-Y/0.jpg)](https://www.youtube.com/watch?v=3tGcuBrs8-Y)
 
 
