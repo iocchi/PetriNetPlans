@@ -1,6 +1,7 @@
 # rp_action examples
 
 This folder contains a full example of PNP application using ROS actions.
+It is suggested to run these examples in the docker containers. Follow instructions in [PetriNetPlans/docker](/docker) to build a docker image and run a docker container containing this example.
 
 Organization of the folders:
 

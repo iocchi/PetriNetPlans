@@ -2,7 +2,7 @@
 # Petri Net Plans
 
 This repository contains Petri Net Plans (PNP) library, PNP ROS bridge and some sample applications.
-More information on the PNP web site: pnp.dis.uniroma1.it
+More information on the [PNP web site](http://pnp.diag.uniroma1.it). PNP component is also a component of [AI4EU platform](https://www.ai4eu.eu/).
 
 This master branch contains up-to-date development of main PNP library, other utilities for plan generation, bridges with ROS and NAOqi and examples.
 
@@ -17,7 +17,6 @@ PNP is licensed under GPL v3.
 * Jarp - PNP GUI editor
 * pyPNP - Python interface for PNP
 * docker - docker installation files and scripts
-
 
 
 # Install
@@ -47,5 +46,11 @@ PNPnaoqi has been tested on NAOQi version 2.5.
 # Examples
 
 * [PNPros example](PNPros/examples/rp_example)
+
+
+
+# Video Tutorials
+
+[![PNP install and run](https://img.youtube.com/vi/3tGcuBrs8-Y/0.jpg)](https://www.youtube.com/watch?v=3tGcuBrs8-Y)
 
 
