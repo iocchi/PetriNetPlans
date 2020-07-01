@@ -11,6 +11,7 @@ fi
 
 # change setings here if needed
 PLAYGROUND_FOLDER=$HOME/playground
+PNP_FOLDER=$HOME/src/PetriNetPlans
 
 echo "Running image $IMAGENAME:$VERSION ..."
 
@@ -29,6 +30,7 @@ docker run -it \
     --privileged \
     --net=host \
     -v $PLAYGROUND_FOLDER:/home/robot/playground \
+    -v $PNP_FOLDER:/home/robot/src/PetriNetPlans \
     $IMAGENAME:$VERSION
 
 

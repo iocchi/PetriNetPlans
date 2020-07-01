@@ -248,9 +248,15 @@ public:
 
 
     void setMainLinearPlan(string plan); // set this plan as main plan for this generation
-    void readPlanFile(const char*filename, string &plan);
+
+    void readPlanFile(const char* filename, string &plan);
     void readPlanFile(const string& filename, string &plan) {
         readPlanFile(filename.c_str(), plan);
+    }
+
+    void readPDDLOutputFile(const char* filename, string &plan);
+    void readPDDLOutputFile(const string& filename, string &plan) {
+        readPDDLOutputFile(filename.c_str(), plan);
     }
 
     void genHumanAction(string say_ask, string say_do, string action_do, string say_dont, string condition);

@@ -4,7 +4,7 @@
 
 IMAGENAME=ub1604_kinetic_pnp
 
-VERSION=0.1
+VERSION=1.0
 if [ ! "$1" == "" ]; then
   VERSION=$1
 fi

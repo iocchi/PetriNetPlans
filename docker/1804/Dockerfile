@@ -1,6 +1,6 @@
 # Docker file for Petri Net Plans
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
-# Version 0.1
+# Version 1.0
 
 FROM ub1804_melodic_pnp:base
 
@@ -19,11 +19,15 @@ RUN cd $HOME/src/PetriNetPlans/PNP &&  mkdir -p build &&  cd build  &&  cmake ..
 
 RUN cd $HOME/src/PetriNetPlans/PNPgen &&  mkdir -p build &&  cd build  &&  cmake ..  && make
 
+RUN echo "export LD_LIBRARY_PATH=\"\${LD_LIBRARY_PATH}:/usr/local/lib\" " >> $HOME/.bashrc
+
 USER root
 
 RUN cd /home/robot/src/PetriNetPlans/PNP/build && make install
 
 RUN cd /home/robot/src/PetriNetPlans/PNPgen/build && make install
+
+RUN cd /usr/local/bin && ln -sf /home/robot/src/PetriNetPlans/Jarp/scripts/jarp.sh .
 
 USER robot
 

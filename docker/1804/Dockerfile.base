@@ -19,9 +19,13 @@ RUN apt-get install -y tmux less sudo eom xterm
 
 RUN apt-get install -y nano unzip iputils-ping net-tools openssh-client
 
+RUN apt-get install -y default-jre-headless
+
 RUN apt-get install -y libxml2-dev libxml++2.6-dev flex
 
 RUN apt-get install -y ros-melodic-navigation ros-melodic-stage-ros
+
+RUN apt-get clean
 
 RUN rm -rf /var/lib/apt/lists/*
 

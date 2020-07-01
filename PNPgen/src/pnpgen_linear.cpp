@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <boost/algorithm/string.hpp>
 
 #include "pnpgenerator.h"
 
@@ -23,8 +24,12 @@ void create_PNP_from_linear_plan(const string& planfile, const string& erfile) {
     PNPGenerator pnpgen(goal_name);
     
     // read the linear plan from file
-    string main_plan; 
-    pnpgen.readPlanFile(planfile, main_plan);
+    string main_plan;
+
+    if (boost::ends_with(planfile, ".plan"))
+        pnpgen.readPlanFile(planfile, main_plan);
+    else
+        pnpgen.readPDDLOutputFile(planfile, main_plan);
     
     cout << "Plan: " << main_plan << endl;
     // generate the main PNP from the linear plan
@@ -43,14 +48,11 @@ void create_PNP_from_linear_plan(const string& planfile, const string& erfile) {
 
 
 int main(int argc, char **argv)
-{
-    // gen_IROS15_example();
-
-    // gen_ICAPS16_example();
-    
+{    
     if (argc<2) {
         cout << "    Use: " << argv[0] << " <planfile> [<erfile>]" << endl;
         cout << "Example: " << argv[0] << " DIAG_printer.plan DIAG_printer.er" << endl;
+        cout << "Example: " << argv[0] << " DIAG_printer.pddlout DIAG_printer.er" << endl;
         return -1;
     }
     
@@ -59,6 +61,7 @@ int main(int argc, char **argv)
     string erfile="";
     if (argc==3)
         erfile = string(argv[2]);
+
 
     create_PNP_from_linear_plan(planfile,erfile);
 

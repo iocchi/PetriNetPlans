@@ -525,9 +525,32 @@ void PNPGenerator::setMainLinearPlan(string plan) {
     Place *p = genLinearPlan(pnp.pinit,plan); p->setName("goal");
 }
 
-void PNPGenerator::readPlanFile(const char*filename, string &plan)
-{
+void PNPGenerator::readPDDLOutputFile(const char* filename, string &plan) {
+
+    string app;
     ifstream f(filename);
+    while(f.good()){
+      getline(f,app);
+      boost::trim(app);
+      if (!app.empty() && app[0]!='#') {
+        // remove inline comments
+        vector<string> v;
+        boost::split(v, app, boost::is_any_of("#"));
+        string act = v[0];
+        boost::erase_all(act, "("); boost::erase_all(act, ")");
+        boost::replace_all(act, " ", "_");
+        plan += " " + act + ";";
+      }
+    }
+    cout << "plan read: " << plan << endl;
+    f.close();
+
+}
+
+
+void PNPGenerator::readPlanFile(const char* filename, string &plan)
+{
+    ifstream f(filename);    
     getline(f,plan);
     f.close();
 }

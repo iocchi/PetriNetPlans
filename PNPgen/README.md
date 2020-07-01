@@ -20,16 +20,42 @@ Required libraries: `boost, libxml++2.6-dev, pcrecpp`
 
 # Run
 
-1) Generation of a PNP from a linear plan
+1) Generation of a PNP from a linear plan 
 
         cd test
         ../bin/pnpgen_linear DIAG_printer.plan
+
+
+        cd test
+        ../bin/pnpgen_linear DIAG_printer.pddlout
+
+
+Note: plan format is detected from the file extension.
+
+```.plan``` = sequence of actions separated by ```;``` in a single line
+
+Example:
+    
+        goto_printer; say_hello; goto_home
+
+
+```.pddlout``` = typical output of PDDL planners
+
+Example:
+    
+        (goto printer)
+        (say hello)
+        (goto home)
+
+
 
 2) Generation of a PNP from a linear plan and execution rules
 
         cd test
         ../bin/pnpgen_linear DIAG_printer.plan DIAG_printer.er
- 
+
+
+
 3) Generation of a PNP from a policy
 
         cd test
@@ -57,7 +83,7 @@ Required libraries: `boost, libxml++2.6-dev, pcrecpp`
 
 Test: 
     Load output pnml files with Jarp.
-    Unfortunately, they may not be readable, unless you move some places, transitions, labels...
+    Unfortunately, plans generated may not be readable, unless you move some places, transitions, labels...
 
 
 6) Generation of a PNP from a conditional plan (given in the source code)
@@ -69,6 +95,7 @@ Test:
 
         cd test
         ../bin/pnpgen_translator inline [conditional_plan_file]
+
 
 A conditional plan has the form:
 
