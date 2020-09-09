@@ -14,6 +14,6 @@ if [ ! "$2" == "" ]; then
   VERSION=$2
 fi
 
-docker build --no-cache -t $IMAGENAME:base -f Dockerfile.base . && \
-    docker build --no-cache -t $IMAGENAME:$VERSION -f $DOCKERFILE .
+docker build --network=host -t $IMAGENAME:base -f Dockerfile.base . && \
+docker build --network=host -t $IMAGENAME:$VERSION -f $DOCKERFILE .
 
