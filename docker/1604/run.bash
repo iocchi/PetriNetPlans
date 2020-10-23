@@ -2,9 +2,9 @@
 
 # Use  ./run.bash [version]
 
-IMAGENAME=ub1604_kinetic_pnp
+IMAGENAME=pnp_1604_kinetic
 
-VERSION=1.0
+VERSION=latest
 if [ ! "$1" == "" ]; then
   VERSION=$1
 fi
@@ -14,21 +14,13 @@ PLAYGROUND_FOLDER=$HOME/playground
 
 echo "Running image $IMAGENAME:$VERSION ..."
 
-if [ -d /usr/lib/nvidia-384 ]; then
-  NVIDIA_STR="-v /usr/lib/nvidia-384:/usr/lib/nvidia-384 \
-           -v /usr/lib32/nvidia-384:/usr/lib32/nvidia-384 \
-           --device /dev/dri"
-  echo "Nvidia support enabled"
-fi
-
 docker run -it \
+    --name petri_net_plans --rm \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v $HOME/.Xauthority:/home/robot/.Xauthority:rw \
-    $NVIDIA_STR \
     -e DISPLAY=$DISPLAY \
     --privileged \
     --net=host \
     -v $PLAYGROUND_FOLDER:/home/robot/playground \
     $IMAGENAME:$VERSION
-
 

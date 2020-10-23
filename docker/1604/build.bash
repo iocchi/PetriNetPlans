@@ -2,7 +2,7 @@
 
 # Use  ./build.bash [Dockerfile] [version]
 
-IMAGENAME=ub1604_kinetic_pnp
+IMAGENAME=pnp_1604_kinetic
 
 DOCKERFILE=Dockerfile
 if [ ! "$1" == "" ]; then
@@ -16,4 +16,6 @@ fi
 
 docker build --network=host -t $IMAGENAME:base -f Dockerfile.base . && \
 docker build --network=host -t $IMAGENAME:$VERSION -f $DOCKERFILE .
+
+docker tag $IMAGENAME:$VERSION $IMAGENAME:latest
 
