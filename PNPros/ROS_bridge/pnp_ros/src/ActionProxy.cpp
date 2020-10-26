@@ -55,11 +55,11 @@ namespace pnpros
 
           active=false;
 
-        if (pnpac == NULL) pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
+          if (pnpac == NULL) pnpac = new actionlib::ActionClient<pnp_msgs::PNPAction>("PNP");
 
-        while (!pnpac->waitForActionServerToStart(ros::Duration(5.0))) {
-            ROS_INFO("Waiting for the PNP action server to come up.");
-        }
+          while (!pnpac->waitForActionServerToStart(ros::Duration(5.0))) {
+              ROS_INFO("Waiting for the PNP action server to come up.");
+          }
     }
 
 	ActionProxy::~ActionProxy() {
@@ -68,12 +68,15 @@ namespace pnpros
 	    end();
 	}
 	
+    // TODO - not used -> remove
     // static function
+/*
     void ActionProxy::actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message)
 	{
 		ROS_INFO_STREAM("Deleting " << message->id);
 		activeActions.erase(message->id); // activeActions is static
 	}
+*/
 	
     void ActionProxy::transitionCb(actionlib::ClientGoalHandle<pnp_msgs::PNPAction> gh)
 	{
@@ -91,10 +94,12 @@ namespace pnpros
 
 	void ActionProxy::start()
 	{
+        ROS_INFO_STREAM("Start: "+robotname+" "+ name + " " + params + " - ID: " + id);
+
 #if USE_MESSAGES	
 		activeActions.insert(id);  // ???
 		
-		Action action;
+		pnp_msgs::Action action;
 		
 		action.id = id;
 		action.robotname = robotname;
@@ -107,17 +112,11 @@ namespace pnpros
 
 #if USE_ACTIONLIB
 		
-		
-		ROS_INFO_STREAM("Start: "+robotname+" "+ name + " " + params + " - ID: " + id);
-		
-		if (!pnpac->waitForActionServerToStart(ros::Duration(0.1)))
-		{
+		if (!pnpac->waitForActionServerToStart(ros::Duration(0.1)))	{
 			cout << "PNP: cannote execute action " << name << endl;
-			
 			return;
 		}
 
-		
         pnp_msgs::PNPGoal goal;
         ROS_DEBUG_STREAM("ActionProxy Robotname "<<robotname);
         goal.id = iid;
@@ -155,8 +154,9 @@ namespace pnpros
     {
         if (!active) return;
         active=false;
+
 #if USE_MESSAGES
-        Action action;
+        pnp_msgs::Action action;
 
         action.id = id;
         action.robotname = robotname;
@@ -204,8 +204,11 @@ namespace pnpros
 
     void ActionProxy::interrupt()
     {
+
+        ROS_INFO_STREAM("Interrupt: "+robotname+" "+ name + " " + params + " - ID: " + id);
+
 #if USE_MESSAGES
-        Action action;
+        pnp_msgs::Action action;
 
         action.id = id;
         action.robotname = robotname;
@@ -276,3 +279,4 @@ namespace pnpros
 		return false;
 	}
 }
+

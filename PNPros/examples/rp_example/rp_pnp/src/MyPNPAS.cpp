@@ -5,6 +5,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
 
+#include <pnp_ros/names.h>
 #include <pnp_msgs/PNPAction.h>
 #include <pnp_msgs/PNPCondition.h>
 #include <pnp_ros/PNPActionServer.h>
@@ -26,7 +27,7 @@ private:
 public:
 
     MyPNPActionServer() : PNPActionServer() { 
-        event_pub = handle.advertise<std_msgs::String>("PNPConditionEvent", 10); 
+        event_pub = handle.advertise<std_msgs::String>(TOPIC_PNPCONDITION, 10); 
         laser_sub = handle.subscribe("scan", 10, &MyPNPActionServer::laser_callback, this);
 
         // robotname external defined in MyActions.h/cpp

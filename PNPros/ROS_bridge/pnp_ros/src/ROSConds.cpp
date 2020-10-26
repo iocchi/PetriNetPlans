@@ -1,3 +1,4 @@
+#include <pnp_ros/names.h>
 #include <pnp_ros/ROSConds.h>
 
 
@@ -9,9 +10,9 @@ namespace pnpros
 	{
 		ros::NodeHandle n;
 		
-		ROS_INFO("Setting service client for PNPConditionEval.");
+		ROS_INFO("Setting service client for %s", SRV_PNPCONDITIONEVAL);
 		
-        client = n.serviceClient<pnp_msgs::PNPCondition>("PNPConditionEval");
+        client = n.serviceClient<pnp_msgs::PNPCondition>(SRV_PNPCONDITIONEVAL);
 		
         pnp_msgs::PNPCondition srv;
 		srv.request.cond = string("hello");
@@ -44,7 +45,7 @@ namespace pnpros
 
         if (atom.find('@') == std::string::npos) {
             // Try to read condition from ROS parameters
-            string rospar = "PNPconditionsBuffer/" + atom;
+            string rospar = PARAM_PNPCONDITIONBUFFER + atom;
             ros::param::get(rospar,r);
         }
 

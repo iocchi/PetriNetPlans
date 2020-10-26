@@ -35,6 +35,8 @@ PNPActionServer::PNPActionServer() : as(nh, "PNP", false)
 
     plantoexec_pub = nh.advertise<std_msgs::String>(TOPIC_PLANTOEXEC, 10);
 
+	action_pub = nh.advertise<std_msgs::String>(TOPIC_PNPACTION_STR,1);
+
     global_PNPROS_variables.clear();
 
     register_action("wait",&PNPActionServer::wait,this);
@@ -79,7 +81,7 @@ void PNPActionServer::goalCallback(PNPAS::GoalHandle gh){
     else if (goal.function=="end") {
         ROS_DEBUG_STREAM("Terminating action " << goal.robotname << " " << goal.name << " " << 
                         goal.params);
-        actionEnd(goal.robotname, goal.name, goal.params);
+        //actionEnd(goal.robotname, goal.name, goal.params); // not needed CancelAction will enable actionEnd
         CancelAction(goal.robotname,goal.name,goal.params);
         current_gh.setAccepted();
         for (int k=0; k<3; k++) { ros::spinOnce(); }
@@ -111,7 +113,7 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
     try
     {
         { boost::mutex::scoped_lock lock(run_mutex);
-          run[goal.robotname+goal.name+goal.params]=true;
+          run[goal.robotname+"#"+goal.name+"_"+goal.params]=true;
           starttime[goal.robotname+goal.name]=ros::Time::now().toSec();
           string atom="timeout_"+goal.name;
           ConditionCache[atom]=0;
@@ -119,10 +121,10 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
         }
 
         actionExecutionThread(goal.robotname,goal.name,goal.params,
-                      &run[goal.robotname+goal.name+goal.params]);
+                      &run[goal.robotname+"#"+goal.name+"_"+goal.params]);
 
         { boost::mutex::scoped_lock lock(run_mutex);
-          run[goal.robotname+goal.name+goal.params]=false;
+          run[goal.robotname+"#"+goal.name+"_"+goal.params]=false;
           starttime[goal.robotname+goal.name]=-1;
         }
         // cout << "### Thread " << goal.name << " completed" << endl;
@@ -130,7 +132,7 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
     catch(boost::thread_interrupted&)
     {
         // cout << "### Thread " << goal.name << " interrupted" << endl;
-        run[goal.robotname+goal.name+goal.params]=false;
+        run[goal.robotname+"#"+goal.name+"_"+goal.params]=false;
         starttime[goal.robotname+goal.name]=-1;
     }
     
@@ -144,7 +146,7 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
 
 void PNPActionServer::CancelAction(string robotname, string action_name, string action_params) {   
     boost::mutex::scoped_lock lock(run_mutex);
-    run[robotname+action_name+action_params]=false;
+    run[goal.robotname+"#"+goal.name+"_"+goal.params]=false;
     starttime[goal.robotname+goal.name]=-1;
 }
 
@@ -378,35 +380,40 @@ boost_MRcondition_fn_t PNPActionServer::get_MRcondition_fn(string conditionname)
 // The function must return only when the action is finished.
 void PNPActionServer::actionExecutionThread(string robotname, string action_name, string action_params, bool *run)  {
   bool found=false;
+
+  string actual_action_params = "";
+  if ((action_params.find('@') == std::string::npos) || (action_name == "unknownvar") || (action_name == "setvar"))
+    actual_action_params = action_params;
+  else {
+    actual_action_params = replace_vars_with_values(action_params);
+    ROS_DEBUG_STREAM("  -- actual parameters: " << actual_action_params);
+  }
+
   if (robotname!="") {
     boost_MRaction_fn_t f = get_MRaction_fn(action_name);
-    if (f!=NULL){
+    if (f!=NULL) {
       found=true;
-      if (action_params.find('@') == std::string::npos)
-        f(robotname,action_params,run);
-      else if ((action_name == "unknownvar") || (action_name == "setvar"))
-        f(robotname,action_params,run);
-      else
-        f(robotname, replace_vars_with_values(action_params),run);
+      f(robotname,actual_action_params,run); // blocking until action finishes or run becomes false
     }
-    //else
-    //  ROS_ERROR_STREAM("??? UNKNOWN Action " << robotname << "#" << action_name << " ??? ");
   }
   if (!found) {
     boost_action_fn_t f = get_action_fn(action_name);
-    if (f!=NULL)
-    {
-      if (action_params.find('@') == std::string::npos)
-        f(action_params,run);
-      else if ((action_name == "unknownvar") || (action_name == "setvar"))
-        f(action_params,run);
-      else
-        f(replace_vars_with_values(action_params),run);
+    if (f!=NULL) {
+      found = true;
+      f(actual_action_params,run); // blocking until action finishes or run becomes false
     }
-    else
-      ROS_ERROR_STREAM("??? UNKNOWN Action " << action_name << " ??? ");
   }
 
+  if (!found) {
+      ROS_INFO_STREAM("??? UNKNOWN Action " << action_name << " ??? External management !!!");
+      // TODO - wait for action to finish (external management)
+      double sleepunit = 0.2;
+      while (*run) {
+        // sleep
+        ros::Duration(sleepunit).sleep();
+      }
+  }
+      
   actionEnd(robotname, action_name, action_params);
 
 }
@@ -421,8 +428,8 @@ int PNPActionServer::evalCondition(string cond) {
       string condition_params = "";
       r = f(condition_params);
     }
-    else
-      ROS_ERROR_STREAM("??? UNKNOWN Condition " << cond << " ??? ");
+    //else
+    //  ROS_ERROR_STREAM("??? UNKNOWN Condition " << cond << " ??? ");
 
     return r;
 }
@@ -451,6 +458,12 @@ void PNPActionServer::actionStart(const std::string & robot, const std::string &
 {
   // Clear condition cache, since new event arrived...
   ConditionCache.clear();
+
+  // send action cmd message
+  std_msgs::String sm;
+  sm.data = robot+"#"+action + "_" + params+".start";
+  action_pub.publish(sm);
+
   // Set status parameter
   stringstream ssbuf;
   ssbuf << PARAM_PNPACTIONSTATUS << action;
@@ -459,6 +472,11 @@ void PNPActionServer::actionStart(const std::string & robot, const std::string &
 
 void PNPActionServer::actionEnd(const std::string & robot, const std::string & action, const std::string & params)
 {
+  // send action cmd message
+  std_msgs::String sm;
+  sm.data = robot+"#"+action + "_" + params+".end";
+  action_pub.publish(sm);
+
   // Set status parameter
   stringstream ssbuf;
   ssbuf << PARAM_PNPACTIONSTATUS << action;
@@ -467,6 +485,11 @@ void PNPActionServer::actionEnd(const std::string & robot, const std::string & a
 
 void PNPActionServer::actionInterrupt(const std::string & robot, const std::string & action, const std::string & params)
 {
+  // send action cmd message
+  std_msgs::String sm;
+  sm.data = robot+"#"+action + "_" + params+".interrupt";
+  action_pub.publish(sm);
+
   // Set status parameter
   stringstream ssbuf;
   ssbuf << PARAM_PNPACTIONSTATUS << action;

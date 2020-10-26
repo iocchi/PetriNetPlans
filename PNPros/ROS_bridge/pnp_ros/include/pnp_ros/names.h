@@ -2,38 +2,44 @@
 
 // Topics
 
-#define TOPIC_PNPACTIVEPLACES "pnp/currentActivePlaces" // names of current active places
+// PNPAS sub 
+#define TOPIC_PNPCONDITION "pnp/conditionEvent" // PNP Conditions as events
 
-#define TOPIC_PNPCONDITION "PNPConditionEvent" // PNP Conditions as events
+// PNPAS pub
+#define TOPIC_PLANTOEXEC "pnp/planToExec" // executes the plan 
 
-#define TOPIC_PLANTOEXEC "planToExec" // executes the plan
+// pnp_ros pub
+#define TOPIC_PNPACTION "pnp/action" // action proxy publisher 
+#define TOPIC_PNPACTION_STR "pnp/action_str" // action proxy publisher 
+                                             // string format <actionname>_<params>.<command>
 
-#define TOPIC_PNPACTION "pnp_action" // action proxy publisher when using messages 
-// (not used when PNP uses actionlib protocol - default)
+// pnp_ros sub
+#define TOPIC_PNPACTIONTERMINATION "pnp/actionTermination"  // notifies action is terminated
 
-#define TOPIC_PNPACTIONCMD "PNPActionCmd" // executes an action command. 
+// pnp_ros sub
+#define TOPIC_PNPACTIONCMD "pnp/actionCmd" // received action command to execute
 // Message syntax: <actionname>[_<params>] <start|end|interrupt>
 // TODO Uniform with naoqi
 // Message syntax: [start|end|interrupt] <actionname> [<params>]
 
+// pnp_ros pub, PNPAS sub
+#define TOPIC_PNPACTIVEPLACES "pnp/currentActivePlaces" // names of current active places
 
-#define TOPIC_PNPACTIONTERMINATION "pnp_action_termination"  // notifies action is terminated
 
+// Services (PNPAS)
 
-// Services
-
-#define SRV_PNPCONDITIONEVAL "PNPConditionEval"
-#define SRV_PNPGETEVENT      "PNPGetEventStartingWith"
-#define SRV_PNPCLEARBUFFER   "PNPClearBuffer"
-#define SRV_PNPGETVAR        "PNPGetVariableValue"
-#define SRV_PNPSETVAR        "PNPSetVariableValue"
-
+#define SRV_PNPCONDITIONEVAL "pnp/conditionEval"
+#define SRV_PNPGETEVENT      "pnp/getEventStartingWith"
+#define SRV_PNPCLEARBUFFER   "pnp/clearBuffer"
+#define SRV_PNPGETVAR        "pnp/getVariableValue"
+#define SRV_PNPSETVAR        "pnp/setVariableValue"
 
 // Params
-#define PARAM_PNPCONDITIONBUFFER "PNPconditionsBuffer/" // PNP Conditions as param values
 
-#define PARAM_PNPACTIONSTATUS "PNPActionStatus/" // PNP action status
+#define PARAM_PNPCONDITIONBUFFER "pnp/conditionsBuffer/" // PNP Conditions as param values
 
-#define PARAM_PNP_CURRENT_PLAN "PNPCurrentPlan" // current plan
+#define PARAM_PNPACTIONSTATUS "pnp/actionStatus/" // PNP action status
+
+#define PARAM_PNP_CURRENT_PLAN "pnp/currentPlan" // current plan
 
 

@@ -65,7 +65,7 @@ protected:
     ros::ServiceServer getVarValue_service;
     ros::ServiceServer setVarValue_service;
     ros::Subscriber event_topic_sub, active_places_sub;
-    ros::Publisher plantoexec_pub;
+    ros::Publisher plantoexec_pub, action_pub;
 
     boost::mutex state_mutex;
     boost::mutex run_mutex;
@@ -73,7 +73,7 @@ protected:
 
     vector<Event> eventBuffer; 
     
-    map<string,bool> run;
+    map<string,bool> run; // current running actions 
     map<string,double> starttime; // ROS Time in seconds
     map<string,boost_action_fn_t> global_PNPROS_action_fns;
     map<string,boost_MRaction_fn_t> global_PNPROS_MRaction_fns;

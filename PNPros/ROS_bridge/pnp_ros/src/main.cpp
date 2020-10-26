@@ -54,13 +54,24 @@ void spinThread()
 
 void action_cmd_callback(const std_msgs::String::ConstPtr& msg)
 {
-	stringstream ss(msg->data);
-	string action, actionname, actionparams, actioncmd;
-	ss >> action;
-	ss >> actioncmd;
+    // format <robotname>#<actionname>_<params>.<function>
+
+    string action, actionname, actionparams, actioncmd;
+    int k;
+
+	// Split message
+	k = msg->data.find('.');
+    if (k != string::npos) {
+        action = msg->data.substr(0,k);
+        actioncmd = msg->data.substr(k+1);
+    }
+    else {
+        ROS_ERROR_STREAM("Action command wrong syntax: " << msg->data);
+        return;
+    }
 
 	// Split action name from parameters
-	int k = action.find('_');
+	k = action.find('_');
     if (k == string::npos) {
         actionname = action;
 		actionparams = "";
@@ -180,8 +191,9 @@ int main(int argc, char** argv)
 	ActionProxy::publisher = n.advertise<pnp_msgs::Action>(TOPIC_PNPACTION,1);
 	ros::Publisher currentActivePlacesPublisher = 
 		n.advertise<String>(TOPIC_PNPACTIVEPLACES,1);
-	ros::Subscriber sub = 
-		n.subscribe(TOPIC_PNPACTIONTERMINATION, 10, &ActionProxy::actionTerminationCallback);
+    // TODO - not used -> remove
+	//ros::Subscriber sub = 
+	//	n.subscribe(TOPIC_PNPACTIONTERMINATION, 10, &ActionProxy::actionTerminationCallback);
 	
 	// Wait for the other modules to subscribe.
 	ros::Duration(3).sleep();

@@ -21,11 +21,11 @@ NODE = 'pnp_cmd'
 
 # ROS names (see pnp_ros/include/pnp_ros/names.h)
 
-TOPIC_PLANTOEXEC = "planToExec"
-TOPIC_PNPACTIONCMD = "PNPActionCmd"
-SRV_PNPCONDITIONEVAL = "PNPConditionEval"
-PARAM_PNPACTIONSTATUS = "PNPActionStatus/"
-PARAM_PNPCONDITIONBUFFER = "PNPconditionsBuffer/"
+TOPIC_PLANTOEXEC = "pnp/planToExec"
+TOPIC_PNPACTIONCMD = "pnp/actionCmd"
+SRV_PNPCONDITIONEVAL = "pnp/conditionEval"
+PARAM_PNPACTIONSTATUS = "pnp/actionStatus/"
+PARAM_PNPCONDITIONBUFFER = "pnp/conditionsBuffer/"
 
 PNPPLANFOLDER = "pnp/plan_folder"
 

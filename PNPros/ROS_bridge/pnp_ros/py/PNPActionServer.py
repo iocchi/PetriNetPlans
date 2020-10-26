@@ -23,6 +23,8 @@ NODE = 'pnpactionserver'
 action_instances = {}
 conditionManager = None
 
+SRV_PNPCONDITIONEVAL = "pnp/conditionEval"
+
 
 ## find the action implementation
 def find_action_implementation(action_name):
@@ -124,8 +126,9 @@ if __name__ == '__main__':
     conditionManager = ConditionManager()
 
     PNPActionServer("PNP")
-    rospy.Service('PNPConditionEval',
+    rospy.Service(SRV_PNPCONDITIONEVAL,
                   PNPCondition,
                   handle_PNPConditionEval)
 
     rospy.spin()
+

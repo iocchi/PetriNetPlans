@@ -7,6 +7,7 @@
 #define USE_ACTIONLIB 1
 
 //#if USE_MESSAGES
+#include <std_msgs/String.h>
 #include <pnp_msgs/Action.h>
 #include <pnp_msgs/ActionFinished.h>
 //#endif
@@ -42,7 +43,8 @@ namespace pnpros
 			ActionProxy(const std::string& name);
 			~ActionProxy();
 			
-            static void actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message);
+            // TODO - not used -> remove
+            // static void actionTerminationCallback(const pnp_msgs::ActionFinished::ConstPtr& message);
 			
 			virtual void start();
 			virtual void interrupt();
@@ -50,3 +52,4 @@ namespace pnpros
 			virtual bool finished();
 	};
 }
+
