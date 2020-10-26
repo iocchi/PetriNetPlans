@@ -133,8 +133,10 @@ target_link_libraries(PNPAS
    ${BOOST_LIBRARIES}
 )
 
-## Declare a cpp executable
-add_executable(pnp_node src/main.cpp)
+
+## pnpros node
+
+add_executable(pnp_node src/pnpros.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -149,6 +151,15 @@ target_link_libraries(pnp_node
    ${BOOST_LIBRARIES}
 )
 
+## PNP basic action server
+add_executable(pnp_as src/pnpas.cpp)
+add_dependencies(pnp_as pnp_msgs_generate_messages_cpp)
+target_link_libraries(pnp_as
+   PNPAS
+   ${PNP_LIBRARY}
+   ${catkin_LIBRARIES}
+   ${BOOST_LIBRARIES}
+)
 
 
 #############
