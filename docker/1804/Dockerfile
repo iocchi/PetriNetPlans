@@ -1,8 +1,8 @@
 # Docker file for Petri Net Plans
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
-# Version 1.0
+# Version 1.2
 
-FROM ub1804_melodic_pnp:base
+FROM pnp_1804_melodic:base
 
 
 ### PNP packages ###
@@ -10,6 +10,10 @@ FROM ub1804_melodic_pnp:base
 USER robot
 
 RUN mkdir -p $HOME/src/
+
+# Trick to disable cache from here
+
+ADD http://worldtimeapi.org/api/ip /tmp/time.tmp 
 
 # Petri Net Plans
 
