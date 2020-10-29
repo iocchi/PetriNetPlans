@@ -18,8 +18,8 @@ echo "======================================="
 echo "   Building $IMAGENAME:$VERSION "
 echo "======================================="
 
-#docker build --network=host -t $IMAGENAME:base -f Dockerfile.base . && \
-#docker build --network=host -t $IMAGENAME:$VERSION -f $DOCKERFILE .
+docker build --network=host -t $IMAGENAME:base -f Dockerfile.base . && \
+docker build --network=host -t $IMAGENAME:$VERSION -f $DOCKERFILE .
 
-#docker tag $IMAGENAME:$VERSION $IMAGENAME:latest
+docker tag $IMAGENAME:$VERSION $IMAGENAME:latest
 
