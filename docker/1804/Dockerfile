@@ -2,7 +2,7 @@
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
 # Version 1.2
 
-FROM pnp_1804_melodic:base
+FROM pnp_1804_melodic:grpc
 
 
 ### PNP packages ###
@@ -12,8 +12,7 @@ USER robot
 RUN mkdir -p $HOME/src/
 
 # Trick to disable cache from here
-
-ADD http://worldtimeapi.org/api/ip /tmp/time.tmp 
+ADD http://worldclockapi.com/api/json/utc/now /tmp/time.tmp 
 
 # Petri Net Plans
 
