@@ -2,7 +2,7 @@
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
 # Version 1.2
 
-FROM pnp_1804_melodic:base
+FROM pnp_1804_melodic:grpc
 
 
 ### PNP packages ###
