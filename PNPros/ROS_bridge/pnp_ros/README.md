@@ -27,16 +27,27 @@ of actions and checking of conditions.
 
 ### Distributed action server
 
-`pnp_ros` publishes a String topic named `pnp/action_str` in the form `<robotname>#<actionname>_<params>.<command>`. 
+`pnp_ros` publishes a String topic named `pnp/action_str` in the form 
+
+        [<robotname>#]<actionname>[_<params>].<command>
+
+`<command>` is either `start`, `interrupt`, `end`.
+
 Action executors should listen to this message and execute the corresponding action. Programmer is responsible for ensuring that only one executor would take care of execution of an action.
 
-Example of String values of topic `pnp/action_str`:
+Example of String values for topic `pnp/action_str`:
 
-    robot#goto_kitchen.start
-    robot#goto.kictchen.interrupt
-    robot#goto.kitchen.end
+        goto_kitchen.start
+        goto_kictchen.interrupt
+        goto_kitchen.end
 
-`pnp_ros` is listening for action commands through the topic `pnp/actionCmd`. Action executors have to notify when an action is terminated publishing a String message in the form `[<robotname>#]<actionname>_<params>.end`
+        robot1#goto_kitchen.start
+        robot1#goto_kictchen.interrupt
+        robot1#goto_kitchen.end
+
+`pnp_ros` is listening for action commands through the topic `pnp/actionCmd`. Action executors have to notify when an action is terminated publishing a String message in the form
+
+        [<robotname>#]<actionname>_<params>.end
 
 Example of String values of topic `pnp/actionCmd`:
 

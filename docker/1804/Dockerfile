@@ -12,8 +12,7 @@ USER robot
 RUN mkdir -p $HOME/src/
 
 # Trick to disable cache from here
-
-ADD http://worldtimeapi.org/api/ip /tmp/time.tmp 
+#ADD http://worldclockapi.com/api/json/utc/now /tmp/time.tmp
 
 # Petri Net Plans
 
@@ -54,5 +53,8 @@ RUN /bin/bash -ci "cd $HOME/ros/catkin_ws; catkin_make -j1"
 WORKDIR /home/robot
 
 CMD /usr/bin/tmux
+
+
+
 
 
