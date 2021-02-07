@@ -11,14 +11,14 @@
 // pnp_ros pub
 #define TOPIC_PNPACTION "pnp/action" // action proxy publisher 
 #define TOPIC_PNPACTION_STR "pnp/action_str" // action proxy publisher 
-                                             // string format <actionname>_<params>.<command>
+                                             // string format <actionname>[_<params>].<command>
 
 // pnp_ros sub
 #define TOPIC_PNPACTIONTERMINATION "pnp/actionTermination"  // notifies action is terminated
 
 // pnp_ros sub
 #define TOPIC_PNPACTIONCMD "pnp/actionCmd" // received action command to execute
-// Message syntax: <actionname>[_<params>] <start|end|interrupt>
+// Message syntax: <actionname>[_<params>].<start|end|interrupt>
 // TODO Uniform with naoqi
 // Message syntax: [start|end|interrupt] <actionname> [<params>]
 
