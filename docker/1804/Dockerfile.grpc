@@ -1,6 +1,6 @@
 # Docker file for ROS
 
-FROM pnp_1804_melodic:base
+FROM iocchi/pnp:base
 
 ARG DEBIAN_FRONTEND=noninteractive
 
