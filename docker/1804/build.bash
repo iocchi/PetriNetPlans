@@ -2,7 +2,7 @@
 
 # Use  ./build.bash [Dockerfile] [version]
 
-IMAGENAME=pnp_1804_melodic
+IMAGENAME=iocchi/pnp-1804-melodic
 
 DOCKERFILE=Dockerfile
 if [ ! "$1" == "" ]; then
@@ -21,7 +21,6 @@ echo "======================================="
 docker build --network=host -t $IMAGENAME:base -f Dockerfile.base . && \
 docker build --network=host -t $IMAGENAME:grpc -f $DOCKERFILE.grpc . && \
 docker build --network=host -t ${IMAGENAME}:$VERSION -f $DOCKERFILE .
-
 
 docker tag $IMAGENAME:$VERSION $IMAGENAME:latest
 

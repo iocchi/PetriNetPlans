@@ -1,6 +1,6 @@
 # Docker file for Petri Net Plans
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
-# Version 1.2
+# 2020-2021
 
 FROM pnp_1804_melodic:grpc
 
