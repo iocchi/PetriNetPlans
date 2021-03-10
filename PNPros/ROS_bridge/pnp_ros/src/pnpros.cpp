@@ -30,7 +30,7 @@ string planFolder = "plans/";
 
 
 // Global variables
-string robot_name = "NONAME";
+string robotname = "NONAME";
 string planToExec = "";
 actionlib::ActionClient<pnp_msgs::PNPAction> *pnpac = NULL;
 
@@ -89,7 +89,7 @@ void action_cmd_callback(const std_msgs::String::ConstPtr& msg)
 		pnp_msgs::PNPGoal goal;
 
         goal.id = 101;
-		goal.robotname = robot_name;
+		goal.robotname = robotname;
 		goal.name = actionname;
 		goal.params = actionparams;
 		goal.function = actioncmd;
@@ -141,10 +141,9 @@ int main(int argc, char** argv)
 		
 	ros::NodeHandle n, np("~");
 
-    robot_name = "NONAME";
-	if (!n.getParam("robot_name",robot_name))
-	    if (!n.getParam("robotname",robot_name))
-		    n.getParam("tf_prefix", robot_name);
+    robotname = "NONAME";
+	if (!n.getParam("robotname",robotname))
+        n.getParam("tf_prefix", robotname);
 
 	
     ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLANTOEXEC, 1, planToExecuteCallback);
@@ -376,7 +375,7 @@ int main(int argc, char** argv)
                     }
                     else {
                         np.setParam(PARAM_PNP_CURRENT_PLAN,planName);
-                        cout << "Starting " << executor->getMainPlanName() << endl;
+                        cout << "Starting plan " << executor->getMainPlanName() << endl;
 
                         String activePlaces;
                         activePlaces.data = "init";

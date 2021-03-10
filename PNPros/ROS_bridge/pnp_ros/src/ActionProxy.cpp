@@ -42,11 +42,11 @@ namespace pnpros
         //I think robot's name should be in plan name but is NOT!!
         if (robotname == "") {
             ros::NodeHandle nh;
-            if(nh.hasParam("robot_name")) {
-              nh.getParam("robot_name", robotname);
+            if(nh.hasParam("robotname")) {
+              nh.getParam("robotname", robotname);
               ROS_DEBUG_STREAM("Exec: " << robotname << "#" << name << " " << params );
             }
-            else ROS_WARN_STREAM("[PNPros]: No robot name defined. You should probably define it by setting the ros patameter \"robot_name\"");
+            else ROS_WARN_STREAM("[PNPros]: No robot name defined. You should probably define it by setting the ros patameter \"robotname\"");
           }
 
           stringstream ssbuf;
@@ -184,8 +184,8 @@ namespace pnpros
 
         goalhandler = pnpac->sendGoal(goal,boost::bind(&ActionProxy::transitionCb, this,  _1),boost::bind(&ActionProxy::feedbackCb, this, _1, _2));
 
-        while ((goalhandler.getCommState() == actionlib::CommState::WAITING_FOR_GOAL_ACK) ||
-                (goalhandler.getCommState() == actionlib::CommState::PENDING) //||
+        while (ros::ok() && ((goalhandler.getCommState() == actionlib::CommState::WAITING_FOR_GOAL_ACK) ||
+                (goalhandler.getCommState() == actionlib::CommState::PENDING)) //||
                 //(goalhandler.getCommState() == actionlib::CommState::ACTIVE)
               )
         {

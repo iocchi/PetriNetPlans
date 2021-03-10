@@ -1,23 +1,26 @@
 <launch>
-  <arg name="current_plan" default="sensing" />
   <arg name="plan_folder" default="$(find pnp_ros)/plans" />
 
   <node
     name="pnp_ros"
     pkg="pnp_ros" type="pnp_node"
     respawn="false" output="screen">
-      <param name="current_plan" value="$(arg current_plan)" />
       <param name="plan_folder" value="$(arg plan_folder)" />
       <param name="learning" value="false" />
       <param name="autorestart" value="false" />
       <param name="use_java_connection" value="false" />
   </node>
 
-  <node
+  <!-- node
     name="PNPActionServer"
     pkg="pnp_ros" type="PNPActionServer.py"
     respawn="false" output="screen">
-    <!-- <param name="name" value="value" /> -->
+  </node -->
+
+  <node
+    name="PNPActionServer"
+    pkg="pnp_ros" type="pnp_as"
+    respawn="false" output="screen">
   </node>
 
 
