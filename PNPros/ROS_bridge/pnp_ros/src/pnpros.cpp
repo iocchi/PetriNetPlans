@@ -81,7 +81,7 @@ void action_cmd_callback(const std_msgs::String::ConstPtr& msg)
         actionparams = action.substr(k+1);
     }
     
-    ROS_INFO_STREAM("Action cmd: " << actioncmd << " " << actionname << " " << actionparams);
+    ROS_INFO_STREAM("Action cmd received: " << actioncmd << " " << actionname << " " << actionparams);
 
     
 	if (actioncmd=="start" || actioncmd=="end" || actioncmd=="interrupt") {
@@ -219,10 +219,9 @@ int main(int argc, char** argv)
 	else
 		ROS_INFO("pnp_ros:: Cannot connect to PNP action server!!!");
 
-
 	if (learning) conditionChecker = new ROSReward();
 	else conditionChecker = new ROSConds();
-	
+
     double refreshRate = 50.0; // Hz
 	
 	ros::Rate rate(refreshRate);
@@ -311,12 +310,15 @@ int main(int argc, char** argv)
 	{		
         while (ros::ok())
 		{
+
+            // cerr << "DEBUG " << planToExec <<  "  " << planName << "  ... " << endl;
+
 			if (planToExec!="") {
                 if (planToExec=="<currentplan>")
                     planName = currentPlanName;
                 else
                     planName = planToExec;
-			  planToExec = "";
+			    planToExec = "";
 			}			
 
             if (planName=="stop") {
@@ -435,11 +437,15 @@ int main(int argc, char** argv)
 
                     } // if executor getMainPlanName ...
 
-                    delete executor;
+                    delete executor;   // stop all actions
+
+	                // Wait for actions to complete (just in case)
+	                ros::Duration(0.5).sleep();
 
                 } // if executor!=NULL
 
-            } // else
+            } // else planName != "stop"
+
 		} // while
 	}
 	

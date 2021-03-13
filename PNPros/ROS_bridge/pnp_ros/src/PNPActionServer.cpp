@@ -417,16 +417,17 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
       string pstr = ssbuf.str();
       ROS_INFO_STREAM("... checking action termination with ROS param " << pstr);
       string val = "";
-      while (*run) {
+      bool localrun=true;
+      while (*run && localrun) {
         ros::Duration(sleepunit).sleep();
         ros::param::get(pstr,val);
-        if (val != "run")
-            *run = false;
+        if (val != "run") { // internal termination of action
+            localrun = false;
+        }
       }
       ROS_INFO_STREAM("... action terminated");
 
   }
-
 
   actionEnd(robotname, action_name, action_params);
 

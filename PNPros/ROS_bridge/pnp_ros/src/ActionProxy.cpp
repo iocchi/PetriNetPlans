@@ -152,8 +152,11 @@ namespace pnpros
 
     void ActionProxy::end()
     {
+
+        // cerr << "###DEBUG### ActionProxy::end "+robotname+" "+ name + " " + params + " - ID: " + id << endl;
+
+
         if (!active) return;
-        active=false;
 
 #if USE_MESSAGES
         pnp_msgs::Action action;
@@ -189,10 +192,10 @@ namespace pnpros
                 //(goalhandler.getCommState() == actionlib::CommState::ACTIVE)
               )
         {
-            //cout << "### In end function: gh state = " << goalhandler.getCommState().toString() << endl;
+            // cout << "###DEBUG### end function - inside while: gh state = " << goalhandler.getCommState().toString() << endl;
             usleep(100e3);
         }
-        //cout << "### In end function: gh state = " << goalhandler.getCommState().toString() << endl;
+        // cout << "###DEBUG### end function - outside while: gh state = " << goalhandler.getCommState().toString() << endl;
 #endif
 
         stringstream ssbuf;
@@ -200,6 +203,9 @@ namespace pnpros
         ros::param::set(ssbuf.str(),"end");
 
         ROS_INFO_STREAM("End: "+robotname+" "+ name + " " + params + " - ID: " + id);
+
+        active=false;
+
     }
 
     void ActionProxy::interrupt()

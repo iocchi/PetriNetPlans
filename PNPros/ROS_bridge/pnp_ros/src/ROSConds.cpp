@@ -10,7 +10,7 @@ namespace pnpros
 	{
 		ros::NodeHandle n;
 		
-		ROS_INFO("Setting service client for %s", SRV_PNPCONDITIONEVAL);
+		ROS_INFO("Testing service %s ...", SRV_PNPCONDITIONEVAL);
 		
         client = n.serviceClient<pnp_msgs::PNPCondition>(SRV_PNPCONDITIONEVAL);
 		
