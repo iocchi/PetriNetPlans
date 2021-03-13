@@ -415,13 +415,16 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
       stringstream ssbuf;
       ssbuf << PARAM_PNPACTIONSTATUS << action_name;
       string pstr = ssbuf.str();
-      string val;
+      ROS_INFO_STREAM("... checking action termination with ROS param " << pstr);
+      string val = "";
       while (*run) {
         ros::Duration(sleepunit).sleep();
         ros::param::get(pstr,val);
         if (val != "run")
             *run = false;
       }
+      ROS_INFO_STREAM("... action terminated");
+
   }
 
 
