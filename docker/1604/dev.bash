@@ -2,7 +2,7 @@
 
 # Use  ./run.bash [version]
 
-IMAGENAME=pnp_1604_kinetic
+IMAGENAME=pnp_kinetic
 
 VERSION=latest
 if [ ! "$1" == "" ]; then

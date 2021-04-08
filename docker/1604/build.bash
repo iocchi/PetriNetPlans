@@ -2,7 +2,7 @@
 
 # Use  ./build.bash [Dockerfile] [version]
 
-IMAGENAME=pnp_1604_kinetic
+IMAGENAME=pnp_kinetic
 
 DOCKERFILE=Dockerfile
 if [ ! "$1" == "" ]; then

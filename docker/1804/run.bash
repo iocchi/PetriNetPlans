@@ -2,7 +2,7 @@
 
 # Use  ./run.bash [version]
 
-IMAGENAME=pnp_1804_melodic
+IMAGENAME=iocchi/pnp
 
 VERSION=latest
 if [ ! "$1" == "" ]; then
