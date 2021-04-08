@@ -16,7 +16,7 @@ PNP_FOLDER=$HOME/src/PetriNetPlans
 echo "Running image $IMAGENAME:$VERSION ..."
 
 docker run -it \
-    --name petri_net_plans_dev --rm \
+    --name pnp --rm \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v $HOME/.Xauthority:/home/robot/.Xauthority:rw \
     -e DISPLAY=$DISPLAY \

@@ -2,7 +2,7 @@
 
 # Use  ./run.bash [version]
 
-IMAGENAME=pnp_1804_melodic
+IMAGENAME=iocchi/pnp
 
 VERSION=latest
 if [ ! "$1" == "" ]; then
@@ -15,7 +15,7 @@ PLAYGROUND_FOLDER=$HOME/playground
 echo "Running image $IMAGENAME:$VERSION ..."
 
 docker create -it \
-    --name petri_net_plans \
+    --name pnp \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v $HOME/.Xauthority:/home/robot/.Xauthority:rw \
     -e DISPLAY=$DISPLAY \

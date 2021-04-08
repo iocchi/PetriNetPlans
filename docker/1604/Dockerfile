@@ -12,8 +12,11 @@ USER robot
 RUN mkdir -p $HOME/src/
 
 # Trick to disable cache from here
+#ADD http://worldclockapi.com/api/json/utc/now /tmp/time.tmp
 
-ADD http://worldtimeapi.org/api/ip /tmp/time.tmp 
+ARG FORCEBUILD=none
+
+RUN echo "$FORCEBUILD"
 
 # Petri Net Plans
 
