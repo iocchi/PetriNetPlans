@@ -2,7 +2,7 @@
 
 # Use  ./build.bash [Dockerfile] [forcebuildtag]
 
-IMAGENAME=pnp_kinetic
+IMAGENAME=pnp
 
 DOCKERFILE=Dockerfile
 if [ ! "$1" == "" ]; then
@@ -20,9 +20,8 @@ echo "======================================="
 echo "   Building $IMAGENAME:$VERSION "
 echo "======================================="
 
-docker build -t $IMAGENAME:base -f Dockerfile.base . && \
-docker build $FORCEBUILDTAG -t $IMAGENAME:$VERSION -f $DOCKERFILE .
+docker build -t $IMAGENAME:kinetic-base -f Dockerfile.base . && \
+docker build $FORCEBUILDTAG -t $IMAGENAME:kinetic-$VERSION -f $DOCKERFILE .
 
-docker tag $IMAGENAME:$VERSION $IMAGENAME:latest
-docker tag $IMAGENAME:$VERSION pnp_1604_kinetic:latest  # back compatibility
+docker tag $IMAGENAME:kinetic-$VERSION pnp_1604_kinetic:latest  # back compatibility
 

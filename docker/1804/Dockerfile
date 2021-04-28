@@ -16,7 +16,7 @@ RUN mkdir -p $HOME/src/
 
 ARG FORCEBUILD=none
 
-RUN echo "$FORCEBUILD"
+RUN echo "$FORCEBUILD" > /tmp/lastdockerbuild
 
 # Petri Net Plans
 

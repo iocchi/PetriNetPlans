@@ -1,8 +1,7 @@
 # Docker file for Petri Net Plans
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
-# Version 1.2
 
-FROM pnp_1604_kinetic:base
+FROM pnp:kinetic-base
 
 
 ### PNP packages ###
@@ -16,7 +15,7 @@ RUN mkdir -p $HOME/src/
 
 ARG FORCEBUILD=none
 
-RUN echo "$FORCEBUILD"
+RUN echo "$FORCEBUILD" > /tmp/lastdockerbuild
 
 # Petri Net Plans
 
