@@ -1188,10 +1188,18 @@ void find_branches(string& to_branch, vector<string>& observations,vector<string
     
     //jump over conditional in main branch
     if(to_branch[i] == '<'){
-      int j = to_branch.find_first_of('>',i);
+
+      // search for closing '>'
+      int j=i+1; int lev=0;
+      while (to_branch[j] != '>' || lev>0) {
+        if (to_branch[j] == '>') lev--;
+        if (to_branch[j] == '<') lev++;
+        j++;
+      }
+      // j is the pointer to closing '>'
       app += to_branch.substr(i,j-i+1);
       i = j;
-      ++i;
+      i++;
     }
     
     //branch of type ? ... :
