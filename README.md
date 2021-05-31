@@ -47,10 +47,14 @@ PNPnaoqi has been tested on NAOQi version 2.5.
 
 * [PNPros example](PNPros/examples/rp_example)
 
+* [DIAG demo](https://github.com/iocchi/DIAG_demo)
+
 
 
 # Video Tutorials
 
-[![PNP install and run](https://img.youtube.com/vi/3tGcuBrs8-Y/0.jpg)](https://www.youtube.com/watch?v=3tGcuBrs8-Y)
+* [Tutorials playlist](https://www.youtube.com/playlist?list=PLyk5DuHplcDe0G4vwWnokdsVCD5hImMW-)
+
+
 
 
