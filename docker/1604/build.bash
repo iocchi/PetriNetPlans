@@ -2,7 +2,10 @@
 
 # Use  ./build.bash [Dockerfile] [forcebuildtag]
 
-IMAGENAME=pnp
+IMAGENAME=pnp  
+IMAGENAMEOLD=pnp_1604_kinetic:latest  # back compatibility
+IMAGENAMENEW=iocchi/pnp:kinetic
+
 
 DOCKERFILE=Dockerfile
 if [ ! "$1" == "" ]; then
@@ -23,5 +26,7 @@ echo "======================================="
 docker build -t $IMAGENAME:kinetic-base -f Dockerfile.base . && \
 docker build $FORCEBUILDTAG -t $IMAGENAME:kinetic-$VERSION -f $DOCKERFILE .
 
-docker tag $IMAGENAME:kinetic-$VERSION pnp_1604_kinetic:latest  # back compatibility
+docker tag $IMAGENAME:kinetic-$VERSION $IMAGENAMEOLD  # back compatibility
+
+docker tag $IMAGENAME:kinetic-$VERSION $IMAGENAMENEW
 
