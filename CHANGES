@@ -1,5 +1,11 @@
+1.4.3  23/12/2021
+- docker updates 
+
+1.4.2
+- updates
+
 1.4.1 13/3/2021
-- updates for docker mode
+- docker updates
 
 1.3 7/2/2021
 - gRPC support in docker/1804
