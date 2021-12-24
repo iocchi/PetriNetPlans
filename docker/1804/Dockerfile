@@ -20,7 +20,7 @@ RUN echo "$FORCEBUILD" > /tmp/lastdockerbuild
 
 # Petri Net Plans
 
-RUN cd $HOME/src && git clone https://github.com/iocchi/PetriNetPlans
+RUN cd $HOME/src && git clone --depth 1 https://github.com/iocchi/PetriNetPlans
 
 RUN cd $HOME/src/PetriNetPlans/PNP &&  mkdir -p build &&  cd build  &&  cmake ..  && make
 
