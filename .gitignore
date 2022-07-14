@@ -45,4 +45,6 @@ qtcreator-build
 PNPnaoqi/build*
 AUTOGEN*
 
+PNPgen/install_manifest.txt 
+PNPgen/Makefile
 
