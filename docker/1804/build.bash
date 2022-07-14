@@ -24,5 +24,6 @@ docker build -t $IMAGENAME:base -f Dockerfile.base . && \
 docker build -t $IMAGENAME:grpc -f $DOCKERFILE.grpc . && \
 docker build $FORCEBUILDTAG -t ${IMAGENAME}:melodic-$VERSION -f $DOCKERFILE .
 
+docker tag $IMAGENAME:melodic-$VERSION $IMAGENAME:melodic
 docker tag $IMAGENAME:melodic-$VERSION $IMAGENAME:latest
 
