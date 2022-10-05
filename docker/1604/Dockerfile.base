@@ -31,7 +31,7 @@ RUN useradd -ms /bin/bash robot && echo "robot:robot" | chpasswd && adduser robo
 USER robot
 
 RUN echo "set -g mouse on" > $HOME/.tmux.conf 
-
+RUN touch ~/.sudo_as_admin_successful
 
 # Init ROS workspace
 
