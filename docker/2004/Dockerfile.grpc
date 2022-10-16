@@ -1,0 +1,62 @@
+# Docker file for ROS with grpc support
+
+FROM iocchi/pnp:base
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+
+USER robot
+
+### gRPC ###
+
+RUN mkdir -p $HOME/.local
+
+# Version 3.13 or later of cmake is required to install gRPC locally
+
+RUN mkdir -p $HOME/src/cmake && cd $HOME/src/cmake && \
+    wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.sh && \
+    sh cmake-linux.sh -- --skip-license --prefix=$HOME/.local && \
+    rm cmake-linux.sh
+
+RUN cd $HOME/src && \
+    git clone --recurse-submodules -b v1.34.1 https://github.com/grpc/grpc
+
+RUN cd $HOME/src/grpc && \
+    mkdir -p cmake/build && \
+    cd cmake/build && \
+    $HOME/.local/bin/cmake -DgRPC_INSTALL=ON \
+      -DgRPC_BUILD_TESTS=OFF \
+      -DCMAKE_INSTALL_PREFIX=$HOME/.local \
+      ../.. && \
+    make -j4 && \
+    make install
+
+
+# build the example
+
+RUN cd $HOME/src/grpc/examples/cpp/helloworld && \
+    mkdir -p cmake/build && \
+    cd cmake/build && \
+    $HOME/.local/bin/cmake -DCMAKE_PREFIX_PATH=$HOME/.local ../.. && \
+    make -j4
+
+
+# Install Python libs
+
+RUN pip3 install grpcio grpcio-tools
+
+
+# Set up .bashrc
+
+RUN echo "" >> $HOME/.bashrc
+RUN echo "export PATH=\"$PATH:$HOME/.local/bin\"" >> $HOME/.bashrc
+RUN echo "" >> $HOME/.bashrc
+RUN echo "export PKG_CONFIG_PATH=\"$PKG_CONFIG_PATH:$HOME/.local/lib/pkgconfig\"" >> $HOME/.bashrc
+RUN echo "" >> $HOME/.bashrc
+RUN echo "source $HOME/ros/catkin_ws/devel/setup.bash" >> $HOME/.bashrc
+RUN echo "" >> $HOME/.bashrc
+
+# Check catkin_make
+
+RUN /bin/bash -ci "cd $HOME/ros/catkin_ws; catkin_make -j1"
+
