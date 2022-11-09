@@ -437,7 +437,8 @@ Transition* PNP::addFail(Place *pi, Place *po) {
 }
 
 
-
+// input: action name, start place
+// output: end place, p0action: input place of the action
 Place* PNP::addGeneralAction(string &name, Place *p0, Place **p0action) {
 
     // check time values "<name>|<time>"
@@ -460,7 +461,8 @@ Place* PNP::addGeneralAction(string &name, Place *p0, Place **p0action) {
 	return n;
 }
 
-
+// input: action name, start place
+// output: end place
 Place* PNP::addAction(string name, Place *p0) {
     Transition *ts = addTransition(name+".start");
     Place *pe = addPlace(name+".exec");
@@ -1406,10 +1408,28 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       }
       return genFromLine_r(pi,plan);
    }
+   else if (next.find("||")!=string::npos) { // parallel action
+      cout << "|| Parallel actions || " << endl;
+      
+      Place *pi = pnp.addPlace("Parinit");
+      Place *pe = pnp.addPlace("Parend");
+      vector<string> pp; boost::split(pp,next,boost::is_any_of("| "));
+      for (int i=0; i<pp.size(); i++) {
+         if (pp[i].size()>0) {
+           cout << i << " " << pp[i] << endl;
+           Place *poa;
+           Place *pn = pnp.addGeneralAction(pp[i],pi,&poa);
+           Transition *tn = pnp.addTransition("tppout");
+           pnp.connect(pn,tn); pnp.connect(tn,pe);
+        }
+      }
+
+      return genFromLine_r(pe,plan);
+   }
    else { // normal action
 
       if (next.find(" ")!=string::npos) {
-          cout << tcol.FAIL << "*** ERROR *** Action name " << next << " not valid. Plan not generated!" << tcol.ENDC << endl;
+          cout << tcol.FAIL << "*** HERE ERROR *** Action name " << next << " not valid. Plan not generated!" << tcol.ENDC << endl;
           exit(-2);
       }
 
