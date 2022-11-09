@@ -994,7 +994,7 @@ bool PNPGenerator::genFromPolicy(Policy &p) {
 bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
 					       ConditionalPlan& final_state, map<string,pair<string,vector<ActionOutcome> > > state_action_out){
 
-  bool ok = true; //check erros
+  bool ok = true; //check errors
 
   map<string,Place*> visited;
 
@@ -1005,15 +1005,17 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
   p1->setName(current_state);
   visited[plan.state] = p1;
 
-  cout << "Final state " << final_state.state << endl;
+  // cout << "Final state " << final_state.state << endl;
 
   stack< pair<string,Place*> > ss; ss.push(make_pair(current_state,p1));
 
   while(!ss.empty()){
+
     current_state = ss.top().first; Place* current_place = ss.top().second;
+
     ss.pop();
 
-    cout << "PNPgen::  " << current_state << " : ";
+    cout << "PNPgen::  " << current_state << " : "; fflush(stdout);
     string action = state_action_out[current_state].first;
 
     if (action==""){
@@ -1021,7 +1023,7 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
 	cout << "PNPgen Warning: No action found for state " << current_state << endl;
         continue;
     }
-    cout << action << " -> ";
+    cout << action << " -> ";  fflush(stdout);
 
     vector<ActionOutcome> vo = state_action_out[current_state].second;
     if (vo.size()==0){
@@ -1043,11 +1045,11 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
     vector<ActionOutcome>::iterator it;
 
     for(it = vo.begin(); it != vo.end(); ++it){
+
       string succ_state = it->successor->state;
       string cond = it->observation;
-
       if (cond[0]!='[') cond = "["+cond+"]";
-      cout << cond << " " << succ_state << "    ";
+      cout << cond << " " << succ_state << "    "; fflush(stdout);
 
       Place* ps = visited[succ_state];
 
@@ -1059,11 +1061,12 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
       	visited[succ_state]=pc;
       	pc->setName(succ_state);
       	// if (succ_state== final_state.state) pc->setName("goal");
-      }else { // if already visited
+      }
+      else { // if already visited
 	       pnp.addConditionBack(cond,pe, ps, dy); dy++;
       }
-     } // for io
 
+     } // for it
 
      cout << endl;
   }
@@ -1074,19 +1077,28 @@ bool PNPGenerator::genFromConditionalPlan_loop(ConditionalPlan& plan,
 
 bool PNPGenerator::genFromConditionalPlan_r(ConditionalPlan *plan, Place *p0) {
     bool ret = true;
-    cout << "PNPgen:: current state: " << plan->state << endl;
+    cout << "  PNPgen:: current state: " << plan->state << endl;
     p0->setName(plan->state);
     Place *p1;
     if (plan->outcomes.size()==1) {
         p1 = addGeneralAction(plan->action,p0);
         vector<ActionOutcome>::iterator it = plan->outcomes.begin();
         ret &= genFromConditionalPlan_r(it->successor,p1);
+        if (plan->action == "give-up") { // give-up action from Contingent-ff
+            if (p1->getName().substr(0,4)=="GOAL")
+              p1->setName("FAIL"+p1->getName().substr(4));
+            else
+              p1->setName("FAIL"+p1->getName());
+        }
     }
     else if (plan->outcomes.size()>1) {
         vector<string> outcomes;
-        for (vector<ActionOutcome>::iterator it = plan->outcomes.begin(); it!=plan->outcomes.end(); it++)
+        for (vector<ActionOutcome>::iterator it = plan->outcomes.begin(); it!=plan->outcomes.end(); it++) {
+            //cout << "  -- obs: " << it->observation << endl;
             outcomes.push_back(it->observation);
+        }
         vector<Place*> vp = addSensingAction(plan->action,p0,outcomes);
+        //cout << "  -- action " << plan->action << endl;
         vector<ActionOutcome>::iterator it; vector<Place *>::iterator pit;
         for (it=plan->outcomes.begin(), pit=vp.begin(); it!=plan->outcomes.end(); it++, pit++) {
             (*pit)->setName(it->successor->state);
@@ -1094,31 +1106,17 @@ bool PNPGenerator::genFromConditionalPlan_r(ConditionalPlan *plan, Place *p0) {
                 ret &= genFromConditionalPlan_r(it->successor,(*pit));
         }
     }
-
-    /*
-    std::vector<ActionOutcome>::iterator it = plan->outcomes.begin();
-    while (it!=plan->outcomes.end()) {
-        Place *pc;
-        if (it->observation!="[]") {
-            std::pair<Transition*,Place*> tp = pnp.addCondition(it->observation, p1);
-            pc = tp.second;
-        }
-        else {
-            pc = p1; //(Place *)(pnp.next(pnp.next(p0)));
-        }
-        pc->setName(it->successor->state);
-        if (it->successor->action!="")
-            ret &= genFromConditionalPlan_r(it->successor,pc);
-        it++;
+    else if (plan->outcomes.size()==0) {
+        p0->setName("GOAL"+plan->state);
     }
-
-*/
 
     return ret;
 }
 
 bool PNPGenerator::genFromConditionalPlan(ConditionalPlan &plan) {
-    return genFromConditionalPlan_r(&plan,pnp.pinit);
+    bool r = genFromConditionalPlan_r(&plan,pnp.pinit);
+    pnp.pinit->setName("INIT"+pnp.pinit->getName());
+    return r;
 }
 
 int found_end(string line){

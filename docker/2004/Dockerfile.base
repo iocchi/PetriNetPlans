@@ -2,9 +2,11 @@
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
 # Version Base
 
-FROM ros:melodic-ros-base-bionic
+FROM ros:noetic-ros-base-focal
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG UID=1000
+ARG GID=1000
 
 
 ###### USER root ######
@@ -14,10 +16,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
 
 RUN apt-get update && \
-    apt-get install -y tmux less sudo eom xterm wget \
+    apt-get install -y tmux less sudo eom xterm wget git \
         nano unzip iputils-ping net-tools openssh-client \
         openjdk-11-jdk libxml2-dev libxml++2.6-dev flex \
-        ros-melodic-navigation ros-melodic-stage-ros && \
+        python3-pip \
+        ros-noetic-navigation ros-noetic-stage-ros && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -25,6 +28,7 @@ RUN apt-get update && \
 # User: robot (password: robot) with sudo power
 
 RUN useradd -ms /bin/bash robot && echo "robot:robot" | chpasswd && adduser robot sudo
+RUN usermod -u $UID robot && groupmod -g $GID robot
 
 
 ###### USER robot ######
@@ -38,17 +42,14 @@ RUN touch ~/.sudo_as_admin_successful
 
 RUN mkdir -p $HOME/ros/catkin_ws/src
 
-RUN /bin/bash -c "source /opt/ros/melodic/setup.bash; cd $HOME/ros/catkin_ws/src; catkin_init_workspace; cd ..; catkin_make"
-
-RUN echo "source $HOME/ros/catkin_ws/devel/setup.bash" >> $HOME/.bashrc
+RUN /bin/bash -c "source /opt/ros/noetic/setup.bash; cd $HOME/ros/catkin_ws/src; catkin_init_workspace; cd ..; catkin_make"
 
 RUN rosdep update
 
 
 # Set up .bashrc
 
-RUN echo "if [ -d /usr/lib/nvidia-384/ ]; then" >> $HOME/.bashrc
-RUN echo "  export PATH=\"/usr/lib/nvidia-384/bin:\${PATH}\"" >> $HOME/.bashrc
-RUN echo "  export LD_LIBRARY_PATH=\"/usr/lib/nvidia-384:/usr/lib32/nvidia-384:\${LD_LIBRARY_PATH}\" " >> $HOME/.bashrc
-RUN echo "fi" >> $HOME/.bashrc
+RUN echo "source $HOME/ros/catkin_ws/devel/setup.bash" >> $HOME/.bashrc
+
+
 

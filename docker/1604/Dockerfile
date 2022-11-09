@@ -11,7 +11,6 @@ USER robot
 RUN mkdir -p $HOME/src/
 
 # Trick to disable cache from here
-#ADD http://worldclockapi.com/api/json/utc/now /tmp/time.tmp
 
 ARG FORCEBUILD=none
 
@@ -50,9 +49,6 @@ RUN cd $HOME/ros/catkin_ws/src && \
 
 RUN /bin/bash -ci "cd $HOME/ros/catkin_ws; catkin_make -j1"
 
-# Remove sudo warning
-
-RUN touch ~/.sudo_as_admin_successful
 
 # Set working dir and container command
 

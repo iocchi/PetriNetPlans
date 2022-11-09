@@ -31,6 +31,7 @@ struct ConditionalPlan {
 
     void addOutcome(ActionOutcome o) { outcomes.push_back(o); }
     void addOutcome(ConditionalPlan *s) { outcomes.push_back(ActionOutcome("",s)); }
+    void addOutcome(std::string o, ConditionalPlan *s) { outcomes.push_back(ActionOutcome(o,s)); }
 
     std::string tab(int level) {
         std::stringstream o;

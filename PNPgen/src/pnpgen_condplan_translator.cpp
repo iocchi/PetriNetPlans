@@ -7,6 +7,7 @@
 
 #include "pnp_translator/pddl_transl.cpp"
 #include "pnp_translator/kpddl_transl.cpp"
+#include "pnp_translator/cff_transl.cpp"
 // #include "pnp_translator/digraph_transl.cpp"
 
 using namespace std;
@@ -151,12 +152,13 @@ int main(int argc, char** argv) {
 //     create_PNP_from_conditionalplan(erfile);
   
   
-  if(argc < 3 || string(argv[1]) != "pddl" && string(argv[1]) != "kpddl" && string(argv[1]) != "inline"){
+  if(argc < 3 || string(argv[1]) != "pddl" && string(argv[1]) != "cff" && string(argv[1]) != "kpddl" && string(argv[1]) != "inline"){
     cout << "PNPgen_Translator: wrong usage!" << endl;
     cout << "                   usage: ./pnpgen_translator <language_type> <path_to_file> [ER file]" << endl;
-    cout << "                   <language_type>: pddl, kpddl, inline" << endl;
-    cout << "                   <path_to_file>: (pddl) file is the FF planner output" << endl;
-    cout << "                                   (kpddl) file is the kplanner output" << endl;
+    cout << "                   <language_type>: pddl, cff, kpddl, inline" << endl;
+    cout << "                   <path_to_file>: (pddl) file is the output of FF planner" << endl;
+    cout << "                                   (cff) file is the output of Continget-FF planner" << endl;
+    cout << "                                   (kpddl) file is the output of kplanner" << endl;
     cout << "                                   (inline) file is the inline description of the plan" << endl;
     
     return 0;
@@ -187,10 +189,9 @@ int main(int argc, char** argv) {
   }
   f.close();
 
-  if(lang == "pddl"){
+  if (lang == "pddl"){
     //=============== PDDL TRANSLATION ===============
-//       string path = "/home/valerio/thesis/PDDL/ff_output.txt";
-    string write_to = "test/pddl_to_condplan.txt";
+    string write_to = "output.txt";
     PDDLTransl pd(path);
       
     pd.read_file();
@@ -199,8 +200,40 @@ int main(int argc, char** argv) {
     cout << "plan write" << endl;
     create_PNP_from_PDDL(write_to); //generate the PNP from the file 'write_to'
   }
+  else if (lang == "cff"){
+    //=============== Contingent-ff TRANSLATION ===============
+    CFFTransl pd(path);
+      
+    pd.read_file();
+    cout << "file read" << endl;
+
+    vector<ConditionalPlan> v = pd.getCondPlan();
+    string goal_name="AUTOGEN_CFFPlan";
+    cout << "CFF Conditional Plan name: " << goal_name << endl;
+    PNPGenerator pnpgen(goal_name);
+
+    // generate the PNP from the conditional plan
+    bool r=pnpgen.genFromConditionalPlan(v[0]);
+
+    if (r) {
+
+        if (erfile!="") {
+            // apply the execution rules
+            pnpgen.readERFile(erfile);
+            pnpgen.applyExecutionRules();
+        }
+        
+        string pnpoutfilename = goal_name+".pnml";
+        pnpgen.save(pnpoutfilename.c_str());
+        cout << "Saved PNP file " << pnpoutfilename << endl;
+    }
+    else {
+        cout << "PNP not generated!!!" << endl;
+    }
+
+  }
   //=============== KPDDL TRANSLATION ===============
-  if(lang == "kpddl"){
+  else if (lang == "kpddl"){
     string write_to = "test/kpddl_to_condplan.txt";
     KPDDLTransl kpd(path);
     kpd.read_file();
@@ -214,7 +247,7 @@ int main(int argc, char** argv) {
   }
   
   //=============== INLINE TRANSLATION ===============
-  if(lang == "inline"){
+  else if (lang == "inline"){
     string goal_name = "AUTOGEN_inline";
     
     char sep='/';

@@ -62,9 +62,8 @@ protected:
 public:
   CondPlan_Translator() { }
   ConditionalPlan* read_file() { cerr << "ConditionalPlan::read_file() NOT IMPLEMENTED!!!" << endl; }
-  // void write_plan(string out = "test/translator_out.txt");
 
-  void write_plan(string file_to_write = "test/translator_out.txt"){
+  void write_plan(string file_to_write = "translator_out.txt"){
     ofstream out;
     out.open(file_to_write.c_str());
 
@@ -129,7 +128,7 @@ public:
 	}
     }
 
-    out << "}";
+    out << "}\n";
     out.close();
 
   }

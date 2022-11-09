@@ -16,14 +16,17 @@ if [ ! "$2" == "" ]; then
   FORCEBUILDTAG="--build-arg FORCEBUILD=$2"
 fi
 
+UPAR="--build-arg UID=`id -u` --build-arg GID=`id -g`"
+
+
 echo "======================================="
 echo "   Building $IMAGENAME:$VERSION "
 echo "======================================="
 
-docker build -t $IMAGENAME:base -f Dockerfile.base . && \
+docker build $UPAR -t $IMAGENAME:base -f Dockerfile.base . && \
 docker build -t $IMAGENAME:grpc -f $DOCKERFILE.grpc . && \
-docker build $FORCEBUILDTAG -t ${IMAGENAME}:melodic-$VERSION -f $DOCKERFILE .
+docker build $FORCEBUILDTAG -t ${IMAGENAME}:noetic-$VERSION -f $DOCKERFILE .
 
-docker tag $IMAGENAME:melodic-$VERSION $IMAGENAME:melodic
-#docker tag $IMAGENAME:melodic-$VERSION $IMAGENAME:latest
+docker tag $IMAGENAME:noetic-$VERSION $IMAGENAME:noetic
+docker tag $IMAGENAME:noetic-$VERSION $IMAGENAME:latest
 
