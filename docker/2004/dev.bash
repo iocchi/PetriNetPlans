@@ -2,9 +2,9 @@
 
 # Use  ./run.bash [version]
 
-IMAGENAME=iocchi/pnp:noetic
+IMAGENAME=iocchi/pnp
 
-VERSION=latest
+VERSION=noetic
 if [ ! "$1" == "" ]; then
   VERSION=$1
 fi
