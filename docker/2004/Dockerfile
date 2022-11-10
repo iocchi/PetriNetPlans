@@ -2,7 +2,7 @@
 # Luca Iocchi, DIAG, Sapienza University of Rome, Italy
 # 2020-2021
 
-FROM iocchi/pnp:grpc
+FROM iocchi/pnp:noetic-grpc
 
 
 ### PNP packages ###

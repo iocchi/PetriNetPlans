@@ -5,6 +5,8 @@
 FROM ros:melodic-ros-base-bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG UID=1000
+ARG GID=1000
 
 
 ###### USER root ######
@@ -25,6 +27,7 @@ RUN apt-get update && \
 # User: robot (password: robot) with sudo power
 
 RUN useradd -ms /bin/bash robot && echo "robot:robot" | chpasswd && adduser robot sudo
+RUN usermod -u $UID robot && groupmod -g $GID robot
 
 
 ###### USER robot ######
@@ -40,15 +43,10 @@ RUN mkdir -p $HOME/ros/catkin_ws/src
 
 RUN /bin/bash -c "source /opt/ros/melodic/setup.bash; cd $HOME/ros/catkin_ws/src; catkin_init_workspace; cd ..; catkin_make"
 
-RUN echo "source $HOME/ros/catkin_ws/devel/setup.bash" >> $HOME/.bashrc
-
 RUN rosdep update
 
 
 # Set up .bashrc
 
-RUN echo "if [ -d /usr/lib/nvidia-384/ ]; then" >> $HOME/.bashrc
-RUN echo "  export PATH=\"/usr/lib/nvidia-384/bin:\${PATH}\"" >> $HOME/.bashrc
-RUN echo "  export LD_LIBRARY_PATH=\"/usr/lib/nvidia-384:/usr/lib32/nvidia-384:\${LD_LIBRARY_PATH}\" " >> $HOME/.bashrc
-RUN echo "fi" >> $HOME/.bashrc
+RUN echo "source $HOME/ros/catkin_ws/devel/setup.bash" >> $HOME/.bashrc
 

@@ -1,6 +1,6 @@
 # Docker file for ROS with grpc support
 
-FROM iocchi/pnp:base
+FROM iocchi/pnp:noetic-base
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG GRPC_VERSION=1.50.0

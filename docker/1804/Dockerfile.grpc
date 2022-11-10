@@ -1,8 +1,9 @@
-# Docker file for ROS
+# Docker file for gRPC
 
-FROM iocchi/pnp:base
+FROM iocchi/pnp:melodic-base
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG GRPC_VERSION=1.48.2
 
 USER root
 
@@ -18,6 +19,12 @@ USER robot
 
 RUN mkdir -p $HOME/.local
 
+# Install Python libs
+
+RUN pip3 install grpcio==$GRPC_VERSION grpcio-tools==$GRPC_VERSION
+
+# Install C++ libs
+
 # Version 3.13 or later of cmake is required to install gRPC locally
 
 RUN mkdir -p $HOME/src/cmake && cd $HOME/src/cmake && \
@@ -26,7 +33,7 @@ RUN mkdir -p $HOME/src/cmake && cd $HOME/src/cmake && \
     rm cmake-linux.sh
 
 RUN cd $HOME/src && \
-    git clone --recurse-submodules -b v1.34.1 https://github.com/grpc/grpc
+    git clone --recurse-submodules -b v$GRPC_VERSION https://github.com/grpc/grpc
 
 RUN cd $HOME/src/grpc && \
     mkdir -p cmake/build && \
@@ -46,11 +53,6 @@ RUN cd $HOME/src/grpc/examples/cpp/helloworld && \
     cd cmake/build && \
     $HOME/.local/bin/cmake -DCMAKE_PREFIX_PATH=$HOME/.local ../.. && \
     make -j4
-
-
-# Install Python libs
-
-RUN pip3 install grpcio grpcio-tools
 
 
 # Set up .bashrc
