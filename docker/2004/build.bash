@@ -9,7 +9,8 @@ if [ ! "$1" == "" ]; then
   DOCKERFILE=$1
 fi
 
-VERSION=`cat ../../version.txt`
+PNP_VERSION=`cat ../../version.txt`
+GRPC_VERSION=1.50.0
 
 FORCEBUILDTAG=""
 if [ ! "$2" == "" ]; then
@@ -17,16 +18,16 @@ if [ ! "$2" == "" ]; then
 fi
 
 UPAR="--build-arg UID=`id -u` --build-arg GID=`id -g`"
-
+GRPC="--build-arg GRPC_VERSION=$GRPC_VERSION"
 
 echo "======================================="
 echo "   Building $IMAGENAME:$VERSION "
 echo "======================================="
 
-docker build $UPAR -t $IMAGENAME:base -f Dockerfile.base . && \
-docker build -t $IMAGENAME:grpc -f $DOCKERFILE.grpc . && \
-docker build $FORCEBUILDTAG -t ${IMAGENAME}:noetic-$VERSION -f $DOCKERFILE .
+docker build $UPAR -t $IMAGENAME:noetic-base -f Dockerfile.base . && \
+docker build $GRPC -t $IMAGENAME:noetic-grpc -f $DOCKERFILE.grpc . && \
+docker build $FORCEBUILDTAG -t $IMAGENAME:noetic-$PNP_VERSION -f $DOCKERFILE .
 
-docker tag $IMAGENAME:noetic-$VERSION $IMAGENAME:noetic
-docker tag $IMAGENAME:noetic-$VERSION $IMAGENAME:latest
+docker tag $IMAGENAME:noetic-$PNP_VERSION $IMAGENAME:noetic
+docker tag $IMAGENAME:noetic-$PNP_VERSION $IMAGENAME:latest
 

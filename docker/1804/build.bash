@@ -20,8 +20,8 @@ echo "======================================="
 echo "   Building $IMAGENAME:$VERSION "
 echo "======================================="
 
-docker build -t $IMAGENAME:base -f Dockerfile.base . && \
-docker build -t $IMAGENAME:grpc -f $DOCKERFILE.grpc . && \
+docker build -t $IMAGENAME:melodic-base -f Dockerfile.base . && \
+docker build -t $IMAGENAME:melodic-grpc -f $DOCKERFILE.grpc . && \
 docker build $FORCEBUILDTAG -t ${IMAGENAME}:melodic-$VERSION -f $DOCKERFILE .
 
 docker tag $IMAGENAME:melodic-$VERSION $IMAGENAME:melodic
