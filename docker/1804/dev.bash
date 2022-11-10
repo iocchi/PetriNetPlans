@@ -23,7 +23,7 @@ docker run -it \
     --privileged \
     --net=host \
     -v $PLAYGROUND_FOLDER:/home/robot/playground \
-    -v $PNP_FOLDER:/home/robot/src/PetriNetPlans \
+    -v $PNP_FOLDER:/home/robot/src/PetriNetPlans-dev \
     $IMAGENAME:$VERSION
 
 
