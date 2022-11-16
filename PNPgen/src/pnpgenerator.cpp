@@ -206,6 +206,17 @@ Place* PNP::addPlace(string name, int n) {
     return p;
 }
 
+Place* PNP::addPlace() {
+    stringstream ss; ss << "X" << node_id;
+    return addPlace(ss.str());
+}
+
+void PNP::delPlace(Place *p) {
+    vector<Place*>::iterator it = find(P.begin(), P.end(), p);
+    P.erase(it);
+    delete(p);
+}
+
 
 Transition* PNP::addTransition(string name) {
     Transition* t = new Transition(name);
@@ -213,12 +224,23 @@ Transition* PNP::addTransition(string name) {
     return t;
 }
 
+Transition* PNP::addTransition() {
+    return addTransition("[]");
+}
+
+void PNP::delTransition(Transition *t) {
+    //T.erase(t);
+    //delete(t);
+}
+
+
 
 void PNP::connect(Node* n1, Node* n2) {
     Edge *e = new Edge(n1,n2);
     E.push_back(e);
 }
 
+/* TODO check if it works ???
 void PNP::disconnect(Node* n1, Node* n2) {
     vector<Edge*>::iterator it = E.begin();
     Edge* ee = new Edge(n1,n2);
@@ -231,7 +253,7 @@ void PNP::disconnect(Node* n1, Node* n2) {
       E.erase(it);
     }
     delete(ee);
-}
+} */
 
 Node* PNP::disconnect(Node* n) {
     // search for connected Nodes
@@ -407,6 +429,16 @@ void PNP::connectActionToPlace(Place *pi, Place *po) { // add po after end place
     ts->setY(pe->getY()); ts->setX(pe->getX()+1); // same line as pe
     connect(pe,ts); connect(ts,po);
 }
+
+// replace end place of action starting in pi with po, end place is deleted!!!
+void PNP::replaceEndPlace(Place *pi, Place *po) { 
+
+    Node *ts = next(next(next(pi))); // transition to end place
+    // Place *pe = (Place*)(next(next(next(next(pi))))); // end place of action
+    Place* pe = (Place *)disconnect(ts); connect(ts,po);
+    delPlace(pe);
+}
+
 
 void PNP::connectPlaces(Place *pi, Place *po) { // add po after pi
     Transition *ts = addTransition(" ");
@@ -1262,7 +1294,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
   
   // cout << endl << "=== Current plan: " << endl << plan << endl;
 
-  if(plan.empty() || plan == "" || plan == " "){ //base case
+  if (plan.empty() || plan == "" || plan == " "){ //base case
     cout << "end" << endl << endl;
     
     /******better visualization************/
@@ -1277,8 +1309,8 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
     
     //get [ai || <..>]
     string next = getNext(plan);    
-    // cout << "current action: " << next << endl;
-    // cout << "rest of the plan: " << plan << endl;
+    cout << "current action: " << next << endl;
+    cout << "rest of the plan: " << plan << endl;
 
     // if there are spaces or new lines in the name of an action returns an error and quit the PNP generation
     // example: if ; is missing between two actions the generation should show an error!!!
@@ -1334,17 +1366,19 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    if(next.find('>') != string::npos && next.find('<') == string::npos){
      next.erase(remove(next.begin(), next.end(), '>'), next.end());
    }
-     
-
-   if (next == "" || next.empty())
-      return pi;
-
-   cout << endl << "Adding action: [" << next << "]" << endl;
-
+   
+   if (next == "" || next.empty()) {
+      cout << endl << "Empty action: [" << next << "]" << endl;
+      return genFromLine_r(pi,plan);
+   }
+    
    if (next.substr(0,1)=="#") { // comment
       return genFromLine_r(pi,plan);
    }
-   else if (next.substr(0,5)=="LABEL") {
+
+   cout << endl << "Adding action: [" << next << "]" << endl;
+
+   if (next.substr(0,5)=="LABEL") {
       if (LABELS[next]==NULL) {
           cout << "Adding label " << next << endl;
           if (pi->getName().substr(0,5)=="LABEL") { // if this place is a label, add a new one
@@ -1407,21 +1441,28 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       return genFromLine_r(pi,plan);
    }
    else if (next.find("||")!=string::npos) { // parallel action
-      cout << "|| Parallel actions || " << endl;
-      
-      Place *pi = pnp.addPlace("Parinit");
-      Place *pe = pnp.addPlace("Parend");
+      // fork transition
+      Transition *tf = pnp.addTransition(); tf->setX(pi->getX()+1); tf->setY(pi->getY());
+      pnp.connect(pi,tf);  // pi: initial place of this part of the plan
+      int ppix = tf->getX()+1;
+      int ppiy = tf->getY();
+      Place *pe;
       vector<string> pp; boost::split(pp,next,boost::is_any_of("| "));
       for (int i=0; i<pp.size(); i++) {
          if (pp[i].size()>0) {
-           cout << i << " " << pp[i] << endl;
            Place *poa;
-           Place *pn = pnp.addGeneralAction(pp[i],pi,&poa);
-           Transition *tn = pnp.addTransition("tppout");
-           pnp.connect(pn,tn); pnp.connect(tn,pe);
-        }
+           Place *ppi = pnp.addPlace(); ppi->setX(ppix); ppi->setY(ppiy); ppiy++;
+           pnp.connect(tf,ppi);
+           Place *pn = pnp.addGeneralAction(pp[i],ppi,&poa);
+           if (i==0) { 
+             pe = pnp.endPlaceOf(ppi); // pe->setName("Pend");
+           }
+           else {
+             pnp.replaceEndPlace(ppi, pe);
+           }
+         }
       }
-
+      pe->setX(ppix+5);
       return genFromLine_r(pe,plan);
    }
    else { // normal action

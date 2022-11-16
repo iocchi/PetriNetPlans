@@ -153,12 +153,16 @@ public:
 	std::vector<Node*> nextAll(Node *n);
 
     void connect(Node* n1, Node* n2);
-    void disconnect(Node* n1, Node* n2);
+    //void disconnect(Node* n1, Node* n2);
     Node* disconnect(Node* p);
 
+    Place* addPlace();
     Place* addPlace(string name);
     Place* addPlace(string name, int n); // n=-1: use node_id
+    void delPlace(Place *p);
+    Transition* addTransition();
     Transition* addTransition(string name);
+    void delTransition(Transition *t);
 
     std::pair<Transition*,Place*> addCondition(string name, Place* p0, int dy=0);
     void addConditionBack(string name, Place* pfrom, Place *pto, int dy=0);
@@ -175,6 +179,7 @@ public:
     Transition* addInterrupt(Place *pi, string condition, Place *po);
     Transition* addFail(Place *pi, Place *po);
     void connectActionToPlace(Place *pi, Place *po); // connect the action and the place with an empty transition
+    void replaceEndPlace(Place *pi, Place *po); // replace end place of action starting in pi with po, end place is deleted!!!
     void connectPlaces(Place *pi, Place *po); // connect the two places with an empty transition
 
     Place* execPlaceOf(Place *pi); // returns the exec place of action starting in pi
