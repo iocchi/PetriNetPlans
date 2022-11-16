@@ -1,3 +1,6 @@
+1.4.5  16/11/2022
+- PNPgen with parallel single actions
+
 1.4.4  5/10/2022
 - docker update (openjdk-11-jdk for Jarp compatibility on Ubuntu 1804) 
 
