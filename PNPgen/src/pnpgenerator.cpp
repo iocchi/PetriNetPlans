@@ -1446,7 +1446,9 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       pnp.connect(pi,tf);  // pi: initial place of this part of the plan
       int ppix = tf->getX()+1;
       int ppiy = tf->getY();
-      Place *pe;
+      // join transition
+      Transition *tj = pnp.addTransition(); tj->setX(pi->getX()+1); tj->setY(pi->getY());
+      Place *pe = pnp.addPlace(); pnp.connect(tj,pe); pe->setY(ppiy);
       vector<string> pp; boost::split(pp,next,boost::is_any_of("| "));
       for (int i=0; i<pp.size(); i++) {
          if (pp[i].size()>0) {
@@ -1454,15 +1456,13 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
            Place *ppi = pnp.addPlace(); ppi->setX(ppix); ppi->setY(ppiy); ppiy++;
            pnp.connect(tf,ppi);
            Place *pn = pnp.addGeneralAction(pp[i],ppi,&poa);
-           if (i==0) { 
-             pe = pnp.endPlaceOf(ppi); // pe->setName("Pend");
-           }
-           else {
-             pnp.replaceEndPlace(ppi, pe);
-           }
+           Place *ppe = pnp.endPlaceOf(ppi);
+           pnp.connect(ppe, tj);
          }
       }
-      pe->setX(ppix+5);
+      tj->setX(ppix+5);
+      pe->setX(ppix+6);
+      
       return genFromLine_r(pe,plan);
    }
    else { // normal action
