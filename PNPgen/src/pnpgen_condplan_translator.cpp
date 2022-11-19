@@ -155,9 +155,9 @@ int main(int argc, char** argv) {
   if(argc < 3 || string(argv[1]) != "pddl" && string(argv[1]) != "cff" && string(argv[1]) != "kpddl" && string(argv[1]) != "inline"){
     cout << "PNPgen_Translator: wrong usage!" << endl;
     cout << "                   usage: ./pnpgen_translator <language_type> <path_to_file> [ER file]" << endl;
-    cout << "                   <language_type>: pddl, cff, kpddl, inline" << endl;
+    cout << "                   <language_type>: pddl, pddl-ff, cff, kpddl, inline" << endl;
     cout << "                   <path_to_file>: (pddl) file is the output of FF planner" << endl;
-    cout << "                                   (cff) file is the output of Continget-FF planner" << endl;
+    cout << "                                   (cff) file is the output of Contingent-FF planner" << endl;
     cout << "                                   (kpddl) file is the output of kplanner" << endl;
     cout << "                                   (inline) file is the inline description of the plan" << endl;
     
@@ -189,17 +189,56 @@ int main(int argc, char** argv) {
   }
   f.close();
 
-  if (lang == "pddl"){
-    //=============== PDDL TRANSLATION ===============
+  if (lang == "pddl-ff"){
+    //=============== PDDL-FF TRANSLATION ===============
     string write_to = "output.txt";
     PDDLTransl pd(path);
-      
+    cout << "file reading " << path << endl;
     pd.read_file();
     cout << "file read" << endl;
     pd.write_plan(write_to); //write the translated plan to 'write_to'
     cout << "plan write" << endl;
     create_PNP_from_PDDL(write_to); //generate the PNP from the file 'write_to'
   }
+  else if (lang == "pddl"){
+    //=============== PDDL TRANSLATION ===============
+    string goal_name = "AUTOGEN_pddl";
+    
+    char sep='/';
+    size_t i = path.rfind(sep, path.length());
+    size_t j = path.find_last_of('.');
+    
+    //is a full path
+    if (i != string::npos) {
+      goal_name = path.substr(i+1, path.find_last_of('.') - i - 1);
+    }else if(j != string::npos){ //same level of file
+      goal_name = path.substr(0, j);
+    }
+    
+    string plan;
+
+    PNPGenerator pnpgen(goal_name);
+    pnpgen.readPDDLOutputFile(path,plan);
+
+    cout << "Plan: " << plan << endl;
+    // generate the main PNP from the linear plan
+    pnpgen.setMainLinearPlan(plan);
+    
+    if (erfile!="") {
+        // apply the execution rules
+        pnpgen.readERFile(erfile);
+        pnpgen.applyExecutionRules();
+    }
+    
+    // save the PNP
+    pnpgen.save();
+
+    // save the plan
+    std::ofstream of(path+string(".plan"));
+    of << plan;
+    of.close();
+  }
+
   else if (lang == "cff"){
     //=============== Contingent-ff TRANSLATION ===============
     CFFTransl pd(path);

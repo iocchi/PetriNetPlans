@@ -555,6 +555,7 @@ void PNPGenerator::save(const char* filename, bool noGraphics) {
 }
 
 
+
 void PNPGenerator::setMainLinearPlan(string plan) {
     Place *p = genLinearPlan(pnp.pinit,plan); p->setName("goal");
 }

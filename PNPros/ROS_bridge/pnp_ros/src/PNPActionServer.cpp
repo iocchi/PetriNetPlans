@@ -221,7 +221,7 @@ int PNPActionServer::doEvalCondition(string cond) {
         r2 = check_for_event(cond);
         r3 = evalConditionBuffer(cond); // check condition param buffer
 
-        //cout << "-- EvalCondition " << cond << " : cache / eval / check " << r0 << " " << r1 << " " << r2 ;
+        // cout << "-- EvalCondition " << cond << " : cache / eval / check / buffer " << r0 << " " << r1 << " " << r2 << " " << r3 ;
 
         if (r0!=-1) result=r0; // cached value has priority
         else if (r1!=-1) result=r1;
@@ -234,7 +234,7 @@ int PNPActionServer::doEvalCondition(string cond) {
         ConditionCache[cond] = result;
     }
 
-    //cout << "-- doEvalCondition RESULT = " << result << endl;
+    // cout << "-- doEvalCondition RESULT = " << result << endl;
     return result;
 }
 
@@ -464,6 +464,8 @@ int PNPActionServer::evalConditionBuffer(string cond){
 
     if (ros::param::get(rospar,v))
         r=v;
+    //else 
+    //  cout << "-- EvalConditionBuffer " << rospar << " not found " << endl;
 
     // cout << "-- EvalConditionBuffer " << cond << " param " << rospar << " " << r << endl;
 
