@@ -99,7 +99,6 @@ std::ostream& operator<< (std::ostream& stream, const Place& place) {
 }
 
 
-
 std::ostream& operator<< (std::ostream& stream, const Transition& transition) {
   stream << "<transition id=\"" << transition.sid << "\">\n";
   if (!noGraphicGeneration)
@@ -358,18 +357,18 @@ vector<Place*> PNP::addSensingAction(string name, Place* p0, vector<string> outc
 vector<Place*> PNP::addSensingBranches(Place* p0, vector<string> outcomes) {
     vector<Place *> v;
 
-    Place *pe = addPlace("",-1);
+    Place *pe = p0; /*addPlace("S",-1);
     connectPlaces(p0,pe);
     pe->setX(p0->getX()+2);
-    pe->setY(p0->getY());
+    pe->setY(p0->getY());*/
 
     int k=0;
     for (vector<string>::iterator it = outcomes.begin(); it!=outcomes.end(); it++, k++) {
         string obs = *it; boost::trim(obs);
         Transition *te = addTransition("["+obs+"]");
-        Place *pf = addPlace("",-1);
+        Place *pf = addPlace("S",-1);
         te->setY(p0->getY()+k); pf->setY(p0->getY()+k);
-        te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
+        te->setX(p0->getX()+1); pf->setX(p0->getX()+2);
         connect(pe,te); connect(te,pf);
         v.push_back(pf);
     }
@@ -1152,13 +1151,13 @@ bool PNPGenerator::genFromConditionalPlan(ConditionalPlan &plan) {
     return r;
 }
 
-int found_end(string line){
+int found_end(string line, char delim1, char delim2){
   
   int brackets = 0;
   int i;
   for(i = 0; i < line.size(); ++i){
-    if(line[i] == '<') brackets++;
-    if(line[i] == '>'){ 
+    if(line[i] == delim1) brackets++;
+    if(line[i] == delim2){ 
       brackets--;
       if(brackets == 0) break;
     }
@@ -1169,36 +1168,152 @@ int found_end(string line){
   return i;
 }
 
+
+char firstsymbol(string &line) {
+    
+    char symbols[] = ";<{|!";
+    int n = strlen(symbols);
+    int p[n]; int imin=0; int pmin = n;
+    for (int i=0; i<n; i++) {
+        p[i] = line.find(symbols[i]);
+        // cout << "symbol " << symbols[i] << " " << (int)p[i] << endl;
+        if (p[i]!=string::npos && p[i]<pmin) {
+          imin = i; pmin = p[i];
+        }
+    }
+    return symbols[imin];
+}
+
+int findend(const string& line, char tk) {
+  int k = line.find(tk);
+  if (k!=string::npos)
+    return k;
+  else
+    return line.size();
+}
+
+
 string getNext(string& line){
+
+  // cout << "getNext " << line << endl;
+  
+  
   string res;
   boost::trim(line);
   
+  char symb = firstsymbol(line);
+  // cout << "first symbol found: " << symb << endl;
+  
   // execution rule
-  if (line[0]=='!') {
+  if (symb=='!') {
     size_t e = line.substr(1).find('!');
     res = line.substr(1,e-1);
     line.erase(0,e+2);
   }
-  //we must return an action ..a;
-  else if (line.find(';') < line.find('<')){
-    //     cout << "case 1 " << line << endl;
-    res = line.substr(0,line.find(';'));
-    line.erase(0,line.find(';')+1);
-  } 
-  // we must return a conditioning <..>
-  else if (line.find('<') < line.find(';')){
+  // return a conditioning <..>
+  else if (symb=='<'){
       //    cout << "case 2 " << line << endl;
       int first = line.find('<');
-      int second = found_end(line);
+      int second = found_end(line,'<','>');
       res = line.substr(first,second-first+1);
       line.erase(first,second-first+2);
   }
-  // we must return the last action ;..a
-  else if (line.find(';') == string::npos && line.find('<') == string::npos){
-      //   cout << "case 3 " << line << endl;
-      res = line;
-      line = "";
+  // return a block { ... };
+  else if (symb=='{') {
+      int first = line.find('{');
+      int second = found_end(line,'{','}');
+      string part = line.substr(first,second-first+1);
+      string rest = line.substr(second-first+1);
+      // cout << "   part " << part << " - rest " << rest << endl; 
+      char symb1 = firstsymbol(rest);
+      if (symb1 == ';') { // return a block { ... }
+        res = part;
+        line.erase(first,second-first+2);
+        //cout << "case block  " << res << endl;
+      }
+      else if (symb1 == '|') {
+        //cout << "case parallel  ... " << endl;
+        //cout << "first block  " << part << endl;
+        int last = second-first+1;
+        int k=rest.find("||");  // next ||
+        int v=findend(rest,';');  // next ;
+        while (k!=string::npos && k<v) {
+            last += k+2;            
+            rest = line.substr(last);
+            //cout << "next parts " << rest << endl;
+            char si = firstsymbol(rest);
+            // skip all block or conditional
+            int toskip=0;
+            if (si=='{') {
+                toskip = found_end(rest,'{','}')+1;
+            }
+            else if (si=='<') {
+                toskip = found_end(rest,'<','>')+1;
+            }
+            k=rest.substr(toskip).find("||"); v=findend(rest.substr(toskip),';');
+        }
+
+        char symb2 = firstsymbol(rest); // must be a BLOCK or a single action
+        
+        // last block/action
+        if (symb2=='{') {
+            last += found_end(rest,'{','}')+1;
+            
+            // check that there is nothing else after this block....
+            rest = line.substr(last);
+            int v = findend(rest,';');
+            string term = rest.substr(0,v);
+            boost::trim(term);
+            if (term!="") {
+                cout << tcol.FAIL << "PARSE ERROR " << line << tcol.ENDC << endl;
+                cout << tcol.FAIL << "Unexpected term " << term << " in " << rest << tcol.ENDC << endl;    
+                abort();        
+            }
+            
+        }
+        else if (symb2==';') {
+            last += rest.find(';');
+        }
+        else {
+            cout << tcol.FAIL << "PARSE ERROR " << line << tcol.ENDC << endl;
+            cout << tcol.FAIL << "Unexpected symbol " << symb1 << tcol.ENDC << endl;    
+            abort();        
+        }
+        res = "*[[* " + line.substr(first,last) + " *]]*";
+        line.erase(first,last+2);
+        //cout << "case parallel " << res << endl;
+      }
+      else {
+        cout << tcol.FAIL << "PARSE ERROR " << line << tcol.ENDC << endl;
+        cout << tcol.FAIL << "Unexpected symbol " << symb1 << tcol.ENDC << endl;    
+        abort();
+      }
   }
+  // A || { B ; C }  PARSE ERROR|||
+  else if (symb=='|' && line.find('{')!=string::npos && line.find('{')<findend(line,';')) {
+    cout << tcol.FAIL << "PARSE ERROR " << line << tcol.ENDC << endl;    
+    cout << tcol.FAIL << "Use blocks for all parallel terms  { ... } || { ... } || { ... } " << tcol.ENDC << endl;    
+    abort();
+  }
+  // return parallel  ... || ... without blocks;
+  else if (symb=='|') {
+      int v = findend(line,';');
+      res = "*[[* " + line.substr(0,v) + " *]]*"; 
+      line.erase(0,v+1);
+      // cout << "case parallel  " << res << endl;
+  }
+  // return an action a;
+  else if (symb==';') { //(line.find(';') < line.find('<') && line.find(';') < line.find('{')) {
+    //     cout << "case 1 " << line << endl;
+    if (line.find(';') != string::npos) {
+      res = line.substr(0,line.find(';'));
+      line.erase(0,line.find(';')+1);
+    }
+    else {  // last / unique action
+      res = line;
+      line = "";    
+    }
+  } 
   boost::trim(res);
   boost::trim(line);
   return res;
@@ -1295,31 +1410,92 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
   
   // cout << endl << "=== Current plan: " << endl << plan << endl;
 
-  if (plan.empty() || plan == "" || plan == " "){ //base case
-    cout << "end" << endl << endl;
+  if (plan.empty() || plan == "" || plan == " ") { //base case
+    // cout << "end" << endl << endl;
     
     /******better visualization************/
-    int x, y;
-    pnp.getLastPlaceCoord(x,y);
-    pi->setX(x+2);
-    pi->setY(y);
+    //int x, y;
+    //pnp.getLastPlaceCoord(x,y);
+    //pi->setX(x+2);
+    //pi->setY(y);
     /************************************/
 
     return pi;
-  }else{
+  } 
+  else {
     
-    //get [ai || <..>]
+    //get next term of the plan: 
+    //  atomic action  a
+    //  condition <...> 
+    //  parallel  ... || ...
+    //  block   { ... }
+    
     string next = getNext(plan);
-    //cout << "current action: " << next << endl;
-    //cout << "rest of the plan: " << plan << endl;
+
+//    cout << "----" << endl << "current term: " << next << endl;
+//    cout << "rest of the plan: " << plan << endl << "----" << endl;
 
     // if there are spaces or new lines in the name of an action returns an error and quit the PNP generation
     // example: if ; is missing between two actions the generation should show an error!!!
 
-    //conditioning: go deep
-    if(next.find('<') != string::npos){
+
+   // parallel blocks
+   if (next.find("*[[*") != string::npos) {
+      
+      next = next.substr(next.find("*[[*")+4,next.find("*]]*")-4);
+
+      cout << "Adding parallel: " << next << endl;
+      
+      // pi initial place where to add this block
+
+      // fork transition
+      Transition *tf = pnp.addTransition(); tf->setX(pi->getX()+1); tf->setY(pi->getY());
+      pnp.connect(pi,tf);  // pi: initial place of this part of the plan
+      int ppix = tf->getX()+1;
+      int ppiy = tf->getY();
+      // join transition
+      Transition *tj = pnp.addTransition();  tj->setY(pi->getY());
+      Place *pe = pnp.addPlace(); pnp.connect(tj,pe);  pe->setY(pi->getY());
+      vector<string> pp; boost::split(pp,next,boost::is_any_of("||"));
+      int pmax=0;
+      for (int i=0; i<pp.size(); i++) {
+         if (pp[i].size()>0) {
+           Place *ppi = pnp.addPlace("P",-1); ppi->setX(ppix); ppi->setY(ppiy); ppiy++;
+           pnp.connect(tf,ppi);           
+           Place *pn = genFromLine_r(ppi, pp[i]);
+           pnp.connect(pn, tj);
+           pmax = std::max(pmax,pn->getX());
+         }
+      }
+      tj->setX(pmax+1);
+      pe->setX(pmax+2);
+      
+      return genFromLine_r(pe,plan);
+   }
+
+   
+   // block ( { only or { before < )
+   else if (next.find('{') != string::npos  && (next.find('<')==string::npos||next.find('{')<next.find('<'))) {
+      cout << "Adding block: " << next << endl;
+      
+      int f = next.find('{');
+      int l = found_end(next,'{','}');
+
+      string block = next.substr(f+1,l-1);
+      boost::trim(block);
+      //cout << "Block to add:   [" << block << "]" << endl;
+      // pi initial place where to add this block
+
+      Place *po = genFromLine_r(pi, block);
+      
+      return genFromLine_r(po,plan);
+   }
+
+
+    //conditional
+   else if (next.find('<') != string::npos) {
       boost::trim(next);
-      int i = found_end(next);
+      int i = found_end(next,'<','>');
       next = next.substr(1,i-1);
       cout << "to branch... " << next << endl;
       vector<string> observations;
@@ -1329,39 +1505,44 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       cout << "-------------" << endl;
       for(int i = 0; i < branches.size(); i++){
         cout << "observation: " << observations[i] << endl;
-        cout << "with branch: " << branches[i] << endl;
+        cout << "branch: " << branches[i] << endl;
         cout << "-------------" << endl;
       }
-      cout << endl;
     
       vector<Place*> s = pnp.addSensingBranches(pi,observations);
       vector<Place*> to_merge;
       for(int i = 0; i < s.size(); ++i){
-        cout << "...continue in the branch: " << branches[i] << endl;
+        cout << "...continue in branch: " << branches[i] << endl;
         Place* p = genFromLine_r(s[i],branches[i]);
         to_merge.push_back(p);
       }
 
-      Place* m = pnp.addPlace("",-1);
+      Place* m = pnp.addPlace("S",-1);
       
-      /******better visualization************/
-      int x, y;
-      pnp.getLastPlaceCoord(x,y);
-      m->setX(x+2);
-      m->setY(y);
-      /************************************/
-      
+      int px = 0;
       for(int i = 0; i < to_merge.size();++i){
         if (to_merge[i]->getName()!="goto") {
           pnp.connectPlaces(to_merge[i],m);
-          cout << "merged " << to_merge[i]->getName() << " with " << m->getName() << endl;
+          // cout << "merged " << to_merge[i]->getName() << " with " << m->getName() << endl;
+          px = std::max(px, to_merge[i]->getX());
         }
       }
-	
+
+      m->setX(px+2);
+      m->setY(pi->getY());
+
       return genFromLine_r(m,plan);     
    } 
-    
-   //no conditioning: add serial action 
+
+
+   // parallel atomic
+   else if (next.find("||") != string::npos) {
+     cout << "ERROR genPlan " << next << endl;
+     abort();
+   }
+
+   
+   // add serial action 
    
    //remove garbage from previous step (to fix)
    if(next.find('>') != string::npos && next.find('<') == string::npos){
@@ -1369,15 +1550,15 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
    }
    
    if (next == "" || next.empty()) {
-      cout << endl << "Empty action: [" << next << "]" << endl;
+      cout << "Empty action" << endl;
       return genFromLine_r(pi,plan);
    }
-    
+
    if (next.substr(0,1)=="#") { // comment
       return genFromLine_r(pi,plan);
    }
 
-   cout << endl << "Adding action: [" << next << "]" << endl;
+   cout << "Adding action: " << next << endl;
 
    if (next.substr(0,5)=="LABEL") {
       if (LABELS[next]==NULL) {
@@ -1441,31 +1622,7 @@ Place* PNPGenerator::genFromLine_r(Place* pi, string plan)
       }
       return genFromLine_r(pi,plan);
    }
-   else if (next.find("||")!=string::npos) { // parallel action
-      // fork transition
-      Transition *tf = pnp.addTransition(); tf->setX(pi->getX()+1); tf->setY(pi->getY());
-      pnp.connect(pi,tf);  // pi: initial place of this part of the plan
-      int ppix = tf->getX()+1;
-      int ppiy = tf->getY();
-      // join transition
-      Transition *tj = pnp.addTransition(); tj->setX(pi->getX()+1); tj->setY(pi->getY());
-      Place *pe = pnp.addPlace(); pnp.connect(tj,pe); pe->setY(ppiy);
-      vector<string> pp; boost::split(pp,next,boost::is_any_of("| "));
-      for (int i=0; i<pp.size(); i++) {
-         if (pp[i].size()>0) {
-           Place *poa;
-           Place *ppi = pnp.addPlace(); ppi->setX(ppix); ppi->setY(ppiy); ppiy++;
-           pnp.connect(tf,ppi);
-           Place *pn = pnp.addGeneralAction(pp[i],ppi,&poa);
-           Place *ppe = pnp.endPlaceOf(ppi);
-           pnp.connect(ppe, tj);
-         }
-      }
-      tj->setX(ppix+5);
-      pe->setX(ppix+6);
-      
-      return genFromLine_r(pe,plan);
-   }
+
    else { // normal action
 
       if (next.find(" ")!=string::npos) {
@@ -1531,8 +1688,9 @@ bool PNPGenerator::genFromLine(string path)
         newp->setX(p->getX()+2); newp->setY(p->getY());
         pnp.connectPlaces(p,newp);
     } 
-    else
-     p->setName("goal");
+    else {
+        p->setName("goal");
+    }
   }
   save();
   
