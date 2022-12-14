@@ -408,14 +408,14 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
   // External management -- BLOCKING
   // external module should set param PARAM_PNPACTIONSTATUS/<action_name> to "end"
   if (!found) {
-      ROS_INFO_STREAM("??? UNKNOWN Action " << action_name << " ??? External management !!!");
+      ROS_INFO_STREAM("External management " << action_name << " " << action_params);
       // wait for action to finish (external management)
       double sleepunit = 0.2;
       // action status parameter
       stringstream ssbuf;
       ssbuf << PARAM_PNPACTIONSTATUS << action_name;
       string pstr = ssbuf.str();
-      ROS_INFO_STREAM("... checking action termination with ROS param " << pstr);
+      ROS_INFO_STREAM("  ... checking action termination with ROS param " << pstr);
       string val = "";
       bool localrun=true;
       while (*run && localrun) {
@@ -425,7 +425,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
             localrun = false;
         }
       }
-      ROS_INFO_STREAM("... action terminated");
+      ROS_INFO_STREAM("  ... action "  << action_name << " " << action_params << " terminated");
 
   }
 

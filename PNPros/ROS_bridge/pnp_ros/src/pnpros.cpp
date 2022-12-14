@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 	if (!n.getParam("robotname",robotname))
         n.getParam("tf_prefix", robotname);
 
-	
+	int mq_size=1; // size of message queue = 1 discard other plans if more are received at the same time
     ros::Subscriber planToExecSub = n.subscribe(TOPIC_PLANTOEXEC, 1, planToExecuteCallback);
 	
 	ExternalConditionChecker* conditionChecker;
@@ -186,10 +186,9 @@ int main(int argc, char** argv)
 			mkdir((planFolder + string("/../log")).c_str(),0700);
 		}
 	}
-	
-	ActionProxy::publisher = n.advertise<pnp_msgs::Action>(TOPIC_PNPACTION,1);
-	ros::Publisher currentActivePlacesPublisher = 
-		n.advertise<String>(TOPIC_PNPACTIVEPLACES,1);
+	mq_size=10; // size of message queue (it affects sending parallel start signals)
+	ActionProxy::publisher = n.advertise<pnp_msgs::Action>(TOPIC_PNPACTION,mq_size);
+	ros::Publisher currentActivePlacesPublisher = n.advertise<String>(TOPIC_PNPACTIVEPLACES,mq_size);
     // TODO - not used -> remove
 	//ros::Subscriber sub = 
 	//	n.subscribe(TOPIC_PNPACTIONTERMINATION, 10, &ActionProxy::actionTerminationCallback);
