@@ -23,6 +23,7 @@ namespace pnpros
         robotname = "";
         string nms = nm;
 
+        ROS_INFO_STREAM("Creating ActionProxy " << nm);
         // cerr << "Parsing: " << nm << " " << nm.find('_') << endl;
 
         size_t k = nm.find('#');
@@ -125,8 +126,8 @@ namespace pnpros
 		goal.params = params;
 		goal.function = "start";
 		
-		
 		goalhandler = pnpac->sendGoal(goal,boost::bind(&ActionProxy::transitionCb, this,  _1),boost::bind(&ActionProxy::feedbackCb, this, _1, _2));
+		ROS_DEBUG_STREAM("ActionGoal sent " << name << "_" << params);
 
         stringstream ssbuf;
         ssbuf << PARAM_PNPACTIONSTATUS << name;
@@ -139,10 +140,13 @@ namespace pnpros
               )
 		{
             //cout << "### In start function: gh state = " << goalhandler.getCommState().toString() << endl;
+			ros::spinOnce();
 			usleep(100e3);
 		}
 
-        //cout << "### In start function: gh state = " << goalhandler.getCommState().toString() << endl;
+        //cout << "### In start function: gh state = " <<  << endl;
+
+		ROS_DEBUG_STREAM("ActionGoal " << name << "_" << params << " state : " << goalhandler.getCommState().toString());
 
 #endif
 

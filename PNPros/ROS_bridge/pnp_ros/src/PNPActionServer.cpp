@@ -65,14 +65,15 @@ void PNPActionServer::goalCallback(PNPAS::GoalHandle gh){
     goal = *current_gh.getGoal();
 
     // Run action (wait until it finishes)
-    //ROS_INFO_STREAM("### Received Goal: " << goal.id << " " << goal.name << " " << 
-    //      goal.params << " " << goal.function);
+    ROS_DEBUG_STREAM("### Received Goal: " << goal.id << " " << goal.name << " " << 
+          goal.params << " " << goal.function);
     
 
     if (goal.function=="start") {
         ROS_DEBUG_STREAM("Starting action " << goal.robotname << " " << goal.name << " " << 
                         goal.params);
         current_gh.setAccepted();
+        for (int k=0; k<3; k++) { ros::spinOnce(); }
         actionStart(goal.robotname, goal.name, goal.params);
         boost::thread t(
             boost::bind(&PNPActionServer::ActionExecutionThread, this, _1),
@@ -131,7 +132,7 @@ void PNPActionServer::ActionExecutionThread(PNPAS::GoalHandle gh) {
     }
     catch(boost::thread_interrupted&)
     {
-        // cout << "### Thread " << goal.name << " interrupted" << endl;
+        ROS_ERROR_STREAM("### ActionExecutionThread " << goal.name << " " << goal.params << " error");
         run[goal.robotname+"#"+goal.name+"_"+goal.params]=false;
         starttime[goal.robotname+goal.name]=-1;
     }
@@ -408,7 +409,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
   // External management -- BLOCKING
   // external module should set param PARAM_PNPACTIONSTATUS/<action_name> to "end"
   if (!found) {
-      ROS_INFO_STREAM("External management " << action_name << " " << action_params);
+      ROS_INFO_STREAM("External management " << action_name << "_" << action_params);
       // wait for action to finish (external management)
       double sleepunit = 0.2;
       // action status parameter
@@ -425,7 +426,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
             localrun = false;
         }
       }
-      ROS_INFO_STREAM("  ... action "  << action_name << " " << action_params << " terminated");
+      ROS_INFO_STREAM("  ... action "  << action_name << "_" << action_params << " terminated");
 
   }
 
