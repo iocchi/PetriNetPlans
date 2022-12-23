@@ -29,9 +29,9 @@ RUN echo "export LD_LIBRARY_PATH=\"\${LD_LIBRARY_PATH}:/usr/local/lib\" " >> $HO
 
 USER root
 
-RUN cd /home/robot/src/PetriNetPlans/PNP/build && make install
+RUN cd /home/robot/src/PetriNetPlans/PNP/build && make clean && make install
 
-RUN cd /home/robot/src/PetriNetPlans/PNPgen/build && make install
+RUN cd /home/robot/src/PetriNetPlans/PNPgen/build && make clean && make install
 
 RUN cd /usr/local/bin && ln -sf /home/robot/src/PetriNetPlans/Jarp/scripts/jarp.sh .
 

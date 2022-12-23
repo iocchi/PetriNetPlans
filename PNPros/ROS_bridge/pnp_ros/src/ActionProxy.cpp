@@ -128,18 +128,32 @@ namespace pnpros
 		
 		goalhandler = pnpac->sendGoal(goal,boost::bind(&ActionProxy::transitionCb, this,  _1),boost::bind(&ActionProxy::feedbackCb, this, _1, _2));
 		ROS_DEBUG_STREAM("ActionGoal sent " << name << "_" << params);
+		ros::spinOnce();
+		usleep(100e3);
 
         stringstream ssbuf;
         ssbuf << PARAM_PNPACTIONSTATUS << name;
         ros::param::set(ssbuf.str(),"run");
+/*
+int 	ACTIVE = 2
+int 	DONE = 7
+int 	PENDING = 1
+int 	PREEMPTING = 6
+int 	RECALLING = 5
+int 	WAITING_FOR_CANCEL_ACK = 4
+int 	WAITING_FOR_GOAL_ACK = 0
+int 	WAITING_FOR_RESULT = 3
+*/
 
+		while (goalhandler.getCommState() == actionlib::CommState::WAITING_FOR_GOAL_ACK) {
+            cout << "### In start function: gh state = " << goalhandler.getCommState().toString() << endl;
+  		    goalhandler = pnpac->sendGoal(goal,boost::bind(&ActionProxy::transitionCb, this,  _1),boost::bind(&ActionProxy::feedbackCb, this, _1, _2));
+			ros::spinOnce();
+			usleep(100e3);
+		}
 
-		while ((goalhandler.getCommState() == actionlib::CommState::WAITING_FOR_GOAL_ACK) ||
-			   (goalhandler.getCommState() == actionlib::CommState::PENDING) //||
-			   //(goalhandler.getCommState() == actionlib::CommState::ACTIVE)
-              )
-		{
-            //cout << "### In start function: gh state = " << goalhandler.getCommState().toString() << endl;
+		while (goalhandler.getCommState() == actionlib::CommState::PENDING) {
+            cout << "### In start function: gh state = " << goalhandler.getCommState().toString() << endl;
 			ros::spinOnce();
 			usleep(100e3);
 		}
