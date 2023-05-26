@@ -21,11 +21,11 @@ UPAR="--build-arg UID=`id -u` --build-arg GID=`id -g`"
 GRPC="--build-arg GRPC_VERSION=$GRPC_VERSION"
 
 echo "======================================="
-echo "   Building $IMAGENAME:$VERSION "
+echo "   Building $IMAGENAME:noetic-$PNP_VERSION "
 echo "======================================="
 
 docker build $UPAR -t $IMAGENAME:noetic-base -f Dockerfile.base . && \
-docker build $GRPC -t $IMAGENAME:noetic-grpc -f $DOCKERFILE.grpc . && \
+# docker build $GRPC -t $IMAGENAME:noetic-grpc -f $DOCKERFILE.grpc . && \
 docker build $FORCEBUILDTAG -t $IMAGENAME:noetic-$PNP_VERSION -f $DOCKERFILE .
 
 docker tag $IMAGENAME:noetic-$PNP_VERSION $IMAGENAME:noetic
