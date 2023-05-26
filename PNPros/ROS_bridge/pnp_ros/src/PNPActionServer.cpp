@@ -285,8 +285,9 @@ bool PNPActionServer::GetEventStartingWith(pnp_msgs::PNPLastEvent::Request  &req
       if(!rit->eventName.compare(0, substring.size(), substring))
       {
         eventNameFound = rit->eventName;
-        rit->eventName = string("***") + rit->eventName;
-	//std::cout << "Consumed1 event " << rit->eventName << std::endl;
+        if (rit->eventName[0]!='*') 
+            rit->eventName = string("***") + rit->eventName;
+	    // std::cout << "Consumed1 event " << rit->eventName << std::endl;
         break;
       }
     }
@@ -409,7 +410,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
   // External management -- BLOCKING
   // external module should set param PARAM_PNPACTIONSTATUS/<action_name> to "end"
   if (!found) {
-      ROS_INFO_STREAM("External management " << action_name << "_" << action_params);
+      ROS_INFO_STREAM("External management " << action_name << "_" << actual_action_params);
       // wait for action to finish (external management)
       double sleepunit = 0.2;
       // action status parameter
@@ -426,7 +427,7 @@ void PNPActionServer::actionExecutionThread(string robotname, string action_name
             localrun = false;
         }
       }
-      ROS_INFO_STREAM("  ... action "  << action_name << "_" << action_params << " terminated");
+      ROS_INFO_STREAM("  ... action "  << action_name << "_" << actual_action_params << " terminated");
 
   }
 
@@ -478,9 +479,14 @@ void PNPActionServer::actionStart(const std::string & robot, const std::string &
   // Clear condition cache, since new event arrived...
   ConditionCache.clear();
 
+  std::string actual_params = params;
+
+  if (params.find('@') != std::string::npos)
+     actual_params = replace_vars_with_values(params);
+
   // send action cmd message
   std_msgs::String sm;
-  sm.data = robot+"#"+action + "_" + params+".start";
+  sm.data = robot+"#"+action + "_" + actual_params+".start";
   action_pub.publish(sm);
 
   // Set status parameter
@@ -491,9 +497,14 @@ void PNPActionServer::actionStart(const std::string & robot, const std::string &
 
 void PNPActionServer::actionEnd(const std::string & robot, const std::string & action, const std::string & params)
 {
+  std::string actual_params = params;
+
+  if (params.find('@') != std::string::npos)
+     actual_params = replace_vars_with_values(params);
+
   // send action cmd message
   std_msgs::String sm;
-  sm.data = robot+"#"+action + "_" + params+".end";
+  sm.data = robot+"#"+action + "_" + actual_params+".end";
   action_pub.publish(sm);
 
   // Set status parameter
@@ -504,9 +515,14 @@ void PNPActionServer::actionEnd(const std::string & robot, const std::string & a
 
 void PNPActionServer::actionInterrupt(const std::string & robot, const std::string & action, const std::string & params)
 {
+  std::string actual_params = params;
+
+  if (params.find('@') != std::string::npos)
+     actual_params = replace_vars_with_values(params);
+
   // send action cmd message
   std_msgs::String sm;
-  sm.data = robot+"#"+action + "_" + params+".interrupt";
+  sm.data = robot+"#"+action + "_" + actual_params+".interrupt";
   action_pub.publish(sm);
 
   // Set status parameter
@@ -564,6 +580,14 @@ void PNPActionServer::addEvent_callback(const std_msgs::String::ConstPtr& msg){
   // Clear condition cache, since new event arrived...
   ConditionCache.clear();
 
+  // setvar_VARIABLE_value
+  // manage setvar special value to set variable to value
+  vector<std::string> splitted_condition = split_condition(msg->data);
+  if (splitted_condition[0] == "setvar" && splitted_condition.size()==3) {
+    update_variable_with_value(splitted_condition[1], splitted_condition[2]);
+  }
+
+
 #if 0
 //   cerr << endl;
    cout << "+++ Added event " << msg->data.c_str() << " to eventBuffer" << endl;
@@ -588,7 +612,7 @@ int PNPActionServer::check_for_event(string cond){
    -- MOVED IN PNPActionServer::doEvalCondition(string cond) 
   //checking if _@X_@Y_..._@Z is contained in the condition. If so, appropriately instantiating the variables in global_PNPROS_variables
   if (well_formatted_with_variables(cond))
-  {    
+  {
     vector<std::string> splitted_condition = split_condition(cond);
     vector<std::string> variable_values = get_variables_values(splitted_condition);
 
@@ -832,13 +856,17 @@ string PNPActionServer::get_variable_value(string var_name, string default_value
     return default_value;
   }
   else {
-    ROS_ERROR("??? Variable %s not initialized ???", var_name.c_str());
-    throw new runtime_error("??? Variable not initialized ???");
+    ROS_ERROR("!!! Variable %s not initialized and no default value !!!", var_name.c_str());
+    // throw new runtime_error("??? Variable not initialized ???");
+    return "NOVALUE";
   }
 }
 
 void PNPActionServer::update_variable_with_value(string var, string value){
   const std::map<std::string,std::string>::iterator& it = global_PNPROS_variables.find(var);
+
+  if (var[0] == '@')
+    var = var.substr(1);
 
   if (it != global_PNPROS_variables.end())
   {
@@ -867,9 +895,11 @@ std::string PNPActionServer::replace_vars_with_values(std::string params){
   {
     if (splitted_parameters[i][0] == '@')
     {
-      std::string key = splitted_parameters[i].substr(1,splitted_parameters[i].length()-1);
-      if(global_PNPROS_variables.find(key) != global_PNPROS_variables.end())
+      std::string key = splitted_parameters[i].substr(1); // ,splitted_parameters[i].length()-1);
+      if(global_PNPROS_variables.find(key) != global_PNPROS_variables.end()) {
         splitted_parameters[i] = global_PNPROS_variables[key];
+        // ROS_WARN("Variable %s initialized. param: %s", key.c_str(),splitted_parameters[i].c_str());
+      }
       else
       {
         ROS_WARN("Variable %s not initialized, passing it to the action", key.c_str());
@@ -1017,7 +1047,7 @@ void PNPActionServer::setvar(string params, bool *run)
     vector<std::string> vp;
     boost::split(vp, params, boost::is_any_of("_"));
     for (size_t i=0; i<vp.size()-1; i++) {
-        if (vp[i][0]='@') {
+        if (vp[i][0]=='@') {
             string var = vp[i].substr(1);
             string value = vp[i+1];
             cout << "    Set variable " << var << " = " << value << endl;
